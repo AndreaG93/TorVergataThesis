@@ -26,6 +26,19 @@ public class TestJSON {
     }
 
     @Test
+    public void validTestCase_3232() {
+
+        try {
+
+            AWSLambdaFunction awsLambdaFunction = new AWSLambdaFunction(functionName);
+            awsLambdaFunction.list();
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
     public void innovationTest() {
 
         try {
@@ -41,6 +54,21 @@ public class TestJSON {
             // "{\n \"key1\": 4 \n}"
 
             awsLambdaFunction.executeWithPayload(null, inputPayload.toString());
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
+
+    @Test
+    public void testUpdateMemorySize() {
+
+        try {
+
+            AWSLambdaFunction awsLambdaFunction = new AWSLambdaFunction(functionName);
+            awsLambdaFunction.updateMemorySize(256);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

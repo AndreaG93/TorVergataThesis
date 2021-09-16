@@ -6,11 +6,11 @@ import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaAsyncClient;
 import com.amazonaws.services.lambda.AWSLambdaClient;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
-import com.amazonaws.services.lambda.model.InvokeRequest;
-import com.amazonaws.services.lambda.model.InvokeResult;
-import com.amazonaws.services.lambda.model.ServiceException;
+import com.amazonaws.services.lambda.model.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.List;
 
 public class AWSLambdaFunction {
 
@@ -58,5 +58,56 @@ public class AWSLambdaFunction {
         System.out.println(invokeResult.getPayload());
     }
 
+    public void list() {
 
+        ListFunctionsResult functionResult = null;
+
+        try {
+            AWSLambda awsLambda = AWSLambdaClientBuilder.standard()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion(Regions.US_EAST_1).build();
+
+            functionResult = awsLambda.listFunctions();
+
+            List<FunctionConfiguration> list = functionResult.getFunctions();
+
+            for (Iterator iter = list.iterator(); iter.hasNext(); ) {
+                FunctionConfiguration config = (FunctionConfiguration) iter.next();
+
+                List<FileSystemConfig> systemConfigList = config.getFileSystemConfigs();
+                for (Iterator myIter = systemConfigList.iterator(); myIter.hasNext(); ) {
+                    FileSystemConfig fileSystemConfig = (FileSystemConfig) myIter.next();
+
+                    System.out.println(fileSystemConfig.toString());
+                }
+
+                System.out.println("The function name is " + config.getFunctionName());
+            }
+
+        } catch (ServiceException e) {
+            System.out.println(e);
+        }
+    }
+
+
+    public void updateMemorySize(int memorySize) {
+
+        UpdateFunctionConfigurationRequest request = new UpdateFunctionConfigurationRequest();
+        request.setFunctionName(this.functionName);
+        request.setMemorySize(memorySize);
+
+        try {
+            AWSLambda awsLambda = AWSLambdaClientBuilder.standard()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion(Regions.US_EAST_1).build();
+
+            UpdateFunctionConfigurationResult result = awsLambda.updateFunctionConfiguration(request);
+
+            System.out.println(result.getMemorySize());
+
+
+        } catch (ServiceException e) {
+            System.out.println(e);
+        }
+    }
 }
