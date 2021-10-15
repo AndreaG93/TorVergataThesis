@@ -3,192 +3,20 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+
+\newcommand{\mathDef}{\overset{\textit{def}}{=}}
+
 \begin{document}
 
-Ricordando che:
 
-\begin{itemize}
-\item The best synchronization technique consists in designing our system so as to avoid
-the need for synchronization in the first place.
-\end{itemize}
 
---------------------------------------------------------------
 
-\section{Architettura generale}
 
-\begin{itemize}
-\item L'attività di scheduling \textbf{non} deve essere un'attività relegata ad un solo processo. Una architettura gerarchica del \textit{controller} non è sostenibile poiché:
 
-\begin{itemize}
-\item Non è scalabile orizzontalmente
-\item Single point of failure
-\item Traffico di rete intenso.
-\end{itemize}
+\section{Super-peer Node}
 
 
-
-\item L'architettura del sistema sarà \textbf{flat} (\textbf{\textit{forse}} unstructured P2P).
-
-\item Il resource owner è colui che crea e mette a disposizione le coreografie
-
-\item Viene introdotto il concetto di responsabilità. Un nodo $A$ si dice \textbf{responsabile} delle attività di scheduling per le invocazioni delle composizioni/funzioni serverless associate al resource owner $X$, se contiene un processo (o thread) $p$, chiamato \textbf{processo scheduler}, che, avendo tutte le strutture dati necessarie e la conoscenza riguardo le composizioni di $X$, riesce a schedulare e gestire le invocazioni degli utenti delle composizioni di $X$.
-
-\item \textbf{Non è necessaria alcuna forma di coordinazione tra i nodi riguardo le attività di scheduling}. Ogni processo scheduler in esecuzione nei vari nodi del sistema lavora indipendentemente (a prescindere da come lo implementiamo). 
-
-\item In linea di principio deve esistere un \textbf{processo scheduler per ogni resource owner.} Più precisamente, se esiste almeno una richiesta di invocazione di una coreografia appartenente ad un resource owner $X$, deve esistere nel sistema un processo scheduler associato al resource owner $X$.
-
-\begin{itemize}
-\item Eventualmente, se non si registrano invocazioni di composizioni del resource owner $X$ per un "\textit{certo tempo}", è possibile deallocare le risorse associate e il nodo perde la responsabilità della g
-\end{itemize}
-
-\item I processi scheduler sono \textbf{RISORSE}. Hanno uno \textbf{STATO} e una \textbf{GUID} (univocamente identificabili a liello GLOBALE)!!!!
-
-\item Quando un nodo A riceve una richiesta di esecuzione di una coreografia associata al resoruce owner X, se A è il responsabile delle risorse di X, ovvero contiene il processo scheduler di X, allora accoda la richiesta nello scheduler secondo l'algoritmo implementato.
-
-\item Quando un nodo A riceve una richiesta di esecuzione di una coreografia associata al resoruce owner X, se A \textbf{NON} è il responsabile delle risorse di X, allora \textbf{ESEGUE UN LOOKUP per sapere chi è il responsabile e gli inoltra la richiesta.}
-
-\begin{itemize}
-\item Se il lookup da esito negativo, ovvero non esiste ancora un responsabile per X, il nodo che riceve la richiesta diventa automaticamente il responsabile. Quindi allocherà risorse per gestire la richiesta ricevuta.
-\end{itemize}
-
-\end{itemize}
-
-\section{Migrazione degli scheduler}
-
-\begin{itemize}
-\item Per garantire bilanciamento del carico nel sistema, si dovrebbe fare in modo che ogni nodo gestisca un numero pressoché uguale di processi scheduler. Tuttavia, non essendo i processi tutti uguali (esisteranno delle differenze), i nodi dovrebbero supportare un numero equo di richieste.
-
-\item I nodi \textbf{MENO} sovraccarichi hanno la facoltà di richiedere processi scheduler a nodi vicini. Se si accorge che un nodo vicino è particolarmente carico, richiede una migrazione. Un nodo non può richiedere la migrazione di un processo scheduler se tale processo è già sottoposto a migrazione da parte di un altro nodo. (DA VEDERE... NON E' DETTO CHE DEBBANO ESSERE I NODI MENO CARICHI A RICHIEDERE UNA MIGRAZIONE)
-
-\item I processi scheduler hanno la facoltà di migrare da un nodo all'altro secondo due forme di necessità:
-\begin{itemize}
-\item Bilanciamento carico
-\item Posizione geografica. Il processo scheduler associato alla gestione delle composizioni del resource owner X, dovrebbe essere posizionato "vicino" ai richiedenti!!
-\end{itemize}
-
-\item Per conoscere lo stato dei nodi vicini, è previsto l'uso di un protocollo di \textbf{GOSSIPING} (quello \textbf{probabilistico}) attraverso cui ogni nodo dovrebbe riuscire ad ottenere una \textbf{visione LOCALE} del sistema.
-
-\item Ogni nodo agisce in modo PROATTIVO (con tutti gli svantaggi e i vantaggi del caso) per cui ad intervalli regolari e a bassa frequenza invia ai suoi vicini informazioni sul loro stato (GUID degli scheduler e numero delle richieste pendenti associate a ciasucna di esse che sta gestendo).
-
-\begin{itemize}
-\item In realtà, per ottimizzare la propagazione dell'informazione, supponiamo di avere i nodi A e B dove A è vicino al nodo C il quale non è vicino al nodo B.... in sostanza A inoltra anche le informazioni di B verso C.
-\end{itemize}
-
-\item Quando avviene una migrazione si da sempre priorità alla migrazione di processi scheduler aventi il MINOR NUMERO di richieste da processare presso il nodo. 
-
-\item \textbf{Un nodo non può migrare un processo scheduler se ne ha uno solo.}
-
-\item \textbf{Un nodo non può migrare un processo scheduler se la somma delle richieste che sta processando più quella delle richieste del processo scheduler in esecuzione sul nodo sovraccarico è simile a quella del nodo preso in esame anche se hanno meno processi scheduler}
-
-\item E' una sorta di Information Sharing Pattern (??)
-\end{itemize}
-
-\section{Ulteriori possibilità alla Migrazione degli scheduler}
-
-\begin{itemize}
-\item Ogni nodo tiene traccia, in maniera totalmente indipendente, del numero di richieste 
-associate alle risorse del resource owner X. Se viene a sapere che un nodo vicino possiede lo scheduler di X, richiede la migrazione di X presso di lui IN MODO DA OTTIMIZZARE IL DELAY DI RETE. (il PULL DEI PROCESSI SCHEDULER)
-
-\item SI PRESUPPONE CHE OGNI NODO ABBIA UGUALI CARATTERISTICHE IN TERMINI DI POTENZA COMPUTAZIONALE E CHE VENGANO GESTITE DA UNA STESSA AUTORITY
-
-\item LA MIGRAZIONE E DI TIPO IBRIDA. Il nodo di destinazione prima alloca tutte le risorse, DIVENTA IL RESPONSABILE, e SOLO DOPO incomincia a ricevere LE NUOVE richieste associate ad al resource owner X. Il vecchio nodo è tenuto a smaltire tutte le richieste prese in carico prima di deallocare tutte le risorse. Quando il vecchio nodo ha smaltito tutte le richieste si considera compiuta la migrazione tuttavia è possibile eseguire una nuova migrazione anche qualora quella precedente associata ad X non è stata completata. (PER ORA!!! NON NE SONO SICURO)
-
-\item TUTTE LE informazioni NECESSARIE PER EFFETTUARE LO SCHEDULING DEVONO TROVARSI SUL NODO PRIMA DI DIVENTARE IL NUOVO RESPONSABILE (strutture dati, thread vari...)
-\end{itemize}
-
-\subsection{Migrazione dei "Processori" (o Migrazione di capacità) Proattiva}
-
-\begin{itemize}
-\item Ogni provider serverless impone un limite $n$ riguardante il numero di invocazioni.
-che per noi è arbitrario. E' ragionevole aspettarsi che aumenti.
-
-\item Se aumenta "troppo" il design precedente tende a sovraccaricare il nodo responsabile dello scheduler del resource owner di X.
-
-\item L'idea quindi è implementare una forma di migrazione della capacità di calcolo a disposizione (o processori).
-
-\item Possono esistere più nodi responsabili di X, ma la dimensione (o capacità) delle code che implementano i loro scheduler sono solo una frazione del totale ammesso dai provider.
-
-\item Il problema del lookup quando arriva una nuova richiesta viene gestito in questo modo:
-\begin{itemize}
-\item Se il nodo di arrivo è responsabile di X, il nodo accetta la richiesta e la schedula.
-\item Se non lo è, ed il QoS della richiesta è tempo di risposta, allora la inoltra al nodo responsabile più vicino (in termini di rete)
-
-\item Se non lo è ed il Qos della richiesta è di tipo costo, allora la inoltra allo scheduler meno carico.
-\end{itemize}
-
-\item La migrazione di capacità avviene in modo \textbf{proattivo} tenendo conto del carico. \textbf{Idealmente, ogni nodo dovrebbe conservare uno storico delle richieste in tipo ed in quantità per richiedere ai nodi capacità e prepararsi ad un imminente picco di richieste}.
-\end{itemize}
-
-
-
-\section{Non c'è un singolo scheduler per \textit{resource owner}}
-
-\begin{itemize}
-\item Un \textit{resource owner} potrebbe usare implementazioni di composizioni appartenenti a differenti provider (lambda, IBM etc.). Ogni provider può gestire le funzioni serverless in modo diverso ed avere LIMITI diversi. (\textbf{tetto massimo di invocazione di funzioni globale VS tetto massimo di invocazioni per funzione})
-
-\item Per riflettere ciò, ogni nodo gestisce esattamente un numero di processi scheduler, associati TUTTI ad un singolo resource owner, che è pari al numero di piattaforme supportate. (ESEMPIO: supporto IBM e AWS.. ogni nodo gestisce due processi scheduler per resource owner: uno per schedulare funzioni su IBM e l'altro su AWS... LE COMPOSIZIONI POSSONO AVERE TRANQUILLAMENTE IMPLEMENTAZIONI DI ENTRAMBI I PROVIDER)
-
-\item Questo è vero se e solo se il resource owner usa effettivamente tutte le piattaforme supportate...PUOI AVERE ANCHE UN SOLO NODO.. PER CUI OGNI NODO GESTISCE UN NUMERO DI SCHEDULER PARI AL NUMERO DEI SERVIZI SERVERLESS EFFETTIVAMENTE UTILIZZATI dal resource owner.
-
-\end{itemize}
-
-\section{OTTIMIZZAZIONI}
-
-\begin{itemize}
-\item Per evitare di allocare strutture dati uguali ogni volta ad ongi invocazione di una corerografia si usano delle cache.
-
-\item Ogni nodo a delle proprie cache ed agiscno in maniera indipendente.
-
-\item C'è una cache per ogni processo scheduler.
-
-\item lo scheduler è implementato con alberi splay (o forse AVL o B-TREE)
-
-\item L'accesso alla cache è possibile solo da parte di un solo thread. Non è necessaria alcuna forma di sincronizzazione.
-\end{itemize}
-
-\section{Tolleranza ai guasti}
-
-\begin{itemize}
-\item Il design garantisce di per se Maggior tolleranza ai guasti
-
-\item La tolleranza ai guasti dei nodi viene raggiunta attraverso uno schema simile a bittorent. In realtà dovremmo abbiamo dei cluster di nodi. Ogni cluster è il responsabile di X. Ogni cluster è organizzato gerarchicamente e, attraverso la elezione di un nodo leader (SUPERPEER), egli gestisce la computazione (POI replicazione attiva)
-
-\item CI SONO ALTERNATIVE? (Certo che ci sono...forse i log?)
-\end{itemize}
-
-
-\section{Caratteristiche}
-
-\begin{itemize}
-\item Scalabile orizzontalmente.
-
-\item NON E' UN'APPLICAZIONE EDGE-NATIVE MA EDGE-ACCELERATED (per ora...)
-
-\item Elegante :) 
-
-\end{itemize}
-
-\section{PROBLEMI}
-
-
-\begin{itemize}
-\item Le informazioni sugli utenti e sulle coreografie sono CENTRALIZZATE su un cluster di zookeeper (CENTRALIZZATO)
-
-\item L'OPTIMIZER è anche esso CENTRALIZZATO. ((E VA BENE COSì PER ORA)
-
-\item come RISOLVERE IL LOOKUP?????????????????????? (CHORD????? \textbf{ma non va bene perché l'overlay non tiene conto della posizione geografica})  CONCETTO DI ULTRAPEER ??? (vedi bittorrent)
-
-
-\end{itemize}
-\section{Scheduler}
-\begin{itemize}
-\item Scheduler multilivello? Simile a LINUX SCHEDULER???
-
-\end{itemize}
-
-
-
-
+An \textit{end-user} represents, instead, a third-party application that wants execute  one or more function choreographies.
 
 \section{Peer Node}
 
@@ -213,17 +41,75 @@ functions.
 
 As known, in server-less computing platforms, computation is done in \textbf{function instances}. These instances are completely managed by the server-less computing platform provider (SSP) and act as tiny servers where a function is been executed.
 
-\section{Server-less Scheduler}
 
-In this section, we will describe the very important notion of \textit{server-less scheduler}.
+\section{Resources}
 
-First of all, Let $R$ a resource owner and $R_{X}$ a set of server-less functions already defined and deployed by $R$ on an \textit{unique} server-less computing platform provider; we assume that $|R_{X}| \geq 1$.
+
+
+
+
+\section{System's resources and actors}
+
+\subsection{Resource owner}
+
+A \textit{resource owner}, henceforward denoted with $R$, represents an entity capable of \textit{creating}, \textit{modifying} and \textit{authorizing} access to several resources of our system.
+
+Given a resource owner $R$, there are two type of resources which he can manage:
+
+\begin{enumerate}
+\item Function choreographies.
+\item Server-less function implementations.
+\end{enumerate}
+
+\subsection{Function choreographies}
+
+A \textit{function choreography} is the most important resource of our system which  represents, using graph notation, all paths that might be traversed through a server-less function composition during its execution. 
+
+Formally, being $R$ the resource owner, a \textbf{function choreography}, denoted as $FC_R$, is a graph $G(V,E)$, where $V$ is a set of abstract functions connected each other using predefined control-flow operators (\texttt{if}, \texttt{for}, etc.).
+
+\begin{equation}
+V \mathDef (f_1, \ldots, f_n) \qquad n \in \mathbb{N}, n \geq 1 
+\end{equation}
+
+
+
+
+
+
+
+
+
+
+\begin{equation}
+V \mathDef R_{{X}_{1}} \cup  \ldots \cup R_{{X}_{n}} = \bigcup_{t = 1}^n R_{{X}_{t}} \qquad t \in \mathbb{N}, t \geq 1 
+\end{equation}
+
+In other words, every vertex $v \in V$ represents a server-less function $f$ which belongs to some set $R_{{X}_{t}}$ that, in turn, represents a set of server-less functions, belonging to $R$, which share same server-less computing platform provider, including its limits in term of max number of function instance runnable at the same time. 
+
+
+
+Cleary, inside a function choreography
+
+
+
+ $V $
+Let $t \in \mathbb{N}$ with $t \geq 1$, a \textbf{function choreography} $FC_{(R_{{X}_{1}}, \ldots,R_{{X}_{t}})}$ is a set of server-less functions sets. 
+
+
+
+
+\section{Server-less function set}
+
+\section{Function Choreography Scheduler}
+
+First of all, let $R$ a resource owner and $R_{X}$ a set of server-less functions already defined and deployed by $R$ on an \textit{unique} server-less computing platform provider; we assume that $|R_{X}| \geq 1$.
 
 Lastly, let $k$ the max number of function instances, executable at the same time on the server-less computing platform provider, which are available to execute any function $x_j$, where $1 \leq j \leq n$, belonging to $R_{X}$
 
 Then, it is said that a \textit{server-less scheduler} $S_{({R_{X}},m)}$ represents a queuing system, implementing any scheduling discipline, equipped with $m$ so-called \textit{virtual function instance}, where $m \leq k$, which aim is to perform scheduling activity managing any function belonging to $R_{X}$. The parameter $m$ is also called \textit{scheduler capacity}.
 
 A virtual function instance represents a function instances on the server-less computing platform provider which is \textit{virtually} owned by that scheduler. In other word, $m$ represents the max number of server-less functions, belonging to $R_{X}$, which a given scheduler $S_{({R_{X}},m)}$ can effectively invoke and perform using the server-less computing platform provider.
+
 
 \subsection{Proprieties and constrains regarding \textit{scheduler capacity}}
 
@@ -247,9 +133,28 @@ Is very important to make clear that different server-less computing platform pr
 \item If a provider imposed limits per-function, then $R_{X}$ will contains only one function belonging to $R$, therefore $k$ will be represent the provider's per-function limit.
 \end{itemize}
 
+
+\section{Abstract Server-less Function}
+
+An \textit{abstract function} represent an abstract descriptions of a corresponding server-less function implementation.
+
+That description includes:
+\begin{itemize}
+\item d
+\item f
+\item d
+\end{itemize}
+
+Any abstract function can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the \textit{resource owner name} while $b$ is the \textit{abstract function name}.
+
+Given an abstract function, a resource owner can provide different implementations which, although they must be semantically equivalent, may expose eventually different performance or cost behaviour.
+
+We call \textit{concrete function} any implementation of a given abstract function and it is uniquely identified by an ordered tuple $(a, b, c)$, where $a$ and $b$ are, like before, the resource owner name and the abstract function name respectively, $c$ represent, instead, the \textit{function type}, which is an abstract descriptions of their corresponding function implementations
+
 \section{Function choreography}
 
-Let $t \in \mathbb{N}$ with $t \geq 1$, a \textbf{function choreography} $FC_{(R_{{X}_{1}}, \ldots,R_{{X}_{t}})}$ is a set of server-less functions sets. 
+
+\section{fds}
 
 
 
@@ -258,13 +163,53 @@ Let $t \in \mathbb{N}$ with $t \geq 1$, a \textbf{function choreography} $FC_{(R
 
 
 
-of $n \geq 1$ of server-less functions sequences $R_{X_j}$ belonging to $R$, where any server-less function is connected each other, eventually using data- and control-flow operator in order to construct the work-flow of a generic application.
-
-
-\subsection{Scheduler behaviour}
 
 
 
+\subsection{Function Choreography scheduling}
+
+Let $FC_R$ a function choreography belonging to a resource owner $R$, containing a set $F$ of abstract functions. Formally:
+
+\begin{equation}
+F =  \left\{ f_1, \ldots, f_n \right\} \qquad n \in \mathbb{N}, n \geq 1 
+\end{equation}
+
+where $f_i$ denote an $i$-th abstract function, for $1 \leq i \leq n$.
+
+In order to effectively start the execution of a function choreography, is required that for each abstract function $f_i \in F$ \textit{at least one} concrete function which implements it exist; we denote the latter with $f_{i, concrete}$.
+
+More generally, since multiple implementations of a same abstract function can exist at the same time, which can be deployed on different server-less platform providers too, is required that:
+
+\begin{equation}
+\begin{array}{lc}
+\textbf{R} \mathDef R_{{X}_{1}} \cup  \ldots \cup R_{{X}_{s}} & \quad s \in \mathbb{N}, s \geq 1  \\
+
+\forall f_i \in F, \quad \exists f_{i, concrete} \in \textbf{R} & \quad 1 \leq i \leq n 
+
+\end{array}
+\end{equation}
+
+where $R_{{X}_{i}}$ denote the $i$-th concrete server-less function set, for $1 \leq i \leq s$.
+
+Is very important to remember that every function implementation $r \in R_{{X}_{i}}$ share both the same provider and the same limit regarding the max number of function instances executable at the same time on the server-less computing platform provider.  
+
+For example, let $r \in R_{{X}_{i}}$ and $g \in R_{{X}_{j}}$, with $i \neq j$, $r$ and $g$. Generally, $r$ and $g$ can share the same server-less computing platform provider, but they may also not. Is very important that $r$ and $g$ cannot share the same limit regarding the max number of function instances executable at the same time. Clearly, this design is required to support providers which impose per-function limits, supporting hybrid-scheduling.
+
+\subsection{$FC_R$-Active Peer Node}
+
+In order to effectively invoke all server-less concrete function belonging to a function choreography $FC_R$, we said that a peer node must be a so-called $FC_R$-\textit{active peer node}, or, simply, \textit{active}.
+
+To become an active node, it must hold all schedulers objects needed to schedule and invoke on server-less platform any possible concrete function implementation of all abstract function belonging to a function choreography. Formally:
+
+\begin{equation}
+R_{{X}_{i}} \in \textbf{R},  \qquad \text{the node holds } S_{({R_{X_i}},m_i)} \text{ with } m_i \geqslant 1 \qquad i \in \mathbb{N},\quad 1 \leq i \leq s, 
+\end{equation}
+
+where $S_{({R_{X_i}},m_i)}$ is the scheduler object necessary to schedule and invoke all server-less function belonging to $R_{X_i}$, while $m_i$ is its capacity factor. 
+
+If aforementioned constrained is not hold, 
+
+\subsection{dasddasasd}
 
 
 
@@ -287,11 +232,6 @@ To be more precise, when a function $x_j$ must to be execute, let $s$ the curren
 
 
 
-
-
-
-
-A \textbf{function choreography}, also called as compound server-less function, are a set of 
 
 
 

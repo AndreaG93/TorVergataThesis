@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.10.11)  14 OCT 2021 15:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.10.11)  15 OCT 2021 18:46
 entering extended mode
 **./appunti.tex
 (appunti.tex
@@ -102,102 +102,81 @@ File: l3backend-pdftex.def 2021-08-04 L3 backend support: PDF output (pdfTeX)
 ) (appunti.aux)
 \openout1 = `appunti.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 6.
-LaTeX Font Info:    ... okay on input line 6.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 34.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 30.
 
 
 (C:\Users\Andrea\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 34.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 30.
 
 
 (C:\Users\Andrea\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (4.7232pt too wide) in paragraph at lines 36--37
-[]\OT1/cmr/bx/n/10 Non e nec-es-saria al-cuna forma di co-or-di-nazione tra i 
-nodi riguardo
- []
-
 [1
 
-{C:/Users/Andrea/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2]
-Overfull \hbox (10.60294pt too wide) in paragraph at lines 86--86
-[]\OT1/cmr/bx/n/14.4 Ulteriori pos-si-bilita alla Mi-grazione degli sched-
+{C:/Users/Andrea/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
+Overfull \hbox (1.85036pt too wide) in paragraph at lines 107--108
+\OT1/cmr/m/n/10 An \OT1/cmr/m/it/10 ab-stract func-tion \OT1/cmr/m/n/10 rep-re-
+sent an ab-stract de-scrip-tions of a cor-re-spond-ing server-
  []
 
-
-Overfull \hbox (20.5774pt too wide) in paragraph at lines 96--97
-[]\OT1/cmr/m/n/10 TUTTE LE in-for-mazioni NEC-ES-SARIE PER EF-FET-TUARE LO SCHE
-DUL-
- []
-
-
-Overfull \hbox (3.55981pt too wide) in paragraph at lines 99--99
-[]\OT1/cmr/bx/n/12 Migrazione dei "Pro-ces-sori" (o Mi-grazione di ca-pacita)
- []
-
-[3]
-Overfull \hbox (14.9894pt too wide) in paragraph at lines 124--124
-[]\OT1/cmr/bx/n/14.4 Non c'e un sin-golo sched-uler per \OT1/cmr/bx/it/14.4 re
--source owner 
- []
-
-[4]
-Overfull \hbox (16.80063pt too wide) in paragraph at lines 165--166
-[]\OT1/cmr/m/n/10 NON E' UN'APPLICAZIONE EDGE-NATIVE MA EDGE-ACCELERATED
- []
-
-[5] [6]
-Overfull \hbox (40.72386pt too wide) in paragraph at lines 299--300
+[2] [3] [4]
+Overfull \hbox (40.72386pt too wide) in paragraph at lines 238--239
 []\OT1/cmr/m/n/10 Let $\OML/cmm/m/it/10 R$ \OT1/cmr/m/n/10 a re-source owner an
 d $\OML/cmm/m/it/10 R[]$ \OT1/cmr/m/n/10 its func-tion chore-og-ra-phy made up 
 of $\OML/cmm/m/it/10 R[]; R[]; [] ; R[]$
  []
 
-[7] [8] (appunti.aux) ) 
+[5] (appunti.aux) ) 
 Here is how much of TeX's memory you used:
- 1597 strings out of 478927
- 21412 string characters out of 2852060
- 319993 words of memory out of 3000000
- 19493 multiletter control sequences out of 15000+600000
- 408405 words of font info for 45 fonts, out of 8000000 for 9000
+ 1625 strings out of 478927
+ 21699 string characters out of 2852060
+ 319007 words of memory out of 3000000
+ 19509 multiletter control sequences out of 15000+600000
+ 413519 words of font info for 65 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,6n,66p,595b,249s stack positions out of 5000i,500n,10000p,200000b,80000s
- <C:\Users\Andrea\AppData\Local\MiKTeX\fonts/pk/ljfour/j
-knappen/ec/dpi600\tcrm1000.pk><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/Andrea/AppData/Local/Programs
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/Andrea/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/Andrea/
-AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Use
-rs/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.p
-fb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
-m/cmmi5.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
-msfonts/cm/cmmi7.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1
-/public/amsfonts/cm/cmr10.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/Andrea/AppData/Local/Programs/M
-iKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/Andrea/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Andrea/AppDat
-a/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/And
-rea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pf
-b>
-Output written on appunti.pdf (8 pages, 185411 bytes).
+ 56i,10n,66p,489b,192s stack positions out of 5000i,500n,10000p,200000b,80000s
+ <C:\Users\Andrea\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
+pen/ec/dpi600\tcrm1000.pk><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/Andrea/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/Andrea/AppData/Local/Pr
+ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><C:/Users/Andrea/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/A
+ndrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
+C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+mi12.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsf
+onts/cm/cmmi5.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmmi7.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Andrea/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Andrea/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/Andrea/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/Andrea/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/User
+s/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pf
+b><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmti7.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmtt10.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/symbols/msam10.pfb><C:/Users/Andrea/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on appunti.pdf (5 pages, 219075 bytes).
 PDF statistics:
- 99 PDF objects out of 1000 (max. 8388607)
+ 113 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
