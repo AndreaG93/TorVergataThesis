@@ -58,103 +58,250 @@ Given a resource owner $R$, there are two type of resources which he can manage:
 
 \begin{enumerate}
 \item Function choreographies.
-\item Server-less function implementations.
+\item Server-less function implementations (also called \textit{concrete server-less functions})
 \end{enumerate}
 
 \subsection{Function choreographies}
 
-A \textit{function choreography} is the most important resource of our system which  represents, using graph notation, all paths that might be traversed through a server-less function composition during its execution. 
+A \textit{function choreography} is the most important resource of our system and it is used to model both server-less functions and server-less function compositions.
 
-Formally, being $R$ the resource owner, a \textbf{function choreography}, denoted as $FC_R$, is a graph $G(V,E)$, where $V$ is a set of abstract functions connected each other using predefined control-flow operators (\texttt{if}, \texttt{for}, etc.).
+Informally, it represents, using graph notation, all paths that might be traversed through a server-less function composition during its execution. In other words, it describes calling relationships between server-less functions.
+
+Formally, being $R$ the resource owner, a \textbf{function choreography}, denoted as $FC_R$, is a \textit{control-flow graph} $G(V,E)$, where:
+
+\begin{itemize}
+\item Each node $v \in V$, called \textit{abstract control-flow node}, represents a generic function of a computer program.
+\item Each edge $(v_i, v_j) \in E$, for any $i,j \in \mathbb{N}$ with $i \neq j$, indicates that the generic function $v_i$ calls that in $v_j$.
+\end{itemize} 
+
+Any function choreography can be  uniquely identified by an ordered string pair $(a, b)$, where $a$ is the \textit{resource owner name} while $b$ is the \textit{function choreography name}.
+
+There are two types of abstract control-flow nodes:
+
+\begin{description}
+\item[Abstract server-less function] denoted as $f_{(abstract, i)}$ while the set of all server-less functions is denoted as $F_{abstract}$.
+\item[Control-flow function] denoted ad $c_t$ while $C$ is the corresponding set of all control-flow functions.
+\end{description}
+
+Formally, let $|V| = n$, $|F_{abstract}| = t$, and $|C| = k$, where $t,k \in \mathbb{N}$ with $t + k = n$, we have that:
 
 \begin{equation}
-V \mathDef (f_1, \ldots, f_n) \qquad n \in \mathbb{N}, n \geq 1 
+\begin{array}{lll}
+
+V & \mathDef & F_{abstract} \cup C \\
+  & = & (f_{(abstract, 1)}, \ldots, f_{(abstract, t)}) \cup (c_1, \ldots, c_k) \\
+\end{array}
+\end{equation}
+
+Clearly, we said that function choreography models a server-less function, when $|V| = 1$ and $|E| = 0$; conversely, it models a server-less function composition, when $|V| > 1$ and $|E| > 0$.
+
+\subsubsection{Abstract server-less function}
+
+An \textit{abstract server-less function} represents a descriptions of one or more corresponding concrete server-less function implementations. That description includes:
+
+\begin{itemize}
+
+\item TODO
+\item TODO
+\item TODO
+
+\end{itemize}
+
+Any abstract server-less function can be uniquely identified by an ordered string pair $(a, b)$, where $a$ is the \textit{resource owner name} while $b$ is the \textit{abstract server-less function name}.
+
+\subsubsection{Concrete server-less function}
+
+Given an abstract server-less function, a resource owner can provide different implementations which, although they must be semantically equivalent, may eventually expose different performance or cost behaviour.
+
+Therefore, we call \textit{concrete server-less function} any implementation of a given abstract function and it is uniquely identified by an ordered string tuple $(a, b, c)$, where $a$ and $b$ represent, like before, the \textit{resource owner name} and the \textit{abstract function name} respectively, while $c$ represents the so-called \textit{function type}, which is an abstract descriptions of the corresponding function implementation.
+
+\subsubsection{Control-flow operator}
+
+Like \texttt{if}, \texttt{for}, etc.
+
+\subsection{Server-less function swarms}
+
+Informally, a so-called \textit{server-less function swarm} represent a set of concrete server-less function with very specific properties.
+
+Precisely, let $l \in \mathbb{N}$ such that $l \neq 0$, $R$ a resource owner, $P$ a server-less computing platform provider and  $X_R$ a set of concrete server-less functions. Moreover, let $\textbf{X}_R$ the set containing all concrete function implementations defined and deployed by $R$ on any provider. 
+
+A set $X_R \subseteq \textbf{X}_R$ is called a \textit{server-less function swarm}, or simply \textit{swarm}, if:
+
+\begin{enumerate}
+\item $|X_{R}| = n \geq 1$, that is $X_{R}$ must contain at least one concrete function.
+\item $X_{R}$ contain concrete functions that share the same platform provider $P$ where they will be executed.
+\item $X_{R}$ contain concrete functions that share the same limit $l$ in term of max number of server-less function instance runnable at the same time by the corresponding platform provider $P$. That limit is also called \textit{server-less function swarm's concurrency limit}, or simply, \textit{concurrency limit}. 
+\end{enumerate}
+
+Is very important to make clear that only at most $l$ concrete functions belonging to $X_R$ can be executed simultaneously by $P$. The value of $l$ depends by specific policies adopted by $P$; some of them imposed that limit \textit{per-account}, others \textit{per-functions}. Our model supports both approaches because:
+
+\begin{itemize}
+
+\item If $P$ imposed limits \textit{per-function}, then $|X_{R}| = 1$, that is, $X_{R}$ will contain only one function defined and deployed by $R$ in $P$, where $l$ will be represent the provider's per-function limit.
+
+\item If $P$ imposed a limit \textit{per-account}, then generally $|X_{R}| \geq 1$ and $l$ will be represent the provider's global limit. 
+\end{itemize}
+
+\section{Function choreography scheduler}
+
+\subsection{Schedulability condition}
+
+Let $FC_R$ a function choreography belonging to a resource owner $R$ and $F_{abstract}$ its server-less abstract functions set. Moreover, be $\textbf{X}_R$ the set containing all functions deployed by $R$ in any provider.
+
+In order to effectively start the execution of a function choreography, is required that for each abstract function $f_{abstract} \in F$ \textit{at least one} concrete function $f$, which implements it, exists.
+
+Formally, a function choreography is said \textit{schedulable} when: 
+\begin{equation}
+\label{eqn:SchedulabilityConditionOne}
+\begin{array}{lc}
+
+& \forall f_{abstract} \in F_{abstract} \\
+
+FC_R \text{ is schedulable } \Leftrightarrow & \\
+ & \exists f \in \textbf{X}_R \mid  f \text{ implements } f_{abstract} \\
+\end{array}
+\end{equation}
+
+Althoust correct, the condition expressed by equation \ref{eqn:SchedulabilityConditionOne} is not very precise, because $\textbf{X}_R$ can contain some functions that doesn't implement any $f_{abstract} \in F_{abstract}$.
+
+Therefore, we define $\Omega_{FC_R}$ as the set containing only concrete functions that are needed to execute $FC_R$, which can belong to any provider.
+
+Precisely, remembering the fact according to which multiple implementations of a same abstract function can exist at the same time, which can be deployed on different server-less platform providers too, we exploit the notion of swarm to formally define the set $\Omega_{FC_R}$.
+
+Let $n \in \mathbb{N}$, such that $n \geq 1$, and $X_{R_i}$ the $i$-th swarm containing only concrete function implementing one or more $f_{abstract} \in F_{abstract}$, where $1 \leq i \leq n$. Since, can exist $n$ swarm objects that satisfy this condition, we can say that:
+
+\begin{equation}
+\begin{array}{c}
+\Omega_{FC_R} \mathDef X_{{R}_{1}} \cup  \ldots \cup X_{{R}_{n}} = \bigcup_{t = 1}^n X_{{R}_{t}} \\
+
+\text{ where } \\	
+
+X_{{R}_{i}} \cap X_{{R}_{j}} = \oslash \text{ for any } i \neq j \\
+
+\forall f \in X_{{R}_{i}}, f \text{ implements } f_{abstract}, \text{ for }  1 \leq i \leq n\\
+
+\end{array}
+\end{equation}
+
+Please note that any swarm $X_{R_i}$ and $X_{R_j}$, for any $i \neq j$, can belong to the same provider but they cannot share the same concurrency limit.
+
+Generally the schedulability condition for $FC_R$ can be written as follows:
+
+\begin{equation}
+FC_R \text{ is schedulable } \Leftrightarrow \exists \Omega_{FC_R}
 \end{equation}
 
 
+\subsection{The $X_R$-Scheduler}
 
+Let $R$ a resource owner, $P$ the server-less provider and $X_{R}$ a swarm, where $k$ its concurrency limit.
 
+Then, it is said that a \textit{$X_R$-Scheduler}, denoted as $S_{({X_{R}},m)}$ represents a queuing system, implementing any scheduling discipline, equipped with $m$ so-called \textit{virtual function instance}, where $m \leq k$, which aim is to decide when and which function, belonging to $X_{R}$, must be performed on $P$. The parameter $m$ is also called \textit{scheduler capacity}.
 
+\subsubsection{Virtual function instance}
 
+A \textit{virtual function instance} represents a real function instances, clearly belonging to the server-less computing platform provider, which is \textit{virtually} owned by $S_{({X_{R}},m)}$.
 
+Therefore, $m$ represents the max number of server-less function instances usable simultaneously by $S_{({R_{X}},m)}$.
 
+\subsubsection{Proprieties and constrains}
 
+According to our model, a $X_R$-scheduler capable to manage any function belonging to $X_{R}$, if exist, is \textit{not} unique, although it is unique inside a peer node. 
+
+In order to achieve better performance in terms of network delay experienced by end users, fault tolerance and load balance, any peer nodes can hold a $X_R$-scheduler in order to manage incoming request sent by several users spread in different geographic regions. 
+
+However, despite there is no upper bound to the number of $X_R$-schedulers existing at the same time in our system, there is a limitation regarding the scheduler capacity of each existing scheduler. 
+
+Let's start summarizing all rules regarding $X_R$-schedulers:
+
+\begin{enumerate}
+
+\item All peer node of our system can hold a $X_R$-scheduler object.
+
+\item Each node can hold only one instance of type $X_R$-scheduler.
+
+\item Let $n \in \mathbb{N}$ such that $n \geq 1$, suppose that our system contains $n$ peer nodes holding a $X_R$-scheduler.
+
+To be more precise, let's say that a sequence $S_{(1,({R_{X}},m_1))}, \ldots , S_{(i,({R_{X}},m_i))}$ exist at the same time in our system, where $S_{(i,({R_{X}},m_i))}$ represent the $X_R$-scheduler owned by i-th node having scheduler capacity equal to $m_i$.
+
+Following constraint must be hold:
 
 \begin{equation}
-V \mathDef R_{{X}_{1}} \cup  \ldots \cup R_{{X}_{n}} = \bigcup_{t = 1}^n R_{{X}_{t}} \qquad t \in \mathbb{N}, t \geq 1 
+\sum_{i=1}^{n} m_i \leq k
 \end{equation}
 
-In other words, every vertex $v \in V$ represents a server-less function $f$ which belongs to some set $R_{{X}_{t}}$ that, in turn, represents a set of server-less functions, belonging to $R$, which share same server-less computing platform provider, including its limits in term of max number of function instance runnable at the same time. 
+In other words, the sum of all scheduler capacities must be less or equal to the max number of function instances executable at the same time on the server-less computing platform provider for a given $X_{R}$ set.
 
-
-
-Cleary, inside a function choreography
-
-
-
- $V $
-Let $t \in \mathbb{N}$ with $t \geq 1$, a \textbf{function choreography} $FC_{(R_{{X}_{1}}, \ldots,R_{{X}_{t}})}$ is a set of server-less functions sets. 
+\end{enumerate}
 
 
 
 
-\section{Server-less function set}
 
-\section{Function Choreography Scheduler}
+
+
+
+
+
+
+, belonging to $R_{X}$, which a given scheduler $S_{({R_{X}},m)}$ can effectively invoke and perform using the server-less computing platform provider.
+
+
+
+
+Suppose that 
+
+
+where $R_{{X}_{i}}$ denote the $i$-th concrete server-less function set, for $1 \leq i \leq s$.
+
+Is very important to remember that every function implementation $r \in R_{{X}_{i}}$ share both the same provider and the same limit regarding the max number of function instances executable at the same time on the server-less computing platform provider.  
+
+For example, let $r \in R_{{X}_{i}}$ and $g \in R_{{X}_{j}}$, with $i \neq j$, $r$ and $g$. Generally, $r$ and $g$ can share the same server-less computing platform provider, but they may also not. Is very important that $r$ and $g$ cannot share the same limit regarding the max number of function instances executable at the same time. Clearly, this design is required to support providers which impose per-function limits, supporting hybrid-scheduling.
+
+
+
+
+
 
 First of all, let $R$ a resource owner and $R_{X}$ a set of server-less functions already defined and deployed by $R$ on an \textit{unique} server-less computing platform provider; we assume that $|R_{X}| \geq 1$.
 
 Lastly, let $k$ the max number of function instances, executable at the same time on the server-less computing platform provider, which are available to execute any function $x_j$, where $1 \leq j \leq n$, belonging to $R_{X}$
 
-Then, it is said that a \textit{server-less scheduler} $S_{({R_{X}},m)}$ represents a queuing system, implementing any scheduling discipline, equipped with $m$ so-called \textit{virtual function instance}, where $m \leq k$, which aim is to perform scheduling activity managing any function belonging to $R_{X}$. The parameter $m$ is also called \textit{scheduler capacity}.
 
-A virtual function instance represents a function instances on the server-less computing platform provider which is \textit{virtually} owned by that scheduler. In other word, $m$ represents the max number of server-less functions, belonging to $R_{X}$, which a given scheduler $S_{({R_{X}},m)}$ can effectively invoke and perform using the server-less computing platform provider.
+
+
+
+Suppose that $k \in \mathbb{N}$ such that $k \neq 0$ represents the provider's global limit in term of max number of server-less function instance runnable at the same time by $P$.
+
+
+
+
+
+
+
+then generally $|X_{R}| \geq 1$ and, supposing for simplicity that $X_{R} = \textbf{X}_R$, $l$ will be represent the provider's global limit.
+
+
+\subsection{The $FC_R$-Scheduler}
+
+To support hybrid-scheduling, that is the ability to execute multiple concrete function implementations belonging to different providers or subjected to different concurrency limit, in order to select the most suitable concrete function implementation according to a given QoS, unfortunately only one ``\textit{scheduler}" is not enough.
+
+We call \textit{$FC_R$-Scheduler} simply a set of \textit{$X_{R}$-Schedulers} where $X_{R} \in \Omega_{FC_R}$. Is always required that $|FC_R| \geq 1$.
+
+
+
+
+
+
+
+
+
 
 
 \subsection{Proprieties and constrains regarding \textit{scheduler capacity}}
 
-According to proposed solution, a scheduler capable to manage any function belonging to $R_{X}$, if exist, is \textit{not} unique, although it is unique inside a peer node. 
-
-In order to achieve better performance in terms of network delay experienced by end users, fault tolerance and load balance, any peer nodes can hold a $S_{({R_{X}},m)}$ scheduler in order to manage incoming request sent by several users spread in different geographic regions. 
-
-However, despite there is no upper bound to the number of schedulers of type $S_{({R_{X}},m)}$ existing at the same time in our system, there is a limitation regarding the scheduler capacity of each existing scheduler. 
-
-To be more precise, let's say that, globally, a there are a set of schedulers $S_{1,({R_{X}},m_1)}, \ldots , S_{p,({R_{X}},m_p)}$ exist at the same time, where $p \in \mathbb{N}$ with $p \geq 1$. Following constrains must be hold:
-
-\begin{equation}
-\sum_{i=1}^{p} m_i \leq k
-\end{equation}
-
-In other words, the sum of all scheduler capacities must be less or equal to the max number of function instances executable at the same time on the server-less computing platform provider for a given $R_{X}$ set.
-
-Is very important to make clear that different server-less computing platform providers may establish limits, regarding the max number of function instances executable at the same time, in different way; some of them imposed limits per-account, others per-functions. Our design can accommodate both approaches because:
-\begin{itemize}
-\item If a provider imposed limits per-account, then $R_{X}$ will contains all functions defined and deployed by $R$, then $k$ will be represent the provider's global limit.
-\item If a provider imposed limits per-function, then $R_{X}$ will contains only one function belonging to $R$, therefore $k$ will be represent the provider's per-function limit.
-\end{itemize}
 
 
-\section{Abstract Server-less Function}
-
-An \textit{abstract function} represent an abstract descriptions of a corresponding server-less function implementation.
-
-That description includes:
-\begin{itemize}
-\item d
-\item f
-\item d
-\end{itemize}
-
-Any abstract function can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the \textit{resource owner name} while $b$ is the \textit{abstract function name}.
-
-Given an abstract function, a resource owner can provide different implementations which, although they must be semantically equivalent, may expose eventually different performance or cost behaviour.
-
-We call \textit{concrete function} any implementation of a given abstract function and it is uniquely identified by an ordered tuple $(a, b, c)$, where $a$ and $b$ are, like before, the resource owner name and the abstract function name respectively, $c$ represent, instead, the \textit{function type}, which is an abstract descriptions of their corresponding function implementations
-
-\section{Function choreography}
-
-
-\section{fds}
 
 
 
@@ -168,32 +315,7 @@ We call \textit{concrete function} any implementation of a given abstract functi
 
 \subsection{Function Choreography scheduling}
 
-Let $FC_R$ a function choreography belonging to a resource owner $R$, containing a set $F$ of abstract functions. Formally:
 
-\begin{equation}
-F =  \left\{ f_1, \ldots, f_n \right\} \qquad n \in \mathbb{N}, n \geq 1 
-\end{equation}
-
-where $f_i$ denote an $i$-th abstract function, for $1 \leq i \leq n$.
-
-In order to effectively start the execution of a function choreography, is required that for each abstract function $f_i \in F$ \textit{at least one} concrete function which implements it exist; we denote the latter with $f_{i, concrete}$.
-
-More generally, since multiple implementations of a same abstract function can exist at the same time, which can be deployed on different server-less platform providers too, is required that:
-
-\begin{equation}
-\begin{array}{lc}
-\textbf{R} \mathDef R_{{X}_{1}} \cup  \ldots \cup R_{{X}_{s}} & \quad s \in \mathbb{N}, s \geq 1  \\
-
-\forall f_i \in F, \quad \exists f_{i, concrete} \in \textbf{R} & \quad 1 \leq i \leq n 
-
-\end{array}
-\end{equation}
-
-where $R_{{X}_{i}}$ denote the $i$-th concrete server-less function set, for $1 \leq i \leq s$.
-
-Is very important to remember that every function implementation $r \in R_{{X}_{i}}$ share both the same provider and the same limit regarding the max number of function instances executable at the same time on the server-less computing platform provider.  
-
-For example, let $r \in R_{{X}_{i}}$ and $g \in R_{{X}_{j}}$, with $i \neq j$, $r$ and $g$. Generally, $r$ and $g$ can share the same server-less computing platform provider, but they may also not. Is very important that $r$ and $g$ cannot share the same limit regarding the max number of function instances executable at the same time. Clearly, this design is required to support providers which impose per-function limits, supporting hybrid-scheduling.
 
 \subsection{$FC_R$-Active Peer Node}
 
@@ -267,6 +389,45 @@ of all the nodes currently involved in downloading F.
 
 
 
+
+
+
+
+
+
+to $R$, therefore $k$ will be represent the provider's per-function limit.
+
+
+
+
+
+
+
+ already registered and deployed by $R$ into our on an \textit{unique} server-less computing platform provider; we assume that $|R_{X}| \geq 1$.
+
+
+
+
+
+\begin{equation}
+V \mathDef R_{{X}_{1}} \cup  \ldots \cup R_{{X}_{n}} = \bigcup_{t = 1}^n R_{{X}_{t}} \qquad t \in \mathbb{N}, t \geq 1 
+\end{equation}
+
+In other words, every vertex $v \in V$ represents a server-less function $f$ which belongs to some set $R_{{X}_{t}}$ that, in turn, represents a set of server-less functions, belonging to $R$, which share same server-less computing platform provider, including its limits in term of max number of function instance runnable at the same time. 
+
+
+
+Cleary, inside a function choreography
+
+
+
+ $V $
+Let $t \in \mathbb{N}$ with $t \geq 1$, a \textbf{function choreography} $FC_{(R_{{X}_{1}}, \ldots,R_{{X}_{t}})}$ is a set of server-less functions sets. 
+
+
+
+
+\section{Server-less function set}
 
 
 
