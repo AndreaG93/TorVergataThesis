@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.10.11)  15 OCT 2021 18:02
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.8) (preloaded format=pdflatex 2021.10.11)  16 OCT 2021 16:33
 entering extended mode
-**./Paper.tex
-(Paper.tex
+**./trash.tex
+(trash.tex
 LaTeX2e <2021-06-01> patch level 1
 L3 programming layer <2021-08-27>
 (C:\Users\Andrea\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
@@ -130,8 +130,9 @@ ftex.def
 File: l3backend-pdftex.def 2021-08-04 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count275
 \l__pdf_internal_box=\box52
-) (Paper.aux)
-\openout1 = `Paper.aux'.
+)
+No file trash.aux.
+\openout1 = `trash.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
 LaTeX Font Info:    ... okay on input line 9.
@@ -149,7 +150,6 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
 LaTeX Font Info:    ... okay on input line 9.
 LaTeX Info: Redefining \it@ocap on input line 9.
 LaTeX Info: Redefining \it@ccap on input line 9.
-
 
 File italian.ldf warning: 
 italian.ldf    With OT1 encoding guillemets are poorly faked
@@ -182,10 +182,10 @@ Overfull \hbox (16.80063pt too wide) in paragraph at lines 168--169
 []\OT1/cmr/m/n/10 NON E' UN'AP-PLI-CA-ZIO-NE EDGE-NATIVE MA EDGE-ACCELERATED
  []
 
-[5] (Paper.aux) ) 
+[5] (trash.aux) ) 
 Here is how much of TeX's memory you used:
- 2929 strings out of 478927
- 42363 string characters out of 2852060
+ 2927 strings out of 478927
+ 42310 string characters out of 2852060
  360004 words of memory out of 3000000
  20800 multiletter control sequences out of 15000+600000
  408046 words of font info for 44 fonts, out of 8000000 for 9000
@@ -200,7 +200,7 @@ a/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/And
 rea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/
 Users/Andrea/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti1
 0.pfb>
-Output written on Paper.pdf (5 pages, 106635 bytes).
+Output written on trash.pdf (5 pages, 106635 bytes).
 PDF statistics:
  53 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
