@@ -3,15 +3,29 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{natbib}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 \newcommand{\mathDef}{\overset{\textit{def}}{=}}
 
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=black,  %choose some color if you want links to stand out
+}
+
+\theoremstyle{definition}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem*{remark}{Remark}
+
 \begin{document}
 
-
-
-
-
+\tableofcontents
+\newpage
 
 \section{Super-peer Node}
 
@@ -267,6 +281,117 @@ A \text{ is } FC_R\text{-active peer node } \Leftrightarrow \forall \Delta_{X_{R
 
 Multiple nodes can be active at the same time. Any node perform its scheduling decision independently.
 
+
+\section{Architecture overview}
+
+Our system design is based on a network of nodes, or \textit{peers}, every of which has the \textit{same functionality}; in fact, any of them is able to handle request submission, request scheduling and, potentially, request execution. 
+
+This is the reason according to which we can mark our proposal as a \textit{P2P system}.
+
+\subsection{Overlay network}
+
+Our system's nodes are connected by an \textit{overlay network}.
+
+\begin{definition}[Overlay network]
+An overlay network is a virtual network built on top of a physical network according to which each nodes can communicate with other if and only if they are connected by virtual links belonging to the virtual network. 
+\end{definition}
+
+\begin{remark}
+A node may not be able to communicate directly with an arbitrary other node although they can communicate through physical network.
+\end{remark}
+
+To be more precise, we have adopt a fully \textit{centralized unstructured overlay network} because the \textit{peer-resource index}, sometimes called \textit{directory}, is centralized. 
+
+Please note that hybrid unstructured or fully decentralized solutions are technically possible, but guarantees about quality of service are very difficult.
+
+\subsubsection{Locality-awareness property}
+
+\textit{Locality-awareness} is one of the essential characteristics of our system. In fact, if each peer is able to select his neighbours exploiting a suitable locality aware algorithm, is possible to decrease user experienced delays.
+
+We have decided to adopt a multi-level based locality-aware neighbour selection called \textit{intra-AS lowest delay clustering algorithm} (ASLDC). 
+
+When ASLDC algorithm is used, each peer chooses nearby peers only from those within the same AS; then it ranks its neighbours in terms of transmission latency, preferring to o establish the connection with the node with the shortest latency to itself. 
+
+TODO \cite{UnderstandingLocalityAwareness}
+
+\subsection{Fault Tolerance}
+
+Like in many other P2P implementation, there are two ways of detecting failures in our proposed solution:
+
+\begin{enumerate}
+\item If a node tries to communicate with a neighbour and fails.
+\item Since all nodes send to all his neighbour nodes so-called ``heartbeat" messages, that is messages sent at fixed time intervals to indicate that the sender is alive, is possible to detect a failure by not receiving aforementioned periodic update messages after a long time. 
+
+\end{enumerate}
+
+\subsubsection{Availability}
+
+Let $n \in \mathbb{N}$, $R$ a resource owner and $FC_R$ his function choreography, since multiple $FC_R$-Scheduler object can exist in $n$ different nodes, our proposed solution can guarantee an high degree of availability. 
+
+In fact, when a node node holding an $FC_R$-Scheduler fails, all end users requests related to $FC_R$ can be routed to any other node holding a $FC_R$-Scheduler. 
+
+\subsubsection{Replication}
+
+Although multiple $FC_R$-Scheduler object can exist, it's not mean that $FC_R$-Scheduler object are replicated, because every of them manage different virtual function instances. 
+
+Except the peer-resource index, any form of replication is performed by our system.
+
+
+
+
+
+
+
+\begin{algorithm}
+\caption{An algorithm with caption}\label{alg:cap}
+\begin{algorithmic}
+
+\State $y \gets 1$
+
+
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+ and $\Delta_{X_{R}}$-Scheduler
+
+
+
+
+
+
+
+
+The locality awareness of the overlay network is used in scheduling jobs, described in Section 3.2
+
+
+
+
+
+
+
+physical network but with added properties such as fault tolerance and flexibility. 
+
+
+
+
+
+
+
+
+
+
+
+The first problem is scheduling. Since there
+is no central scheduler it is difficult
+
+
+
+Hybrid unstructured overlay
+
+
 \subsection{$FC_R$-Request}
 
 
@@ -324,9 +449,113 @@ of all the nodes currently involved in downloading F.
 
 
 
+Replication and Fault Tolerance. There are two ways of detecting failures in CAN,
+the first if a node tries to communicate with a neighbor and fails, it takes over that neighbor’s
+zone. The second way of detecting a failure is by not receiving the periodic update message
+after a long time. In the second case, the failure would probably be detected by all the
+neighbors, and all of them would try to take over the zone of the failed node, to resolve this,
+all nodes send to all other neighbors the size of their zone, and the node with the smallest
+zone takes over.
+
+\newpage
+
+
+\begin{equation}
+E[T] = \sum_{i = 0}^n E[S_i] + E[T_{Q_i}]
+\end{equation}
+
+\section{Queuing system of a $\Delta_{X_{R}}$-scheduler}
+
+Let $k \in \mathbb{N}$ such that $k \geq 0$. Moreover, suppose that $R$ represents a resource owner, $P$ a server-less provider and $\Delta_{X_{R}}$ a sub-swarm of the swarm $X_{R}$ where $k$ its concurrency limit. Finally, let $S_{(\Delta_{X_{R}},m)}$ a $\Delta_{X_{R}}$-scheduler. 
+
+Obliviously, since there are only $m$ available virtual function instances, if there are more than $m$ server-less functions waiting to be execute, a choice has to be made about which server-less function has to run next to ensuring QoS guarantees for latency critical applications.
+
+Because we expect to execute server-less functions with different response-time requirements, which may have different scheduling needs, i have designed the $\Delta_{X_{R}}$-scheduler as a queuing system implementing a \textit{multilevel queue scheduling algorithm} which partitions the ready queue into several separate queues. 
+
+According to our solution, each queue has its own scheduling algorithm and any server-less function is permanently assigned to one queue according to his class.
+
+In addition, we have adopt \textit{round-robin} (\textit{RR}) scheduling algorithm to perform scheduling activity among the queues.
+
+\subsection{Server-less function preemption}
+
+A very important consideration regards server-less function preemption. 
+
+In our context, due to FaaS paradigm, which hides the complexity of servers where our functions will be executed, the ability to preempt functions is not naturally available.
+
+For that reason, only non-preemptive scheduling algorithms, according to which once a server-less function starts running it cannot be preempted, even if a higher priority server-less function comes along, can be adopted.
+
+Since many scheduling algorithms require job preemption to run optimally, this situation can lead to a suboptimal resource management. 
+
+\subsection{Queuing system design}
+
+A $\Delta_{X_{R}}$-scheduler is made up of three queues:
+
+\begin{itemize}
+
+\item One queue implements a \textit{Non-Preemptive Least-Slack-Time-First} (\textit{LST}) scheduling algorithm. We will refer to that queue using $Q_{LST}$ notation.
+
+That algorithm implements a \textit{dynamic priority scheduling approach} where priorities are assigned to server-less functions based on their \textit{slacks}.
+
+At any time $t$, the \textit{slack} of a job with deadline at $d$ is equal to $d - t - s$, where $s$ is the time required to complete the job. 
+
+Any job having strict latency requirements must to be assign to this queue.
+
+\item Another queue implements, instead, a \textit{Non-Preemptive Shortest-Job-First} (\textit{SJF}) scheduling algorithm. That queue is denoted with $Q_{SJF}$.
+
+That policy assigns priorities to jobs based on their size: the smaller the size, the higher the priority.
+
+This queue is reserved for any function choreography that tolerates high latency. However, according to queueing theory, since SJF performs very bad when service time distribution is heavy-tailed; in fact
+
+\begin{equation}
+E[T_Q(x)]^{SJF} = \dfrac{\rho E[S^2]}{2E [S]} \cdot \dfrac{1}{(1 - \rho x )^2}
+\end{equation}
+
+This queue is not suitable for very, very large server-less function. The variance in the job size distribution must be low.
+
+\item Finally, the third queue exploits the the simplest scheduling algorithm, that is the \textit{First-Come-First-Served} (\textit{FCFS}) policy, and it is denoted using $Q_{FCFS}$ notation.
+
+This queue is used for any heavy-tailed server-less function which can tolerate high latency.
+\end{itemize}
+
+\subsection{The virtual function instances allocation problem}
+
+Although a $S_{(\Delta_{X_{R}},m_A)}$ owns $m$ 
+
+
+
+
+This form of aging prevents starvation. 
+
+
+Finally, suppose that a node peer $A$ holds a $S_{(\Delta_{X_{R}},m_A)}$, which represents the 
+$\Delta_{X_{R}}$-Scheduler object.
+
+\begin{enumerate}
+\item Once a request is received over HTTP
+\item Ask to the coordinator for 
+\end{enumerate}
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\bibliography{Bibliography}
 \end{document}
