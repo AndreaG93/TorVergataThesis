@@ -517,10 +517,58 @@ This queue is not suitable for very, very large server-less function. The varian
 This queue is used for any heavy-tailed server-less function which can tolerate high latency.
 \end{itemize}
 
+
 \subsection{The virtual function instances allocation problem}
 
-Although a $S_{(\Delta_{X_{R}},m_A)}$ owns $m$ 
+Let $n \in \mathbb{N}$ such that $n \geq 1$ and suppose that, at a certain time, a sequence including $n$ unique $\Delta_{X_{R}}$-schedulers exist in our system.
 
+Formally, that sequence is denoted with $S_{(1,(\Delta_{X_{R}},m_1))}, \ldots , S_{(i,(\Delta_{X_{R}},m_n))}$, where $S_{(i,(\Delta_{X_{R}},m_i))}$ represents the $\Delta_{X_{R}}$-scheduler owned by $i$-th node having scheduler capacity equal to $m_i$.
+
+We have already established that the following constraint must be hold:
+
+\begin{equation}
+\label{eqn:SchedulerConstrains}
+\sum_{i=1}^{n} m_i \leq k
+\end{equation}
+
+where $k \in \mathbb{N}$, with $k > 0$, is the concurrency limit of the swarm $X_R$.
+
+
+\subsubsection{Reactive scaling policy}
+
+Every node of the system monitors all queues belong to its $\Delta_{X_{R}}$-Scheduler and adjusts the number of reserved virtual function instances to preserve quality-of-service guarantees. This activity is called \textit{reactive scaling policy}.
+
+Although a $S_{(\Delta_{X_{R}},m)}$ owns $m$ virtual function instances, they are not equally shared between aforementioned run queue. 
+
+First of all, let be $v_{LST}$, $v_{SJF}$ and $v_{FCFS}$ the numbers of the virtual function instances bounded to the $Q_{LST}$, $Q_{SJF}$ and $Q_{FCFS}$ run-queue. 
+
+At any time, following constrains must be hold:
+
+\begin{equation}
+v_{LST} \mathDef \dfrac{N \cdot E[S]}{\sum slack} 
+\end{equation}
+
+\begin{equation}
+v_{SJF} \mathDef \dfrac{len(Q_{SJF})}{\alpha} 
+\end{equation}
+
+\begin{equation}
+v_{FCFS} \mathDef \dfrac{len(Q_{FCFS})}{\alpha} 
+\end{equation}
+
+\begin{equation}
+m = v_{LST} + v_{SJF} + v_{FCFS}
+\end{equation}
+
+\begin{enumerate}
+\item If the current number of virtual function instances is not enough to avoid deadline misses by latency constrained server-less function inside $Q_{LST}$, will be add to $VCPU_{LST}$ a number of virtual processor equal to 
+
+\begin{equation}
+v_{LST} < \dfrac{N \cdot E[S]}{\sum slack} 
+\end{equation}
+
+
+\end{enumerate}
 
 
 
@@ -536,8 +584,52 @@ $\Delta_{X_{R}}$-Scheduler object.
 \end{enumerate}
 
 
+\begin{equation}
+m = \dfrac{\sum slack}{E[S] \cdot m_{current}} + \dfrac{N}{\alpha}
+\end{equation}
+
+\begin{equation}
+\lambda_{FC_R} \geq \lambda_{threshold} 
+\end{equation}
 
 
+\begin{equation}
+RTT_{(A,B)} > RTT_{(A,C)} + 
+\end{equation}
+
+\begin{equation}
+f_{abstract} = next 
+\end{equation}
+
+\begin{equation}
+f_{abstract} = min(E[f_{\Delta_{X_{R_i}}}] + E[T_{Q_{LST}}] F
+\end{equation}
+
+
+
+
+
+
+\subsubsection{Server-less function scheduling for QoS ``Minimum Response Time"}
+
+Let $n \in \mathbb{N}$, such that $n \geq 1$, supposing to have an $FC_R$-\textit{active peer node} and let $\Omega_{FC_R}$ the set of all sub-swarms containing at least one function implementing any $f_{abstract} \in \textbf{F}_{abstract}$, where $|\Omega_{FC_R}| = n$.
+
+Finally, suppose that $f_{abstract}$ is the next abstract function that have to be executed according to the control-flow logic described by $FC_R$.
+
+\begin{enumerate}
+\item For $1 \leq i \leq n$, let $\Delta_{(X_{R_i}, f_{abstract})} \subseteq \Delta_{X_{R_i}}$ containing all concrete functions implementing $f_{abstract}$.
+
+\item For $1 \leq i \leq n$, select $\textbf{f}_i \in \Delta_{(X_{R_i}, f_{abstract})}$ functions having the minimum response time $E[T_{\textbf{f}_i}]$.
+
+\item Found $i \in [0,m]$ such that: 
+
+\begin{equation}
+E[T_{\textbf{f}_i}] + E[T_{Q_i}]^{\textbf{LST}} < E[T_{\textbf{f}_j}] +E[T_{Q_j}]^{\textbf{LST}} \quad \text{ for } j \in \mathbb{N}, 1 \leq j \leq n, i \neq j
+\end{equation}
+
+\item Select the i-th \textit{$\Delta_{X_{R}}$-Schedulers} belonging to \textit{$FC_R$-Scheduler} of the node and add  $\textbf{f}_i$ into the $Q_{LST}$ run-queue.
+
+\end{enumerate}
 
 
 
