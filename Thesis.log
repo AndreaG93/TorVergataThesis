@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.10.20)  21 OCT 2021 09:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (MiKTeX 21.10) (preloaded format=pdflatex 2021.10.22)  22 OCT 2021 09:59
 entering extended mode
 **./Thesis.tex
 (Thesis.tex
@@ -502,11 +502,11 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 467.
 
-[10] [11] [12] (Thesis.bbl)
+[10] [11] (Thesis.bbl)
 
 Package natbib Warning: There were undefined citations.
 
-[13] (Thesis.aux)
+[12] (Thesis.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -514,8 +514,8 @@ Package rerunfilecheck Info: File `Thesis.out' has not changed.
 (rerunfilecheck)             Checksum: A70F1BB33D74C841D168553E040CD0E6;5581.
  ) 
 Here is how much of TeX's memory you used:
- 9897 strings out of 478927
- 144131 string characters out of 2852060
+ 9896 strings out of 478927
+ 144124 string characters out of 2852060
  458646 words of memory out of 3000000
  27533 multiletter control sequences out of 15000+600000
  414759 words of font info for 70 fonts, out of 8000000 for 9000
@@ -548,9 +548,9 @@ ype1/public/amsfonts/cm/cmti7.pfb><C:/Users/Andrea/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmti8.pfb><C:/Users/Andrea/AppData/Local/Progr
 ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb><C:/Users/Andrea/AppData/L
 ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on Thesis.pdf (13 pages, 347593 bytes).
+Output written on Thesis.pdf (12 pages, 346359 bytes).
 PDF statistics:
- 435 PDF objects out of 1000 (max. 8388607)
- 89 named destinations out of 1000 (max. 500000)
+ 430 PDF objects out of 1000 (max. 8388607)
+ 88 named destinations out of 1000 (max. 500000)
  249 words of extra memory for PDF output out of 10000 (max. 10000000)
 
