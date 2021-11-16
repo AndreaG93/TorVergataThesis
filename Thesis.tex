@@ -7,6 +7,13 @@
 \usepackage{natbib}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage[mathscr]{euscript}
+\usepackage{tikz}
+
+\newcommand{\Cross}{\mathbin{\tikz [x=1.8ex,y=1.8ex,line width=.15ex] \draw (0,0) -- (1,1) (0,1) -- (1,0);}}
+
+\newcommand*{\N}{\mathbb{N}}
+\DeclareMathOperator*{\argminA}{arg\,min}
 
 \newcommand{\mathDef}{\overset{\textit{def}}{=}}
 
@@ -23,9 +30,16 @@
 \newtheorem*{remark}{Remark}
 
 \begin{document}
+	
+\bibliographystyle{plain}
+\bibliography{Bibliography.bib}
+
 
 \tableofcontents
 \newpage
+
+\input{Chapter1}
+\input{Chapter2}
 
 \section{Super-peer Node}
 
@@ -64,9 +78,7 @@ As known, in server-less computing platforms, computation is done in \textbf{fun
 
 \section{System's resources and actors}
 
-\subsection{Resource owner}
 
-A \textit{resource owner}, henceforward denoted with $R$, represents an entity capable of \textit{creating}, \textit{modifying} and \textit{authorizing} access to several resources of our system.
 
 Given a resource owner $R$, there are two type of resources which he can manage:
 
@@ -75,63 +87,7 @@ Given a resource owner $R$, there are two type of resources which he can manage:
 \item Server-less function implementations (also called \textit{concrete server-less functions})
 \end{enumerate}
 
-\subsection{Function choreographies}
 
-A \textit{function choreography} is the most important resource of our system and it is used to model both server-less functions and server-less function compositions.
-
-Informally, it represents, using graph notation, all paths that might be traversed through a server-less function composition during its execution. In other words, it describes calling relationships between server-less functions.
-
-Formally, being $R$ the resource owner, a \textbf{function choreography}, denoted as $FC_R$, is a \textit{control-flow graph} $G(V,E)$, where:
-
-\begin{itemize}
-\item Each node $v \in V$, called \textit{abstract control-flow node}, represents a generic function of a computer program.
-\item Each edge $(v_i, v_j) \in E$, for any $i,j \in \mathbb{N}$ with $i \neq j$, indicates that the generic function $v_i$ calls that in $v_j$.
-\end{itemize} 
-
-Any function choreography can be  uniquely identified by an ordered string pair $(a, b)$, where $a$ is the \textit{resource owner name} while $b$ is the \textit{function choreography name}.
-
-There are two types of abstract control-flow nodes:
-
-\begin{description}
-\item[Abstract server-less function] denoted as $f_{(abstract, i)}$ while the set of all server-less functions is denoted as $F_{abstract}$.
-\item[Control-flow function] denoted ad $c_t$ while $C$ is the corresponding set of all control-flow functions.
-\end{description}
-
-Formally, let $|V| = n$, $|F_{abstract}| = t$, and $|C| = k$, where $t,k \in \mathbb{N}$ with $t + k = n$, we have that:
-
-\begin{equation}
-\begin{array}{lll}
-
-V & \mathDef & F_{abstract} \cup C \\
-  & = & (f_{(abstract, 1)}, \ldots, f_{(abstract, t)}) \cup (c_1, \ldots, c_k) \\
-\end{array}
-\end{equation}
-
-Clearly, we said that function choreography models a server-less function, when $|V| = 1$ and $|E| = 0$; conversely, it models a server-less function composition, when $|V| > 1$ and $|E| > 0$.
-
-\subsubsection{Abstract server-less function}
-
-An \textit{abstract server-less function} represents a descriptions of one or more corresponding concrete server-less function implementations. That description includes:
-
-\begin{itemize}
-
-\item TODO
-\item TODO
-\item TODO
-
-\end{itemize}
-
-Any abstract server-less function can be uniquely identified by an ordered string pair $(a, b)$, where $a$ is the \textit{resource owner name} while $b$ is the \textit{abstract server-less function name}.
-
-\subsubsection{Concrete server-less function}
-
-Given an abstract server-less function, a resource owner can provide different implementations which, although they must be semantically equivalent, may eventually expose different performance or cost behaviour.
-
-Therefore, we call \textit{concrete server-less function} any implementation of a given abstract function and it is uniquely identified by an ordered string tuple $(a, b, c)$, where $a$ and $b$ represent, like before, the \textit{resource owner name} and the \textit{abstract function name} respectively, while $c$ represents the so-called \textit{function type}, which is an abstract descriptions of the corresponding function implementation.
-
-\subsubsection{Control-flow operator}
-
-Like \texttt{if}, \texttt{for}, etc.
 
 \subsection{Server-less function swarms}
 
@@ -649,5 +605,5 @@ E[T_{\textbf{f}_i}] + E[T_{Q_i}]^{\textbf{LST}} < E[T_{\textbf{f}_j}] +E[T_{Q_j}
 
 
 
-\bibliography{Bibliography}
+
 \end{document}
