@@ -128,7 +128,7 @@ Let $\mathcal{S} = (\Phi,E)$ a choreography. Let's now introduce following notat
 	
 \end{itemize}
 
-\subsubsection{Abstract Serverless Function}
+\subsection{Abstract Serverless Function}
 
 Supposing that a choreography $\mathcal{S} = (\Phi,E)$ is given, an \textit{abstract serverless function} $\phi \in \Phi$, or simply \textit{abstract function}, is a \textit{resource} that represents a computational unit needed by business logic. 
 
@@ -171,97 +171,108 @@ Clearly, based on above definition, we can say:
 |\mathscr{F_E}| + |\mathscr{F_O}| &=& |\Phi| 
 \end{eqnarray}
 
+Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$, where:
+\begin{itemize}
+	\item $a$ represents the identifier of the choreography $\mathcal{S}$;
+	\item $b$ is the name of the abstract serverless function $\phi$;
+\end{itemize}
+
 % Generally it contains the description of what the corresponding implementation does including several proprieties, like input or output data types.
+
+\subsubsection{Special Abstract Serverless Functions} 
 
 According to the serverless paradigm, the execution of a serverless application starts with a particular function, which we will denote as the \textit{entry point}, while any other serverless functions, belonging to the application, will be invoked subsequently according to specified business logic. 
 
 Clearly, the execution of a serverless application ends when ends the execution of the last function according to the business logic. That ending function will be denoted as \textit{end point}. According to our point of view, the end point is not unique.
 
-Obliviously, in order to appropriately model a serverless application, any choreography $\mathcal{S}$ must have exactly one entry point and at least one end point. 
+In order to appropriately model a serverless application, any choreography $\mathcal{S}$ has two special abstract functions:
 
-Given $\mathcal{S}$ a choreography, the entry point of $\mathcal{S}$ is denoted by $\phi_{entry}$ while the end point by $\phi_{end}$. Formally:
+\begin{itemize}
+	\item One acting as the entry point which is denoted by $\phi_{entry}$;
+	\item Another acting as the end point and denoted by $\phi_{end}$;
+\end{itemize}
+
+Formally:
 
 \begin{eqnarray}
 	\phi_{entry} \in \Phi \text{ is the entry point of } \mathcal{S} & \Leftrightarrow & in(\phi_{entry}) = \emptyset \\
 	\phi_{end} \in \Phi \text{ is the end point of } \mathcal{S} & \Leftrightarrow & out(\phi_{end}) = \emptyset
 \end{eqnarray}
 
-\subsection{Configuration}
+\subsection{Serverless Choreography Configuration}
 
-Given a choreography $SC_R = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, or simply \textit{configuration}, of $SC_R$ that allows us to meet user-specified QoS objectives.
+Given a choreography $\mathcal{S} = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, also called \textit{choreography configuration} or simply \textit{configuration}, that allows us to meet user-specified QoS objectives.
+
+Informally, a configuration specifies which implementation $f_{\phi} \in \textbf{F}_{\phi}$, for each $\phi \in \mathscr{F_E}$, will be effectively executed, including its parameters such as memory size or CPU power.
 
 \subsubsection{Serverless Functions Configuration}
 
-Let an abstract executable serverless function $\mathscr{F_E}$ and \textbf{F} the corresponding set of serverless function which implement it, we define the following vector:
+Let $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding set of serverless functions which implement it. 
 
-\begin{equation}
-	x \in \textbf{F} \times \N
-\end{equation}
-
-as the \textit{serverless functions configuration}, or simply \textit{configuration}, of $\mathscr{F_E}$. In this context, for any $f \in \textbf{F}$ and $m \in \N$, given $x =(f,m)$, $f$ represents a particular serverless function while $m$ represents the allocated memory size.
+We say that a \textit{configuration} for $\phi$ is a vector $x_{\phi} \in \textbf{F}_{\phi} \times \N$. Let $m \in \N$ and supposing that $x_{\phi} = (f_{\phi},m)$, $f_{\phi}$ represents a particular serverless function implementing $\phi$ while $m$ represents the allocated memory size of $f_{\phi}$.
 
 At this point, we can define some useful functions:
 
 \begin{itemize}	
-	\item $C_{\textbf{F}} : \textbf{F} \times \N \to \left[ 0, \infty \right)$ which represents a cost function for serverless functions. For any $f \in \textbf{F}$ and $n \in \N$, $C_{\textbf{F}}(f,n)$ returns the average cost paid by developers to execute $f$ using an allocated memory size equal to $n$.
+	\item $C_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is the cost function for the serverless functions implementing $\phi$.
 	
-	\item $RT_{\textbf{F}} : \textbf{F} \times \N \to \left[ 0, \infty \right)$ which represents a delay function for serverless functions. For any $f \in \textbf{F}$ and $n \in \N$, $RT_{\textbf{F}}(f,n)$ returns the average response time of function $f$ using $n$ as allocated memory size.
-\end{itemize}
-
-Any abstract serverless function is uniquely identified by an ordered string tuple $(a, b, c)$, where:
-\begin{itemize}
-	\item $a$ represents the name of the resource owner $R$;
-	\item $b$ represents the name of the serverless choreography $SC_R$;
-	\item $c$ is the name of the abstract serverless function $\phi$
+	To be more precise, for all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $C_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the average cost paid by developers to execute $f_{\phi}$ using an allocated memory size equal to $m$.
+	
+	
+	\item $RT_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is a delay function for the serverless functions implementing $\phi$.
+	
+	For all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $RT_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the average response time when $f_{\phi}$ is invoked with memory size equal to $m$;
 \end{itemize}
 
 \subsubsection{Serverless Choreography Configuration}
 
-Let $n,k \in \N$, such that $k \leq n$, and $SC_R$ a serverless choreography where $|\Phi| = n$ and $|\mathscr{F_E}| = k$. 
+Let $n,k \in \N$ and a choreography $\mathcal{S} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
 
-The basic goal of our framework is to determine a so-called \textit{serverless choreography configuration} that allows us to meet user-specified QoS objectives. Formally, a serverless choreography configuration $\textbf{x}$ is a $k\times2$ matrix such that:
+Formally, a configuration for $\mathcal{S}$ is a vector $\textbf{X}$ such that:
 
 \begin{equation}
-\textbf{X} \in \lbrace \textbf{F}_1 \times \mathbb{N} \rbrace \times \ldots \times \lbrace \textbf{F}_k \times \mathbb{N} \rbrace = \Cross_{i = 1}^k \lbrace \textbf{F}_i \times \mathbb{N} \rbrace
+\textbf{X} \in \lbrace \textbf{F}_{\phi_{1}} \times \mathbb{N} \rbrace \times \ldots \times \lbrace \textbf{F}_{\phi_{k}} \times \mathbb{N} \rbrace = \Cross_{i = 1}^k \lbrace \textbf{F}_{\phi_{i}} \times \mathbb{N} \rbrace
 \end{equation}
 
-In other words, $\textbf{x}$ is a matrix where, for $i \in \left[ 1, k \right]$, the $i$-th row contains a serverless functions configuration for the abstract executable serverless functions $F_i \in \mathscr{F_E}$. 
-
-More precisely, for $v \in \left[ 1, k \right]$, the matrix $\textbf{X}$ is such that:
-
-\begin{itemize}
-	\item the element $(v,1)$ identifies the serverless function $f \in \textbf{F}_v$ which implements the abstract executable serverless function $F_v \in \mathscr{F_E}$;
-	
-	\item the element $(v,2)$ identifies the allocated memory size $m \in N$ of the serverless function identified by the element $(v,1)$.
-\end{itemize}
+For all $i \in \left[ 1, k \right]$, supposing that $\textbf{X} = \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace $, $x_{\phi_{i}}$ is a configuration for $\phi_{i}$; we will use $X(i)$ notation as a reference to the configuration $x_{\phi_{i}}$ while we will use $X(i,1)$ and $X(i,2)$ to denote respectively the implementation $f \in \textbf{F}_{\phi_i}$ and the allocated memory size $m \in N$ for the function $f$.
 
 \subsection{Metrics}
 
-Let $\mathcal{C} = (\Phi,E)$ a choreography such that:
+Let $\mathcal{S} = (\Phi,E)$ a choreography such that:
 \begin{itemize}
-	\item $\mathcal{C}$ is a DAG without any cycles and loops;
-	\item Is true that the transition probabilities of all paths between the start point and
-	the end point of $\mathcal{C}$ can sum up to $1$:
+	\item $\mathcal{S}$ is a DAG without any cycles or loops;
+	\item Is true that the transition probabilities of all paths between the entry point and
+	the end point of $\mathcal{S}$ can sum up to $1$. Formally:
 	
 	\begin{equation}
-		\sum_{\pi \in \Pi(\phi_{start}, \phi_{end})} TPP(\pi) = 1
+		\sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) = 1
 	\end{equation}
 
 \end{itemize}
 
-At this point, let $\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n$ a path. We define the response time of $\pi$ as follows:
+Suppose to have a path $\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n$ and a choreography configuration $\textbf{X}$ for $\mathcal{S}$. 
+
+We can define the \textit{response time} of $\pi$ given $\textbf{X}$ as follows:
 
 \begin{equation}
-	RT_P(\pi, \textbf{X}) = \sum_{\substack{1\le i\le n\\ \phi_i \in \mathscr{F_E}}} N(\phi_i) \cdot RT_{\textbf{F}} (X_{\phi_{i}1},X_{\phi_{i}2}) + \sum_{i = 1}^{n-1} N(\phi_i) \cdot D(\phi_i,\phi_{i+1})
+	RT_P(\pi, \textbf{X}) = \sum_{i = 1}^n \left(  N(\phi_i) \cdot RT_{\phi_i} (X(i) \right)  + \sum_{i = 1}^{n-1} N(\phi_i) \cdot D(\phi_i,\phi_{i+1})
 \end{equation}
 
-Let $\textbf{X}$ a configuration of the choreography $\mathcal{C}$, the response time of $\mathcal{C}$ is defined as follows:
+Similarly, we define the cost of $\pi$ given $\textbf{X}$ as follows:
 
 \begin{equation}
-	RT_C(\mathcal{C}, \textbf{X}) = \sum_{\pi \in \Pi(\phi_{start}, \phi_{end})} TPP(\pi) \cdot RT_{P}(\pi, \textbf{X})
+	C_P(\pi, \textbf{X}) = \sum_{\substack{1\le i\le n\\ \phi_i \in \mathscr{F_E}}} N(\phi_i) \cdot C_{\textbf{F}_{\phi_i}} (X(i))
 \end{equation}
 
-\subsection{Structures}
+
+Then the response time and the cost of the choreography $\mathcal{S}$ a follows:
+
+\begin{eqnarray}
+	RT_C(\mathcal{S}, \textbf{X}) & = & \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \cdot RT_{P}(\pi, \textbf{X}) \\
+	C_C(\mathcal{S}, \textbf{X}) & = & \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \cdot C_{P}(\pi, \textbf{X}) 
+\end{eqnarray}
+
+\subsection{Serverless Sub-choreography}
 
 In this section, we will define several types of structures belonging to a given serverless choreography. 
 
