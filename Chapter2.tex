@@ -274,42 +274,57 @@ Then the response time and the cost of the choreography $\mathcal{S}$ a follows:
 
 \subsection{Serverless Sub-choreography}
 
-In this section, we will define several types of structures belonging to a given serverless choreography. 
-
-Let $SC_R = (\Phi,E)$ a serverless choreography. We say that a \textit{serverless sub-choreography} $SC_R'$, or simply \textit{sub-choreography}, is a weighted directed sub-graph of $SC_R$. Formally:
+For any given serverless choreography $\mathcal{S} = (\Phi,E)$, is possible to identify a \textit{serverless sub-choreography}, or simply \textit{sub-choreography}, denoted by $S^*$, which is a weighted directed sub-graph of $\mathcal{S}$ formally as follows:
 
 \begin{equation}
-	SC_R' \mathDef (\Phi',E') \qquad \text{ where } \Phi' \subseteq \Phi \wedge E' \subseteq E
+	S^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
 \end{equation}
 
-We denote $\phi_{start}' \in \Phi'$ and $\phi_{end}' \in \Phi'$, respectively, as the \textit{entry point} and the \textit{end point} of the sub-choreography $SC_R'$
+Through $\phi_{start}^* \in \Phi^*$ and $\phi_{end}^* \in \Phi^*$ notation we denote, respectively, the \textit{entry point} and the \textit{end point} of the sub-choreography $S^*$.
 
-\subsubsection{Parallel}
+\subsection{Structures}
 
-Supposing that a choreography $SC_R = (\Phi,E)$ is given, let us consider two vertices $\phi_i \in \Phi$ and $\phi_j \in \Phi$, for any $i,j \in \left[ 1, n \right]$ such that $i \neq j$.
-
-We say that the sub-choreography $\mathcal{P}$, such that $\phi_{start}' = \phi_i$ and $\phi_{end}' = \phi_j$, is called \textit{parallel structure} when:
+Supposing to have a serverless choreography $\mathcal{S} = (\Phi,E)$, we call \textit{structure} any sub-choreography $\mathcal{S}^*= (\Phi^*,E^*)$ whose entry point and the end point are, respectively, an opening and a closing orchestration functions of the same type. Formally:
 
 \begin{equation}
-	TPP(\pi) = 1 \qquad \forall \pi \in \Pi(\phi_{start}^*, \phi_{end}^*)
+	S^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{rlll}
+		\phi_{entry}^* & \in \mathscr{F_O^*} & \wedge & \mathscr{T}(\phi_{entry}^*) = \tau_{\alpha} \\ 
+		\phi_{end}^* & \in \mathscr{F_O^*} & \wedge & \mathscr{T}(\phi_{end}^*) = \tau_{\omega}
+	\end{array} \right.
 \end{equation}
 
-Let $out(\phi_{start}^*)$ the set of all edges starting from vertex as defined in equation \ref{outDef} and suppose that $|out(\phi_{start}^*)| = s \in \N \setminus \left\lbrace 0 \right\rbrace $.
+The most important aspect is that every structure can be viewed as a set of sub-choreographies of $\mathcal{S}^*$. Formally, suppose that $\Lambda = (A,B)$ is a graph such that:
 
-Then $\Theta$ is defined as the set, such that $|\Theta| = s$, containing all the sub-choreographies $(\Phi^{**}, E^{**})$ which will be executed at the same time during the processing of the parallel structure. More precisely:
+\begin{equation}
+\begin{array}{lll}
+	A & \mathDef & \Phi^* \setminus \left\lbrace \phi_{entry}^*,\phi_{end}^* \right\rbrace   \\
+	B & \mathDef & E^* \setminus \left( out\left(\phi_{entry}^*\right) \cup in\left(\phi_{end}^*\right) \right)
+\end{array}
+\end{equation}
+
+Let $c \in \N$ and suppose that $c$ is the number of connected components of the graph $\Lambda$.
+
+We denote by $\Theta_{\mathcal{S}^*}$ as the set containing all connected components of $\Lambda$ every of which is considered as a sub-choreography of $\mathcal{S}^*$. Formally:
 
 \begin{equation}
 	\begin{array}{c}
-	\Theta \mathDef \left\lbrace (\Phi^{**}_1, E^{**}_1), \ldots ,(\Phi^{**}_s, E^{**}_s) \right\rbrace \\\\
-	\text{ where } \\\\
-	\phi_{start_{i}}^{**}, \phi_{end_{i}}^{**} \in \Phi^{**}_i \\\\
-	
-	\phi_{start_{i}}^{**} \in succ(\phi_{start}^*) \wedge \phi_{end_{i}}^{**} \in pred (\phi_{end}^*) \quad \forall i \in \left[ 1, s \right]
+		\Theta_{\mathcal{S}^*} \mathDef \left\lbrace \theta_i, \ldots ,\theta_c \right\rbrace \\\\
+		\text{ where } \\\\
+		
+		\theta_i \mathDef (\Phi^{**}_i, E^{**}_i) \text{ is a sub-choreography of } \mathcal{S}^* \\
+		 \Phi^{**}_i \subset \Phi^{*} \wedge E^{**}_i \subset E^{*} \qquad \forall i \in \left[ 1, c \right] \\
 	\end{array}
 \end{equation} 
 
-Simply the response time of a parallel structure is the longest response time of all
-sub-choreographies $(\Phi^{**}, E^{**})$ in it, while its cost is equal to the sum of costs of execution of all sub-choreographies. Formally, being $\textbf{X}$ a configuration of the choreography $SC_R$:
+\subsubsection{Parallel}
+
+A structure $\mathcal{P} = (\Phi,E,\Theta)$ is called \textit{parallel structure} when:
+
+\begin{equation}
+	TPP(\pi) = 1 \qquad \forall \pi \in \Pi(\phi_{start}, \phi_{end})
+\end{equation}
+
+Let $n \in \N$, supposing that $|\Theta| = n$, the response time of a parallel structure is the longest response time of all sub-choreographies $\theta_i \in \Theta$ for all $i \in \left[ 1, n \right]$, while its cost is equal to the sum their costs of execution. Formally, being $\textbf{X}$ a configuration of  $\mathcal{P}$:
 
 \begin{equation}
 	RT_{parallel}(\mathcal{P}, \textbf{X}) = max \left\lbrace RT_C(\mathcal{\theta}, \textbf{X}) \mid \theta \in \Theta \right\rbrace 
@@ -318,6 +333,8 @@ sub-choreographies $(\Phi^{**}, E^{**})$ in it, while its cost is equal to the s
 \begin{equation}
 	C_{parallel}(\mathcal{P}, \textbf{X}) = \sum_{\theta \in \Theta} C_C(\theta, \textbf{X})
 \end{equation}
+
+
 
 \subsubsection{Branch}
 
