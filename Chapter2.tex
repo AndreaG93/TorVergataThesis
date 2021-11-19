@@ -50,70 +50,43 @@ A \textit{serverless application} represents a stateless and event-driven softwa
 
 A \textit{resource owner}, henceforward denoted with $R$, represents an entity capable of \textit{creating}, \textit{modifying} and \textit{authorizing} access to several resources of our system.
 
+\newpage
 \section{Serverless Choreography}
 
-According to our framework, a \textit{serverless choreography} is a \textit{resource} used to model and implement both serverless functions and serverless applications.
+In this section we will introduce the notion of \textit{serverless choreography}, a very important \textit{resource} adopted to model and implement both serverless functions and serverless applications.
 
-Informally, a serverless choreography is derived by the control-flow graph which describes, using graph notation, all paths that might be traversed through a serverless application during its execution. Similarly, a serverless choreography describes calling relationships between serverless functions which can be combined using several types of control-flow connectors.
+Informally, the notion of serverless choreography has been derived from that of a control-flow graph; as known, the latter describes, using graph notation, all paths that might be traversed through a serverless application during its execution. Similarly, a serverless choreography describes calling relationships between serverless functions which can be combined using several types of control-flow connectors.
 
-\subsection{Definition}
+\subsection{Preliminary Definitions}
 
-Formally, let $n \in \N \setminus \left\lbrace 0 \right\rbrace $, being $R$ the resource owner, a \textit{serverless choreography}, or simply \textit{choreography}, $\mathcal{S}_R$ owned by $R$ is a weighted directed graph defined as follows:
+Before to define what we mean for serverless choreography, is necessary to introduce some very useful notations.
 
-\begin{equation}
-	\mathcal{S}_R \mathDef (\Phi,E)
-\end{equation}
-
-where:
+Let $n \in \N$ and $G = (\Phi,E)$ a directed graph, where:
 
 \begin{itemize}
-	\item $\Phi$ represents a finite set of vertices such that $|\Phi|=n$. 
-	
-	Each vertex $\phi \in \Phi$ is called \textit{abstract serverless function} which represents, generally, a computational unit; we will describe more in detail what we mean by abstract serverless function shortly;
-	
-	\item $E \subseteq \Phi \times \Phi $ represents a finite set of directed edges.
-	
-	For all $i,j \in \left[ 1, n \right]$, each directed edge from $\phi_i \in \Phi$ to $\phi_j \in \Phi$, denoted as $\left( \phi_i, \phi_j \right)$, indicates that the abstract serverless function $\phi_j$ \textit{can} be called by $\phi_i$, representing the interaction between $\phi_i$ and $\phi_j$ defined by the business logic;
-	
-	\item For all $i,j \in \left[ 1, n \right]$, the number $p_{ij} \in \left[ 0, 1 \right]$ is the weight assigned to the edge $\left(\phi_i, \phi_j \right)$ and represents the \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ after finishing the execution of $\phi_i$.
-	
-	$P : \Phi \times \Phi \to \left[ 0, 1 \right]$ is defined as the \textit{transition probability function} according to which $P\left(\phi_i, \phi_j \right) = p_{ij}$. Clearly, when $P\left(\phi_i, \phi_j \right) = 0$, the directed edge $\left( \phi_i, \phi_j \right)$ does not exist according to business logic, therefore $\phi_i$ cannot invoke $\phi_j$;
-	
-\end{itemize} 
+	\item $\Phi$ is a finite set of vertices, such that $|\Phi| = n$;
+	\item  $E \subseteq \Phi \times \Phi $ is a finite set of ordered pairs of vertices $e_{ij} = \left( \phi_i, \phi_j \right)$, where $\phi_i \in \Phi$ to $\phi_j \in \Phi$ for any $i,j \in \N \cap \left[ 1, n \right]$. Any ordered pair of vertices is also called directed edge;
+\end{itemize}
 
-A choreography $\mathcal{S}_R$ can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the name of the resource owner $R$, while $b$ is the function choreography name.
-
-Clearly, we say that choreography models a serverless function when $|\Phi| = 1$ and $|E| = 0$; conversely, it models a serverless function application when $|\Phi| > 1$ and $|E| > 0$.
-
-From now, a choreography $\mathcal{S}_R$ will be briefly denoted by $\mathcal{S}$ when no confusion can arise about the resource owner $R$.
-
-\subsubsection{Notations}
-
-Let $\mathcal{S} = (\Phi,E)$ a choreography. Let's now introduce following notations and functions:
+Then, we will adopt following notations:
 
 \begin{itemize}
-	\item A \textit{path} $\pi$ is defined as a finite sequence of distinct vertices and edges as follows:
+	\item A \textit{path} of $G$ is defined as a finite sequence of distinct vertices and edges. We will denote a path by $\pi$ which formally can be represented as follows:
 	
 	\begin{equation}
-	\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n
+		\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n
 	\end{equation}
-	 
+	
 	where:
 	
 	\begin{itemize}
-		\item $\phi_i \in \Phi$, for all $i \in \left[ 1, n \right]$
-		\item $e_i = \left( \phi_i, \phi_{i+1} \right) \in E$, for all $i \in \left[ 1, n-1 \right]$
+		\item $\phi_i \in \Phi$, for all $i \in \N \cap \left[ 1, n \right]$
+		\item $e_i = \left( \phi_i, \phi_{i+1} \right) \in E$, for all $i \in \N \cap \left[ 1, n-1 \right]$
 	\end{itemize}
-	
-	\item Given a path $\pi$, we define the \textit{transition probability} of the path $\pi$ the following quantity:
-	
-	\begin{equation}
-		TPP(\pi) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1} \right)
-	\end{equation}
 
-	\item Let $\phi_i \in \Phi$ to $\phi_j \in \Phi$ for all $i,j \in \left[ 1, n \right]$, the set $\Pi(\phi_i, \phi_j)$ identifies all possible paths starting from vertex $\phi_i$ and ending at vertex $\phi_j$.
-	
-	\item The set $out(\phi_u)$ ($in(\phi_u)$) denotes all edges starting (ending) from (to) vertex $\phi_u$, while the set $succ(\phi_u)$ ($pred(\phi_u)$) includes all direct successor (predecessors) vertices of $\phi_u$. Formally:
+	\item Let $\phi_i,\phi_j \in \Phi$ for any $i,j \in \N \cap \left[ 1, n \right]$, the set denoted by $\Pi(\phi_i, \phi_j)$ identifies all possible paths starting from vertex $\phi_i$ and ending at vertex $\phi_j$.
+		
+	\item For any $u \in \N \cap \left[ 1, n \right]$, the set $out(\phi_u)$ ($in(\phi_u)$) denotes all edges starting (ending) from (to) vertex $\phi_u$, while the set $succ(\phi_u)$ ($pred(\phi_u)$) includes all direct successor (predecessors) vertices of $\phi_u$. Formally:
 	
 	\begin{eqnarray}\label{outDef}
 		out(\phi_u) & \mathDef & \left\lbrace (\phi_u, \phi) \in E, \quad \forall \phi \in \Phi  \right\rbrace \\
@@ -121,16 +94,92 @@ Let $\mathcal{S} = (\Phi,E)$ a choreography. Let's now introduce following notat
 		succ(\phi_u) & \mathDef & \left\lbrace \phi \in \Phi \mid (\phi_u, \phi) \in out(\phi_u)  \right\rbrace \\
 		pred(\phi_u) & \mathDef & \left\lbrace \phi \in \Phi \mid (\phi, \phi_u) \in in(\phi_u)  \right\rbrace 
 	\end{eqnarray}
-	
-	\item $NI: \Phi \to \left[ 0, \infty \right)$ is a function representing the average number of invocations of an abstract serverless function $\phi \in \Phi$ during the execution of a serverless choreography $\mathcal{S}$.
-	
-	\item $D : \Phi \times \Phi \to \left[ 0, \infty \right)$ represents a delay function according to which $D\left(\phi_i, \phi_j \right)$ identifies the delay from $\phi_i$ to $\phi_j$ due to network delay or orchestration task;  
-	
+
+
 \end{itemize}
 
-\subsection{Abstract Serverless Function}
+\subsection{Definition}
 
-Supposing that a choreography $\mathcal{S} = (\Phi,E)$ is given, an \textit{abstract serverless function} $\phi \in \Phi$, or simply \textit{abstract function}, is a \textit{resource} that represents a computational unit needed by business logic. 
+According to the serverless paradigm, the execution of a serverless application starts with a particular function, which we will call \textit{entry point}, while any other serverless functions, belonging to the application, will be invoked subsequently according to specified business logic defined by developers; as we will see shortly, the latter can be naturally modeled by a weighted directed graph.
+
+Clearly, the execution of a serverless application ends when the execution of the last function of the application ends; that ending function will be call as \textit{end point}. We assume that the entry point is unique.
+
+Let $n \in \N \setminus \left\lbrace 0 \right\rbrace $ and $R$ a resource owner.
+
+A \textit{serverless choreography} owned by $R$, or simply \textit{choreography} of $R$, is a resource represented by a weighted directed graph denoted as follows:
+
+\begin{equation}
+	\mathcal{C}_R \mathDef (\Phi,E)
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $|\Phi| = n$;
+	
+	\item Each vertex $\phi \in \Phi$ is called \textit{abstract serverless function} and represents a computational unit; we will describe more in detail what we mean by abstract serverless function shortly;
+	
+	\item Let $i,j \in \N \cap \left[ 1, n \right]$ and $\phi_i, \phi_j \in \Phi$, any directed edge $e_{ij} = \left( \phi_i, \phi_j \right) \in E$ represents the calling relationship between two abstract serverless function which depends on the business logic defined by $R$. 
+	
+	In our context, any directed edge $\left( \phi_i, \phi_j \right) \in E$ states that the abstract serverless function $\phi_j$ \textit{can} be called by $\phi_i$;
+
+	\item Let $i,j \in \N \cap \left[ 1, n \right]$, the number $p_{ij} \in \R \cap \left[ 0, 1 \right]$ is the weight assigned to the edge $\left(\phi_i, \phi_j \right) \in E$, where: 
+	
+	\begin{itemize}
+		
+		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ after finishing the execution of $\phi_i$;
+		
+		\item We will use a function $P : \Phi \times \Phi \to \left[ 0, 1 \right]$, called \textit{transition probability function}, such that $P\left(\phi_i, \phi_j \right) = p_{ij}$. When $P\left(\phi_i, \phi_j \right) = 0$, it implies that the directed edge $\left( \phi_i, \phi_j \right) \notin E$, therefore $\phi_i$ cannot invoke $\phi_j$;
+		
+		\item For any path $\pi = \phi_1 e_1 \ldots e_{n-1} \phi_n$ of $\mathcal{C}_R$, we define \textit{transition probability of the path $\pi$} the following quantity:
+		
+		\begin{equation}
+			TPP(\pi) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1} \right)
+		\end{equation}
+		
+	\end{itemize}
+	
+	\item $\Phi$ contains only one serverless abstract function, denoted by $\phi_{entry}$, acting as the entry point and at least one acting as the end point, which is denoted, instead, by $\phi_{end}$. Formally, we define aforementioned vertices as follows: 
+	
+	\begin{equation}
+		\begin{array}{lcll}
+			\phi \in \Phi & \text{ is the entry point of } \mathcal{S} & \Leftrightarrow & in(\phi) = \emptyset \\
+			\phi \in \Phi & \text{ is the end point of } \mathcal{S} & \Leftrightarrow & out(\phi) = \emptyset
+		\end{array}
+	\end{equation}
+	
+	Then, following conditions must be hold:
+	
+	\begin{eqnarray}
+		\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \label{cond1} \\
+		\exists   \phi \in \Phi & \mid & out(\phi) = \emptyset \label{cond2}
+	\end{eqnarray}
+	
+	Finally, we will also use the notation $\alpha(\mathcal{C}_R)$ to denote the entry point $\phi_{entry}$ of a choreography $\mathcal{C}_R$. Conversely, we will adopt the notation $\omega(\mathcal{C}_R)$ to denote the set of all end points of $\mathcal{C}_R$
+		
+	\item Must be hold the condition according to which the transition probabilities of all paths between the entry point and	the end point of $\mathcal{C}_R$ sum up to $1$. Formally:
+	
+	\begin{equation}\label{cond3}
+		\sum_{\phi_{end} \in \omega(\mathcal{C}_R)} \Big( \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \Big) = 1
+	\end{equation}
+	
+	In other words, above conditions guarantees that any execution starting from $\phi_{entry}$ will terminate.
+	
+	\item A function, denoted by $D : \Phi \times \Phi \to \left[ 0, \infty \right)$, represents a delay function according to which $D\left(\phi_i, \phi_j \right)$ identifies the delay from $\phi_i$ to $\phi_j$ due to network delay or orchestration task;  
+	
+\end{itemize} 
+
+A choreography $\mathcal{C}_R$ can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the name of the resource owner $R$, while $b$ is the function choreography name.
+
+Clearly, we say that choreography models a serverless function when $|\Phi| = 1$ and $|E| = 0$; conversely, it models a serverless function application when $|\Phi| > 1$ and $|E| > 0$.
+
+From now, a choreography $\mathcal{C}_R$ will be briefly denoted by $\mathcal{C}$ when no confusion can arise about the resource owner $R$.
+
+\subsubsection{Abstract Serverless Function}
+
+Supposing that a choreography $\mathcal{C} = (\Phi,E)$ is given.
+
+An \textit{abstract serverless function} $\phi \in \Phi$, or simply \textit{abstract function}, is a \textit{resource} that represents a computational unit defined by business logic provided by developers.
 
 According to our model, there are two types of abstract functions implementations:
 
@@ -138,7 +187,7 @@ According to our model, there are two types of abstract functions implementation
 	
 	\item $\phi$ is defined as \textit{serverless executable functions}, or simply \textit{executable function}, when $\phi$ contains executable code which implementing business logic.
 	
-	$\mathscr{F_E}$ is defined as the set containing all executable function of $\mathcal{S}$ and it is formally defined as follows:
+	$\mathscr{F_E}$ is defined as the set containing all executable function of $\mathcal{C}$ and it is formally defined as follows:
 	
 	\begin{equation}
 		\mathscr{F_E} \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless executable function }\right\rbrace 
@@ -154,16 +203,15 @@ According to our model, there are two types of abstract functions implementation
 		
 	\item $\phi$ is called \textit{serverless orchestration functions}, or \textit{orchestration functions}, when $\phi$ contain orchestration code needed to decide which and how the next abstract functions must be called; in other words, orchestration code is control-flow code.
 	
-	$\mathscr{F_O}$ is defined as the set containing all executable function of $\mathcal{S}$ and it is formally defined as follows:
+	$\mathscr{F_O}$ is defined as the set containing all orchestration functions of $\mathcal{C}$ and it is formally defined as follows:
 	
 	\begin{equation}
 		\mathscr{F_O} \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless orchestration function }\right\rbrace 
 	\end{equation}
 
-	
 \end{itemize}
 
-Clearly, based on above definition, we can say: 
+Clearly, based on above definitions, we can say: 
 
 \begin{eqnarray}
 \mathscr{F_E} \cap \mathscr{F_O} & = & \emptyset \\
@@ -173,44 +221,39 @@ Clearly, based on above definition, we can say:
 
 Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$, where:
 \begin{itemize}
-	\item $a$ represents the identifier of the choreography $\mathcal{S}$;
+	\item $a$ represents the identifier of the choreography $\mathcal{C}$;
 	\item $b$ is the name of the abstract serverless function $\phi$;
 \end{itemize}
 
-% Generally it contains the description of what the corresponding implementation does including several proprieties, like input or output data types.
+\subsubsection{Serverless Sub-choreography}
 
-\subsubsection{Special Abstract Serverless Functions} 
+Let $\mathcal{C} = (\Phi,E)$ a choreography. 
 
-According to the serverless paradigm, the execution of a serverless application starts with a particular function, which we will denote as the \textit{entry point}, while any other serverless functions, belonging to the application, will be invoked subsequently according to specified business logic. 
+The weighted directed sub-graph of $\mathcal{C}$ defined as follows:
 
-Clearly, the execution of a serverless application ends when ends the execution of the last function according to the business logic. That ending function will be denoted as \textit{end point}. We assume that both entry point and end point are unique.
+\begin{equation}
+	C^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
+\end{equation}
 
-In order to appropriately model a serverless application, any choreography $\mathcal{S}$ has to contain two special abstract functions:
+is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
-\begin{itemize}
-	\item One acting as the entry point which is generally denoted by $\phi_{entry}$;
-	\item Another acting as the end point and denoted, instead, by $\phi_{end}$;
-\end{itemize}
+\subsubsection{Basic Serverless Choreography}\label{BasicDefinition}
 
-Formally:
+Suppose to have a choreography $\mathcal{C} = (\Phi,E)$. 
 
-\begin{eqnarray}
-	\phi \in \Phi \text{ is the entry point of } \mathcal{S} & \Leftrightarrow & in(\phi) = \emptyset \\
-	\phi \in \Phi \text{ is the end point of } \mathcal{S} & \Leftrightarrow & out(\phi) = \emptyset
-\end{eqnarray}
-
-More precisely:
+When $\mathcal{C}$ is a DAG, that is it does not contain cycles or loops, if following condition are hold:
 
 \begin{eqnarray}
-	\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \\
-	\exists !  \phi \in \Phi & \mid & out(\phi) = \emptyset \\
+	|\mathscr{F_O}| = 0 \\
+	|\omega(\mathcal{C})| = 1
 \end{eqnarray}
 
-Finally, we will adopt the notations $\alpha(\mathcal{S})$ and $\omega(\mathcal{S})$ to denote, respectively, the unique $\phi \in \Phi$ such that $\phi$ is the entry and end point of $\mathcal{S}$;
+the choreography $\mathcal{C}$ will be called \textit{basic serverless choreography}, or \textit{simply basic choreography}.
+
 
 \subsection{Serverless Choreography Configuration}
 
-Given a choreography $\mathcal{S} = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, also called \textit{choreography configuration} or simply \textit{configuration}, that allows us to meet user-specified QoS objectives.
+Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, also called \textit{choreography configuration} or simply \textit{configuration}, that allows us to meet user-specified QoS objectives.
 
 Informally, a configuration specifies which implementation $f_{\phi} \in \textbf{F}_{\phi}$, for each $\phi \in \mathscr{F_E}$, will be effectively executed, including its parameters such as memory size or CPU power.
 
@@ -235,9 +278,9 @@ At this point, we can define some useful functions:
 
 \subsubsection{Serverless Choreography Configuration}
 
-Let $n,k \in \N$ and a choreography $\mathcal{S} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
+Let $n,k \in \N$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
 
-Formally, a configuration for $\mathcal{S}$ is a vector $\textbf{X}$ such that:
+Formally, a configuration for $\mathcal{C}$ is a vector $\textbf{X}$ such that:
 
 \begin{equation}
 \textbf{X} \in \lbrace \textbf{F}_{\phi_{1}} \times \mathbb{N} \rbrace \times \ldots \times \lbrace \textbf{F}_{\phi_{k}} \times \mathbb{N} \rbrace = \Cross_{i = 1}^k \lbrace \textbf{F}_{\phi_{i}} \times \mathbb{N} \rbrace
@@ -245,26 +288,21 @@ Formally, a configuration for $\mathcal{S}$ is a vector $\textbf{X}$ such that:
 
 For all $i \in \left[ 1, k \right]$, supposing that $\textbf{X} = \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace $, $x_{\phi_{i}}$ is a configuration for $\phi_{i}$; we will use $X(i)$ notation as a reference to the configuration $x_{\phi_{i}}$ while we will use $X(i,1)$ and $X(i,2)$ to denote respectively the implementation $f \in \textbf{F}_{\phi_i}$ and the allocated memory size $m \in N$ for the function $f$.
 
+
+
+
 \subsection{Metrics}
 
-Let $\mathcal{S} = (\Phi,E)$ a choreography such that:
-\begin{itemize}
-	\item $\mathcal{S}$ is a DAG without any cycles or loops;
-	\item Is true that the transition probabilities of all paths between the entry point and
-	the end point of $\mathcal{S}$ can sum up to $1$. Formally:
-	
-	\begin{equation}
-		\sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) = 1
-	\end{equation}
+Let $\mathcal{C} = (\Phi,E)$ a basic choreography as defined in section \ref{BasicDefinition}.
 
-\end{itemize}
+
 
 Suppose to have a path $\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n$ and a choreography configuration $\textbf{X}$ for $\mathcal{S}$. 
 
 We can define the \textit{response time} of $\pi$ given $\textbf{X}$ as follows:
 
 \begin{equation}
-	RT_P(\pi, \textbf{X}) = \sum_{i = 1}^n \left(  N(\phi_i) \cdot RT_{\phi_i} (X(i) \right)  + \sum_{i = 1}^{n-1} N(\phi_i) \cdot D(\phi_i,\phi_{i+1})
+	RT_P(\pi, \textbf{X}) = \sum_{i = 1}^n \left( RT_{\phi_i} (X(i) \right)  + \sum_{i = 1}^{n-1} D(\phi_i,\phi_{i+1})
 \end{equation}
 
 Similarly, we define the cost of $\pi$ given $\textbf{X}$ as follows:
@@ -281,15 +319,7 @@ Then the response time and the cost of the choreography $\mathcal{S}$ a follows:
 	C_C(\mathcal{S}, \textbf{X}) & = & \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \cdot C_{P}(\pi, \textbf{X}) 
 \end{eqnarray}
 
-\subsection{Serverless Sub-choreography}
 
-For any given serverless choreography $\mathcal{S} = (\Phi,E)$, is possible to identify a \textit{serverless sub-choreography}, or simply \textit{sub-choreography}, denoted by $S^*$, which is a weighted directed sub-graph of $\mathcal{S}$ formally as follows:
-
-\begin{equation}
-	S^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
-\end{equation}
-
-Through $\phi_{start}^* \in \Phi^*$ and $\phi_{end}^* \in \Phi^*$ notation we denote, respectively, the \textit{entry point} and the \textit{end point} of the sub-choreography $S^*$.
 
 \subsection{Structures}
 
@@ -433,50 +463,18 @@ We define the utility function as follows:
 where $w_{RT}, w_{C} \geq 0$, $w_{RT} + w_{C} = 1$, are weights for the different QoS attributes, while $RT_{max}$ ($RT_{min}$) and $C_{max}$ ($C_{min}$) denote, respectively, the maximum (minimum) value for the overall expected response time and cost.
 
 
-
-
-
-
-Before to proceed, when the serverless workflow configuration $x$ is used,
-
-
-
-
-\begin{itemize}
-	\item $D(\textbf{x})$ denotes the end-to-end response time of current serverless workflow $G_s$ when the serverless workflow configuration $x$ is used. At the same time, $C(\textbf{x})$ represents the  
-	\item $C(\textbf{x})$ re
-\end{itemize}
-
-gdfgdfgdfgd
-
-\begin{itemize}
-	\item $\textbf{x}(\mathscr{F})$ is used to denote the configuration $\left( f, m \right) $ of the serverless abstract function $\mathscr{F}$.
-	\item $C_{func}(\textbf{x}(\mathscr{F}))$ represents the cost to pay to execute the concrete serverless function $f$ with memory size $m$.
-\end{itemize}
-
-
-
 \begin{equation}
-	C_{walk}(w, \textbf{x}) = \sum_{\mathscr{F} \in w} C_{func}(\textbf{x}(\mathscr{F}))
-\end{equation}
-
-
-\begin{equation}
-	C_{conf}(\textbf{x}) = \sum_{w \in SP_{G_s}(\mathscr{F}_{start}, \mathscr{F}_{end})} TPP(w) C(w, \textbf{x})
-\end{equation}
-
-
-\begin{equation}
-\begin{array} {lllrrr} 
-\displaystyle \operatorname*{arg\,min}_\pi & \displaystyle\sum_{i = 1}^n C_{\pi}(x_{ij})x_{ij} \\\\
-& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} T(x)^{f_k^i} Y_x^{f_k^i} & \leq &  D_{\textbf{F}} \\
-& \displaystyle\sum_{j = 1}^{n_i} x_{ij} & = & 1 & \forall i \in \lbrace 0, n \rbrace \\\\
-& x_{ij} \in \lbrace 0, 1 \rbrace &&
+\begin{array} {rll} 
+\displaystyle \operatorname*{arg\,max}_\textbf{X} & F(\textbf{X}) \\\\
+\text{subject to} & C(\textbf{X}) \leq C_{user} \\\\
+	              & RT(\textbf{X}) \leq RT_{user} \\\\              
+	              & \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} = 1 & \qquad \forall \phi_{i} \in \mathscr{F_E} \\\\
+				  & x_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace & \qquad \forall \phi_{i} \in \mathscr{F_E} \wedge j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]
 \end{array}
 \end{equation}
 
 
-
+% $\phi \in \mathscr{F_E}$
 
 
 
