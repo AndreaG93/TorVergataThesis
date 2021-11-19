@@ -183,21 +183,30 @@ Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$,
 
 According to the serverless paradigm, the execution of a serverless application starts with a particular function, which we will denote as the \textit{entry point}, while any other serverless functions, belonging to the application, will be invoked subsequently according to specified business logic. 
 
-Clearly, the execution of a serverless application ends when ends the execution of the last function according to the business logic. That ending function will be denoted as \textit{end point}. According to our point of view, the end point is not unique.
+Clearly, the execution of a serverless application ends when ends the execution of the last function according to the business logic. That ending function will be denoted as \textit{end point}. We assume that both entry point and end point are unique.
 
-In order to appropriately model a serverless application, any choreography $\mathcal{S}$ has two special abstract functions:
+In order to appropriately model a serverless application, any choreography $\mathcal{S}$ has to contain two special abstract functions:
 
 \begin{itemize}
-	\item One acting as the entry point which is denoted by $\phi_{entry}$;
-	\item Another acting as the end point and denoted by $\phi_{end}$;
+	\item One acting as the entry point which is generally denoted by $\phi_{entry}$;
+	\item Another acting as the end point and denoted, instead, by $\phi_{end}$;
 \end{itemize}
 
 Formally:
 
 \begin{eqnarray}
-	\phi_{entry} \in \Phi \text{ is the entry point of } \mathcal{S} & \Leftrightarrow & in(\phi_{entry}) = \emptyset \\
-	\phi_{end} \in \Phi \text{ is the end point of } \mathcal{S} & \Leftrightarrow & out(\phi_{end}) = \emptyset
+	\phi \in \Phi \text{ is the entry point of } \mathcal{S} & \Leftrightarrow & in(\phi) = \emptyset \\
+	\phi \in \Phi \text{ is the end point of } \mathcal{S} & \Leftrightarrow & out(\phi) = \emptyset
 \end{eqnarray}
+
+More precisely:
+
+\begin{eqnarray}
+	\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \\
+	\exists !  \phi \in \Phi & \mid & out(\phi) = \emptyset \\
+\end{eqnarray}
+
+Finally, we will adopt the notations $\alpha(\mathcal{S})$ and $\omega(\mathcal{S})$ to denote, respectively, the unique $\phi \in \Phi$ such that $\phi$ is the entry and end point of $\mathcal{S}$;
 
 \subsection{Serverless Choreography Configuration}
 
@@ -336,16 +345,72 @@ Let $n \in \N$, supposing that $|\Theta| = n$, the response time of a parallel s
 
 
 
-\subsubsection{Branch}
+\subsubsection{Branch/Switch}
 
-We say that A sub-choreography $\mathcal{B}$, such that $\phi_{start}' = \phi_i$ and $\phi_{end}' = \phi_j$, is called \textit{branch structure} when:
+Let $\mathcal{B} = (\Phi,E,\Theta)$ a structure and suppose that $\alpha(\mathcal{B}) = \phi_{entry}$ and $\omega(\mathcal{B}) = \phi_{end}$. 
+
+$\mathcal{B}$ is called \textit{branch structure} when following conditions are hold:
+
+\begin{eqnarray}
+	TPP(\pi) \neq 1  & \quad \forall \pi \in \Pi(\phi_{entry}, \phi_{end}) \\
+    |\Theta| = n  & n \in \left\lbrace 1,2 \right\rbrace 
+\end{eqnarray}
+
+Let all $\theta_i \in \Theta$ sub-choreographies of $\mathcal{B}$, for all $i \in \left\lbrace 1,2 \right\rbrace $. Then the response time and the cost of a branch structure can be defined as follows:
 
 \begin{equation}
-	\begin{array}{c}
-	TPP(\pi) \neq 1 \qquad \forall \pi \in \Pi(\phi_{start}^*, \phi_{end}^*) \\
-	\wedge \\
-	\displaystyle\sum_{\pi \in \Pi(\phi_{start}^*, \phi_{end}^*)} TPP(\pi) = 1
-	\end{array}
+	RT_{branch}(\mathcal{B}, \textbf{X}) = \sum_{i = 1}^n P(\phi_{entry}, \alpha(\theta_i)) RT_C(\theta_i, \textbf{X})
+\end{equation}
+
+\begin{equation}
+	C_{branch}(\mathcal{B}, \textbf{X}) = \sum_{i = 1}^n C_C(\phi_{entry}, \alpha(\theta_i)) C_C(\theta_i, \textbf{X})
+\end{equation}
+
+Finally, according to our model, $\mathcal{B}$ is called \textit{switch structure} when $|\Theta| > 2$.
+
+\subsubsection{Loop}
+
+Let $\mathcal{L} = (\Phi,E,\Theta)$ a structure and suppose that $\alpha(\mathcal{L}) = \phi_{entry}$ and $\omega(\mathcal{L}) = \phi_{end}$. 
+
+If $|\Theta| = 1$ and $(\phi_{end}, \phi_{entry}) \in E$, denoting by $\theta$ the unique sub-choreography of $\mathcal{L}$, $\mathcal{L}$ will be called \textit{loop structure} when following conditions are hold:
+
+\begin{eqnarray}
+	P(\phi_{start}, \alpha(\theta)) = 1 \\
+	P(\phi_{end}, \phi_{entry}) \neq 0 \\
+	P(\phi_{end}, \phi_{entry}) + \sum_{\phi \in succ(\phi_{end})} P(\phi_{end}, \phi) = 1
+\end{eqnarray}
+
+In order to compute the mean response time and the mean cost of a loop structure, we need to know $EI(\mathcal{L})$, that is the expected value of the number of iterations of $\mathcal{L}$.
+
+We know that geometric distribution gives the probability that the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event "we will not execute the loop body", we know that success probability $p$ is given by:
+
+\begin{equation}
+	p = 1 - P(\phi_{end}, \phi_{entry})
+\end{equation}
+
+Then:
+
+\begin{eqnarray}
+	P(EI(\mathcal{L}) = k) & = & \Big[  1 - P(\phi_{end}, \phi_{entry}) \Big] \cdot \bigg[  P(\phi_{end}, \phi_{entry}) \bigg] ^{k-1} \\
+	& = & pq^{k-1}
+\end{eqnarray}
+
+\begin{eqnarray}
+	E[X] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
+	& = & p \sum_{k = 0}^\infty kq^{k} \nonumber \\
+	& = & p \cdot \frac{q}{(1-q)^2} \nonumber \\
+	& = & \dfrac{q}{p} \nonumber \\
+	& = & \dfrac{P(\phi_{end}, \phi_{entry})}{1 - P(\phi_{end}, \phi_{entry})} 
+\end{eqnarray}
+
+Then the response time and the cost of a loop structure can be defined as follows:
+
+\begin{equation}
+	RT_{loop}(\mathcal{L}, \textbf{X}) = E[I_{\mathcal{L}}] \cdot RT_C(\theta, \textbf{X})
+\end{equation}
+
+\begin{equation}
+	C_{loop}(\mathcal{L}, \textbf{X}) = E[I_{\mathcal{L}}] \cdot C_C(\theta, \textbf{X})
 \end{equation}
 
 
