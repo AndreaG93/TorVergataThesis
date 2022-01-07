@@ -42,7 +42,163 @@ A serverless function can be triggered through events or HTTP requests following
 
 \subsection{Serverless Application}
 
-A \textit{serverless application} represents a stateless and event-driven software system made up of a set of serverless functions hosted on one or more FaaS platforms and combined together by an \textit{orchestrator}, which handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
+In serverless paradigm, the most basic scenario is to invoke a single function through a HTTP request; however, if you want to built more complex applications, constructing so-called \textit{serverless application}, serverless functions must be connected and appropriately coordinated.
+
+Formally, we define a serverless application as a stateless and event-driven software system made up of a serverless functions set hosted on one or more FaaS platforms and combined together by a so-called \textit{coordinator} (or \textit{orchestrator}).
+
+Generally, the coordinator is a broker needed to implement the business logic of any application: it chains together serverless function, handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
+
+Most public cloud providers for serverless computing have introduced platforms to define and coordinate serverless function in order to built serverless application, like AWS Step Functions which combines multiple Lambda functions and other serverless services offered by AWS into responsive serverless applications
+
+Although FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale providers resulting in mostly non-portable FaaS solutions 
+
+and provider lock-in
+
+occurs when transitioning data, products, or services to another vendor's platform is difficult and costly, making customers more dependent (locked-in) on a single cloud storage solution.
+
+FC languages and runtime systems are still in their
+infancy with numerous drawbacks. Current commercial and open
+source offerings of FC systems are dominated by a few large-
+scale providers who offer their own platforms, 
+
+As FaaS platforms take over operational responsibilities,
+besides uploading the source code of functions, users have
+limited control over resources on FaaS platforms. Taking
+AWS Lambda as an example, the amount of allocated mem-
+ory during execution and the concurrency level are only op-
+tions for tuning the performance of functions. The amount
+of allocated memory is between 128 MB and 3,008 MB
+in 64MB increments [13]. Previous researches have proven
+that computational power and network throughput are in
+proportion to the amount of allocated memory, and disk
+performance also increases with larger memory size due
+to less contention [14], [15]. By reserving and provisioning
+more instances to host functions, high concurrency level can
+decrease ﬂuctuations in the function performance incurred
+by cold starts (container initialization provisioning delay if
+no warm instance is available) and reduce the number of
+throttles under very heavy request loads
+
+
+
+\subsection{fdsfsd}
+
+
+
+
+\begin{itemize}
+	\item 
+\end{itemize}
+
+\subsection{title}
+
+
+Serverless computing has given a much-needed agility to
+developers, abstracted away the management and maintenance
+of physical resources, and provided them with a relatively
+small set of conﬁguration parameters: memory and CPU.
+While relatively simpler, conﬁguring the “best” values for
+these parameters while minimizing cost and meeting perfor-
+mance and delay constraints poses a new set of challenges.
+This is due to several factors that can signiﬁcantly aﬀect the
+running time of serverless functions.
+
+
+the run-time of these serverless
+functions decreases with the increase of memory size allocated
+to the function. However, the marginal improvement in the
+run-time decreases as the memory increases.
+
+This behavior
+is because the pricing model as exposed by the cloud providers
+is tightly coupled with the amount of resources speciﬁed
+to execute the serverless function (c.f. Figure 1a), and the
+dependency between memory and CPU resource allocation –
+AWS Lambda allocates CPU power
+
+
+a model for each executable belonging to a given choreography.
+
+
+
+This helps developers decide if a developed
+workload would comply with their QoS agreements, and if
+not, how much performance improvement they would need
+to do so. The performance improvement decided could be
+achieved either by improving the design, quality of code, or
+by simply resizing the resource allocated to each instance,
+which is usually set by changing the allocated memory.
+
+
+A cold start 
+
+Cold/Warm start: as deﬁned in previous work [3], [8],
+[10], we refer to cold start request when the request goes
+through the process of launching a new function instance.
+For the platform, this could include launching a new virtual
+machine, deploying a new function, or creating a new
+instance on an existing virtual machine, which introduces an
+overhead to the response time experienced by users. In case
+the platform has an instance in the idle state when a new
+request arrives, it will reuse the existing function instance
+instead of spinning up a new one. This is commonly known
+as a warm start request. Cold starts could be orders of
+magnitude longer than warm starts for some applications.
+Thus, too many cold starts could impact the application’s
+responsiveness and user experience [3].
+
+
+
+his equation gives the probability of a request being
+rejected (blocked) by the warm pool, assuming there are m
+warm servers. If m is less than the maximum concurrency
+level, the request blocked by the warm pool causes a cold
+start. If the warm pool has reached the maximum concur-
+rency level, any request rejected by the warm pool will be
+rejected by the platform.
+
+\subsection{Concurrency level}
+
+Any public serverless computing platform imposes a limitation on the number of serverless function instance runnable at the same time by the corresponding platform provider; this limit is known as \textit{concurrency level}.
+
+For example, in $2021$, AWS Lambda doesn't allow more than 1000 serverless function instances in running state at the same time.
+
+\subsection{Start/Cold start}
+
+When a request arrives on a FaaS platform, 
+
+\begin{description}
+	\item[Cold start] If the warm pool is busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, latter will trigger the launching of a new function instance, which will be added to the warm pool. This event is called \textit{cold start}.
+		
+	From the FaaS provider point of view, this operation requires to start either a new virtual	machine or a new container; in any case, regardless of the method adopted, a cold start introduces a very important overhead to the response time experienced by users. 
+	
+	\item[Warm start] When there is at least one serverless function instance in idle state, the FaaS platform reuses it to serve the incoming request without launching a new one. This is called \textit{warm start}.
+\end{description}  
+
+A very important aspect is that cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application’s responsiveness and user experience.
+
+To be more precise, let $k \in \N$ and $C_{\text{max},P}$ the maximum concurrency level imposed by FaaS provider $P$, when a new request arrives on the platform, one of the following events can occur:
+
+\begin{itemize}
+	\item If $k < C_{\text{max},P}$, that is the number of function instances into the warm pool is less than the maximum concurrency level, the request will be blocked by the system causing a cold start.
+	
+	\item If $k = C_{\text{max},P}$, that is the warm pool size reaches the maximum concurrency level, any further request will be rejected by the platform
+\end{itemize}
+
+\subsubsection{Cold start probability}
+
+As previously said, the rejection of a request by the warm pool triggers a cold start, adding subsequently a new function instance to the warm pool in order to handle received requests. 
+
+To build our framework, we must to know the probability of a request being rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
+
+Formally, let $k \in N$, the cold start probability $\textbf{P}_{C}$ is the probability that an arrival finds all $k$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
+
+\begin{equation}
+	\textbf{P}_{C} = \dfrac{\dfrac{\rho^k}{k!}}{\displaystyle\sum_{j=0}^k \dfrac{\rho^j}{j!}}
+\end{equation}
+
+
+
 
 \section{Orchestrator Model}
 
@@ -179,13 +335,13 @@ From now, a choreography $\mathcal{C}_R$ will be briefly denoted by $\mathcal{C}
 
 Supposing that a choreography $\mathcal{C} = (\Phi,E)$ is given.
 
-An \textit{abstract serverless function} $\phi \in \Phi$, or simply \textit{abstract function}, is a \textit{resource} that represents a computational unit defined by business logic provided by developers.
+As said previously, any $\phi \in \Phi$ is called \textit{abstract serverless function}, or simply \textit{abstract function}, that is a \textit{resource} representing a computational unit required by business logic provided by developers.
 
 According to our model, there are two types of abstract functions implementations:
 
 \begin{itemize}
 	
-	\item $\phi$ is defined as \textit{serverless executable functions}, or simply \textit{executable function}, when $\phi$ contains executable code which implementing business logic.
+	\item $\phi$ is called \textit{serverless executable functions}, or simply \textit{executable function}, when $\phi$ contains executable code; therefore, in that case, we said that an executable function models a serverless function.
 	
 	$\mathscr{F_E}$ is defined as the set containing all executable function of $\mathcal{C}$ and it is formally defined as follows:
 	
@@ -195,13 +351,13 @@ According to our model, there are two types of abstract functions implementation
 	
 	However, multiple different implementations of a given executable function can be provided by developers which, although they must be semantically and logically equivalent, may eventually expose different performance or cost behavior. 
 	
-	Therefore, for each $\phi \in \mathscr{F_E}$, the set $\textbf{F}_{\phi}$, containing all implementations of $\phi$, generally denoted by $f_{\phi}$, such that $|\textbf{F}| \geq 1 $, must exist.
-
-	We will explain later that the aim of our framework is to pick exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS objective.
+	For any $\phi \in \mathscr{F_E}$, we will use $\textbf{F}_{\phi}$ notation to represent the so-called \textit{implementation-set} of $\phi$, that is the set containing any concrete implementation, denoted as $f_{\phi}$, of $\phi$.
 	
-	We assume that every $f_{\phi} \in \textbf{F}_{\phi}$ for all $\phi \in \mathscr{F_E}$ is already deployed on one or more FaaS platform by developers.
-		
-	\item $\phi$ is called \textit{serverless orchestration functions}, or \textit{orchestration functions}, when $\phi$ contain orchestration code needed to decide which and how the next abstract functions must be called; in other words, orchestration code is control-flow code.
+	Later, we will explain how our framework is able to pick, for all $\phi \in \mathscr{F_E}$, exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS objective.
+	
+	\item $\phi$ is called \textit{serverless orchestration functions}, or simply \textit{orchestration functions}, when $\phi$ contains the so-called \textit{orchestration code}. 
+	
+	According to our model, orchestration code represents the logic required to chain together any components of an application, handling events and triggering executable functions in the correct order according to the business logic. In other words, orchestration code is used to manage the control-flow of any application; later we will describe how it is possible.
 	
 	$\mathscr{F_O}$ is defined as the set containing all orchestration functions of $\mathcal{C}$ and it is formally defined as follows:
 	
@@ -225,6 +381,21 @@ Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$,
 	\item $b$ is the name of the abstract serverless function $\phi$;
 \end{itemize}
 
+\subsubsection{Executability condition}
+
+Let $\mathcal{C} = (\Phi,E)$ a choreography.
+
+Obviously, in order to effectively start the execution of a choreography, is required that, for each executable function $\phi \in \mathscr{F_E}$, \textit{at least one} concrete implementation $f_{\phi}$ exists.
+
+Formally, we said that a choreography is \textit{executable} when: 
+
+\begin{eqnarray}
+	\label{eqn:SchedulabilityConditionOne}
+	\mathcal{C} \text{ is executable } & \Leftrightarrow & |\textbf{F}_{\phi}| \geq 1 \qquad \forall \phi \in \mathscr{F_E}
+\end{eqnarray}
+
+We will only deal with executable choreographies. Moreover, for all $\phi \in \mathscr{F_E}$, we always assume that all $f_{\phi} \in \textbf{F}_{\phi}$ are already deployed on one or more FaaS platform by developers.
+
 \subsubsection{Serverless Sub-choreography}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
@@ -239,54 +410,75 @@ is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \text
 
 \subsubsection{Basic Serverless Choreography}\label{BasicDefinition}
 
-Suppose to have a choreography $\mathcal{C} = (\Phi,E)$. 
-
-When $\mathcal{C}$ is a DAG, that is it does not contain cycles or loops, if following condition are hold:
+Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
 
 \begin{eqnarray}
-	|\mathscr{F_O}| = 0 \\
-	|\omega(\mathcal{C})| = 1
+	|\mathscr{F_O}| = 0 \label{cond21} \\
+	|\omega(\mathcal{C})| = 1 \label{cond22}
 \end{eqnarray}
 
-the choreography $\mathcal{C}$ will be called \textit{basic serverless choreography}, or \textit{simply basic choreography}.
+We said that any choreography $\mathcal{C}$, satisfying the conditions \ref{cond21} and \ref{cond22}, represents a \textit{basic serverless choreography}, or simply a \textit{basic choreography}.
 
+\newpage
+\section{Serverless Choreography Configuration}
 
-\subsection{Serverless Choreography Configuration}
+Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, called also \textit{choreography configuration} or, simply, \textit{configuration}, which allows us to meet user-specified QoS objectives.
 
-Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, also called \textit{choreography configuration} or simply \textit{configuration}, that allows us to meet user-specified QoS objectives.
+Informally, a configuration specifies which concrete implementation $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}$, will be effectively executed, including several parameters, like memory size or CPU power.
 
-Informally, a configuration specifies which implementation $f_{\phi} \in \textbf{F}_{\phi}$, for each $\phi \in \mathscr{F_E}$, will be effectively executed, including its parameters such as memory size or CPU power.
+\subsection{Executable Function Configuration}
 
-\subsubsection{Serverless Functions Configuration}
+Before explaining formally what we meant by choreography configuration, we must firstly to explain the concept of executable function configuration.
 
-Let $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding set of serverless functions which implement it. 
+Let $m \in \N$, $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
 
-We say that a \textit{configuration} for $\phi$ is a vector $x_{\phi} \in \textbf{F}_{\phi} \times \N$. Let $m \in \N$ and supposing that $x_{\phi} = (f_{\phi},m)$, $f_{\phi}$ represents a particular serverless function implementing $\phi$ while $m$ represents the allocated memory size of $f_{\phi}$.
+Formally, an \textit{executable function configuration} for the executable function $\phi$ is a two-dimensional vector defined as follows:
+
+\begin{equation}
+x_{\phi} = (f_{\phi},m) \in \textbf{F}_{\phi} \times \N
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $f_{\phi}$ represents a particular serverless function implementing the executable function $\phi$.
+	\item $m$ represents the allocated memory size of $f_{\phi}$.
+\end{itemize}
 
 At this point, we can define some useful functions:
 
 \begin{itemize}	
-	\item $C_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is the cost function for the serverless functions implementing $\phi$.
+	\item $C_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is the \textit{cost function} for any serverless functions belonging to the implementation-set $\textbf{F}_{\phi}$.
 	
-	To be more precise, for all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $C_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the average cost paid by developers to execute $f_{\phi}$ using an allocated memory size equal to $m$.
+	Precisely, for all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $C_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the \textit{average cost} paid by developers to execute $f_{\phi}$ using an allocated memory size equal to $m$.
 	
 	
-	\item $RT_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is a delay function for the serverless functions implementing $\phi$.
+	\item $RT_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is a \textit{delay function} for any serverless functions belonging to the implementation-set $\textbf{F}_{\phi}$.
 	
-	For all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $RT_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the average response time when $f_{\phi}$ is invoked with memory size equal to $m$;
+	For all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $RT_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the \textit{average response time} when $f_{\phi}$ is invoked with memory size equal to $m$;
 \end{itemize}
 
-\subsubsection{Serverless Choreography Configuration}
 
-Let $n,k \in \N$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
 
-Formally, a configuration for $\mathcal{C}$ is a vector $\textbf{X}$ such that:
+
+\subsection{Serverless Choreography Configuration}
+
+Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
+
+Formally, a serverless choreography configuration for $\mathcal{C}$ is a matrix $\textbf{X}$ such that:
 
 \begin{equation}
-\textbf{X} \in \lbrace \textbf{F}_{\phi_{1}} \times \mathbb{N} \rbrace \times \ldots \times \lbrace \textbf{F}_{\phi_{k}} \times \mathbb{N} \rbrace = \Cross_{i = 1}^k \lbrace \textbf{F}_{\phi_{i}} \times \mathbb{N} \rbrace
+\textbf{X} \mathDef \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \in \lbrace \textbf{F}_{\phi_{1}} \times \mathbb{N} \rbrace \times \ldots \times \lbrace \textbf{F}_{\phi_{k}} \times \mathbb{N} \rbrace = \Cross_{i = 1}^k \lbrace \textbf{F}_{\phi_{i}} \times \mathbb{N} \rbrace
 \end{equation}
 
-For all $i \in \left[ 1, k \right]$, supposing that $\textbf{X} = \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace $, $x_{\phi_{i}}$ is a configuration for $\phi_{i}$; we will use $X(i)$ notation as a reference to the configuration $x_{\phi_{i}}$ while we will use $X(i,1)$ and $X(i,2)$ to denote respectively the implementation $f \in \textbf{F}_{\phi_i}$ and the allocated memory size $m \in N$ for the function $f$.
+where, for all $i \in \left[ 1, k \right]$, $x_{\phi_{i}}$ is an executable function configuration for $\phi_{i}$.
+
+%We will use $X(i)$ notation as a reference to the configuration $x_{\phi_{i}}$ while we will use $X(i,1)$ and $X(i,2)$ to denote respectively the implementation $f \in \textbf{F}_{\phi_i}$ and the allocated memory size $m \in N$ for the function $f$.
+
+\section{The problem of cold starts}
+
+In order to find a suitable serverless choreography configuration capable to satisfy QoS imposed by end users, we must find a way to decide  
+
 
 
 
@@ -321,7 +513,7 @@ Then the response time and the cost of the choreography $\mathcal{S}$ a follows:
 
 
 
-\subsection{Structures}
+\section{Serverless Choreography Structures}
 
 Supposing to have a serverless choreography $\mathcal{S} = (\Phi,E)$, we call \textit{structure} any sub-choreography $\mathcal{S}^*= (\Phi^*,E^*)$ whose entry point and the end point are, respectively, an opening and a closing orchestration functions of the same type. Formally:
 
