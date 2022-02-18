@@ -422,28 +422,66 @@ We said that any choreography $\mathcal{C}$, satisfying the conditions \ref{cond
 \newpage
 \section{Serverless Choreography Configuration}
 
-Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine the so-called \textit{serverless choreography configuration}, called also \textit{choreography configuration} or, simply, \textit{configuration}, which allows us to meet user-specified QoS objectives.
+Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine a so-called \textit{serverless choreography configuration}, called also \textit{choreography configuration} or, simply, \textit{configuration}, allowing us to meet user-specified QoS objectives.
 
-Informally, a configuration specifies which concrete implementation $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}$, will be effectively executed, including several parameters, like memory size or CPU power.
+Informally, a configuration specifies which concrete function will be use for all executable function inside a choreography, specifying several parameters, like memory size or CPU power.
 
 \subsection{Executable Function Configuration}
 
-Before explaining formally what we meant by choreography configuration, we must firstly to explain the concept of executable function configuration.
+In this section, we will explain the concept of \textit{executable function configuration}. 
 
-Let $m \in \N$, $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
+Let $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
 
-Formally, an \textit{executable function configuration} for the executable function $\phi$ is a two-dimensional vector defined as follows:
+Formally, an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
 
 \begin{equation}
-x_{\phi} = (f_{\phi},m) \in \textbf{F}_{\phi} \times \N
+x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
 \end{equation}
 
 where:
 
 \begin{itemize}
-	\item $f_{\phi}$ represents a particular serverless function implementing the executable function $\phi$.
-	\item $m$ represents the allocated memory size of $f_{\phi}$.
+	\item $f_{\phi} \in \textbf{F}_{\phi}$  denotes a particular concrete function implementing the executable function $\phi$.
+	\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
 \end{itemize}
+
+\subsection{Serverless Choreography Configuration}
+
+Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
+
+Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
+
+\begin{eqnarray}
+\textbf{X}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
+& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
+& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\}
+\end{eqnarray}
+
+where:
+
+\begin{itemize}
+\item $x_{\phi_{i}}$ represents the executable function configuration for the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$.
+
+\item $f_{\phi_{i_j}}$ represent the $j$-th concrete function implementing the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$.
+
+\item $\textbf{M}_{f_{\phi_{i_j}}} \subseteq \N$ denotes the set containing all available memory size options, allowed by provider, during the execution of the concrete function $f_{\phi_{i_j}}$, for some $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 At this point, we can define some useful functions:
 
@@ -461,19 +499,7 @@ At this point, we can define some useful functions:
 
 
 
-\subsection{Serverless Choreography Configuration}
 
-Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
-
-Formally, a serverless choreography configuration for $\mathcal{C}$ is a matrix $\textbf{X}$ such that:
-
-\begin{equation}
-\textbf{X} \mathDef \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \in \lbrace \textbf{F}_{\phi_{1}} \times \mathbb{N} \rbrace \times \ldots \times \lbrace \textbf{F}_{\phi_{k}} \times \mathbb{N} \rbrace = \Cross_{i = 1}^k \lbrace \textbf{F}_{\phi_{i}} \times \mathbb{N} \rbrace
-\end{equation}
-
-where, for all $i \in \left[ 1, k \right]$, $x_{\phi_{i}}$ is an executable function configuration for $\phi_{i}$.
-
-%We will use $X(i)$ notation as a reference to the configuration $x_{\phi_{i}}$ while we will use $X(i,1)$ and $X(i,2)$ to denote respectively the implementation $f \in \textbf{F}_{\phi_i}$ and the allocated memory size $m \in N$ for the function $f$.
 
 \section{The problem of cold starts}
 
@@ -655,37 +681,78 @@ We define the utility function as follows:
 where $w_{RT}, w_{C} \geq 0$, $w_{RT} + w_{C} = 1$, are weights for the different QoS attributes, while $RT_{max}$ ($RT_{min}$) and $C_{max}$ ($C_{min}$) denote, respectively, the maximum (minimum) value for the overall expected response time and cost.
 
 
-\begin{equation}
-\begin{array} {rll} 
-\displaystyle \operatorname*{arg\,max}_\textbf{X} & F(\textbf{X}) \\\\
-\text{subject to} & C(\textbf{X}) \leq C_{user} \\\\
-	              & RT(\textbf{X}) \leq RT_{user} \\\\              
-	              & \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} = 1 & \qquad \forall \phi_{i} \in \mathscr{F_E} \\\\
-				  & x_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace & \qquad \forall \phi_{i} \in \mathscr{F_E} \wedge j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]
-\end{array}
-\end{equation}
+Following formulation is based on the enumeration of all possible choreography configurations, that is of all combinations of executable function configuration of a given choreography.
 
-fdsfsdfsdfsd
+For the sake of conciseness, in the following we use following notation: 
+
+p to define both a pattern and its index, and $\Omega$ to define both the set of patterns and the
+set of patterns indices.
+
+
 
 \begin{equation}
-\displaystyle 
-\sum_{i = 0}^{|\mathscr{F_E}|} 
-\sum_{j = 0}^{|\textbf{F}_{\phi_i}|} 
-\sum_{s \in M \subset \N } 
-F(x_{\phi_{0}}, \ldots, x_{\phi_{|\mathscr{F_E}|}}) 
+	\begin{array} {rll} 
+		\displaystyle max & \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} F(\textbf{X}_{\omega}) \\\\
+		
+		\text{subject to} & \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} C(\textbf{X}_{\omega}) \leq C_{user} \\\\
+		
+		& \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} RT(\textbf{X}_{\omega}) \leq RT_{user} \\\\ 
+		             
+		& \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} = 1 & \\\\
+		
+		
+		& x_{\omega} \in \lbrace 0, 1 \rbrace & \qquad \forall \omega \in \N \cap [1,|\Omega|]
+	\end{array}
+\end{equation}
+
+Above formulation is based on the enumeration of all possible choreography configuration.
+
+
+
+
+
+
+
+\subsection{Multi-dimensional Multi-choice Knapsack Problem}
+
+
+\begin{equation}
+	\begin{array} {rll} 
+		\displaystyle max & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} p_{\phi_{i_{j}}} \\\\
+		
+		\text{subject to} & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} c_{\phi_{i_{j}}} \leq C_{user} \\\\
+		
+		& \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} t_{\phi_{i_{j}}} \leq RT_{user} \\\\       
+		       
+		& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} = 1 & \qquad \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\\\
+		
+		& x_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace & \qquad \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \wedge \forall j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]
+	\end{array}
 \end{equation}
 
 
-% $\phi \in \mathscr{F_E}$
+The MMKP is an NP-hard in the strong sense [2]. It is not
+always possible to find a feasible solution in a reasonable
+computing time especially for big instances. Since exact
+methods are reserved for limited scale problem, heuristic
+approaches are needed for solving it. 
+
+
+
+Let $x_{\phi_{i_{j}}} = (f_j, m_j) $ an executable function configuration for the executable function $\phi_i$, for some $i \in \N \cap [1,|\mathscr{F_E}|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$.
+
+Basically, we can compute resource requirements $c_{\phi_{i_{j}}}$ and $t_{\phi_{i_{j}}}$ in the following ways:
+
+\begin{eqnarray}
+	c_{\phi_{i_{j}}} = E[\phi_i] \cdot TTP(\pi) \cdot C(x_{\phi_{i_{j}}}) & \text{ where } & \pi = \phi_1 e_1 \ldots e_{i-1} \phi_i
+\end{eqnarray}
 
 
 
 
 
 
-
-
-
+\newpage
 
 
 
