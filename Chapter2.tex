@@ -299,8 +299,8 @@ where:
 	
 	\begin{equation}
 		\begin{array}{lcll}
-			\phi \in \Phi & \text{ is the entry point of } \mathcal{S} & \Leftrightarrow & in(\phi) = \emptyset \\
-			\phi \in \Phi & \text{ is the end point of } \mathcal{S} & \Leftrightarrow & out(\phi) = \emptyset
+			\phi \in \Phi & \text{ is the entry point of } \mathcal{C_R} & \Leftrightarrow & in(\phi) = \emptyset \\
+			\phi \in \Phi & \text{ is the end point of } \mathcal{C_R} & \Leftrightarrow & out(\phi) = \emptyset
 		\end{array}
 	\end{equation}
 	
@@ -743,13 +743,102 @@ Let $x_{\phi_{i_{j}}} = (f_j, m_j) $ an executable function configuration for th
 
 Basically, we can compute resource requirements $c_{\phi_{i_{j}}}$ and $t_{\phi_{i_{j}}}$ in the following ways:
 
-\begin{eqnarray}
-	c_{\phi_{i_{j}}} = E[\phi_i] \cdot TTP(\pi) \cdot C(x_{\phi_{i_{j}}}) & \text{ where } & \pi = \phi_1 e_1 \ldots e_{i-1} \phi_i
-\end{eqnarray}
+\begin{equation}
+	c_{\phi_{i_{j}}} \mathDef C(x_{\phi_{i_{j}}}) \cdot \prod_{\theta \in \Theta_{\phi_i}} P \left( pred(\alpha(\theta)), \alpha(\theta) \right) \cdot E[I_{\theta}] 
+\end{equation}
+
+\begin{equation}
+	c_{\phi_{i_{j}}} \mathDef C(x_{\phi_{i_{j}}}) \cdot \prod_{\theta \in \Theta_{\phi_i}} P \left( pred(\alpha(\theta)), \alpha(\theta) \right) \cdot E[I_{\theta}] 
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $\Pi(\phi_{entry},\phi_i)$ 
+\end{itemize}
+
+
+\begin{itemize}
+	\item $\Pi(\phi_{entry},\phi_i)$ denotes the set of all possible paths starting from the entry point of choreography $\mathcal{C_R}$ to the executable function $\phi_i$.
+\end{itemize}
+
+Finally, for any executable function configuration $x_{\phi_{i_j}}$, its profit $p_{\phi_{i_{j}}}$ is determined as follows;
+
+\begin{equation}
+	p_{\phi_{i_{j}}} \mathDef w_{RT} \cdot \dfrac{t_{\phi_{i_{\textbf{MAX}}}} - t_{\phi_{i_{j}}}}{t_{\phi_{i_{\textbf{MAX}}}} - t_{\phi_{i_{\textbf{MIN}}}}} + w_{C} \cdot \dfrac{c_{\phi_{i_{\textbf{MAX}}}} - c_{\phi_{i_{j}}}}{c_{\phi_{i_{\textbf{MAX}}}} - c_{\phi_{i_{\textbf{MIN}}}}}
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $t_{\phi_{i_{\textbf{MIN}}}}$ and $t_{\phi_{i_{\textbf{MAX}}}}$ represent, respectively, the minimum and maximum response time values registered during the execution of all concrete function implementing $\phi_i$.
+	
+	\item $c_{\phi_{i_{\textbf{MIN}}}}$ and $c_{\phi_{i_{\textbf{MAX}}}}$ represent, respectively, the minimum and maximum cost values spent by all concrete function implementing $\phi_i$.
+	
+	\item $w_{RT}$ and $w_{C}$ are weights for the different QoS attributes such that:
+	
+	\begin{eqnarray}
+		w_{C} \geq 0 \\
+		w_{RT} \geq 0 \\
+		w_{RT} + w_{C} = 1
+	\end{eqnarray}
+
+\end{itemize}
 
 
 
 
+\begin{algorithm}
+	\KwData{this text}
+	\KwResult{Some solution}
+	Initialization pheromone trails\;
+	\While{Termination conditions not met}{
+		ConstructSolutions\;
+		ApplyLocalSearch\;
+		UpdatePheromoneTrails\;
+	}
+	\caption{Algorithmic skeleton for ACO algorithms}
+\end{algorithm}
+
+
+\begin{algorithm}
+	\KwData{this text}
+	\KwResult{Some solution}
+	\For{$k\gets0$ \KwTo $|\mathcal{A}|$ \KwBy $1$}{
+		
+		\BlankLine
+		
+		$S_k \leftarrow \emptyset $ \;
+		$G_{candidates} \leftarrow \mathcal{G} $\;
+		
+		\BlankLine
+		\BlankLine
+		
+		$\textbf{G}_i \leftarrow$ Randomly select a group from $G_{candidates}$ for some $i \in \left[1;|\mathcal{G}|\right]$\;
+		$o_{i_k} \leftarrow$ Randomly select an object from $\textbf{G}_i$ for some $k \in \left[1;|\textbf{G}_i|\right]$\;
+			
+		\BlankLine
+		\BlankLine
+		
+		$S_k \leftarrow \{o_{i_k}\} $ \;
+		$G_{candidates} \leftarrow G_{candidates} \setminus \textbf{G}_i $\;
+		
+		\BlankLine
+		
+		\While{$G_{candidates} \neq \emptyset$}{
+			
+			\BlankLine
+			
+			$\textbf{G}_i \leftarrow$ Randomly select a group from $G_{candidates}$\;
+			$\mathcal{O} \leftarrow $  without violating resource constraints \;
+			
+		
+			\BlankLine	
+		}
+		
+		
+	}
+\end{algorithm}
 
 
 \newpage
