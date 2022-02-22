@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[10pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -36,570 +36,1048 @@
 
 \begin{document}
 	
-\bibliographystyle{plain}
-\bibliography{Bibliography.bib}
-
-
 \tableofcontents
 \newpage
 
-\input{Chapter1}
-\input{Chapter2}
 
-\section{Super-peer Node}
-
-
-An \textit{end-user} represents, instead, a third-party application that wants execute  one or more function choreographies.
-
-\section{Peer Node}
-
-Proposed 
-
-Hybrid structures are notably deployed in collaborative distributed systems.
-The main issue in many of these systems is to first get started, for which often
-a traditional client-server scheme is deployed. Once a node has joined the
-system, it can use a fully decentralized scheme for collaboration.
+\begin{equation}
+	\begin{array} {lllrr} 
+		\text{min} & \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} g(x)^{f_k^i} Y_x^{f_k^i} \\\\
+		& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} T(x)^{f_k^i} Y_x^{f_k^i} & \leq &  D_{\textbf{F}} \\
+		& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} Y_x^{f_k^i} & = & 1 \\\\
+		& Y_x^{f_k^i} \in \lbrace 0, 1 \rbrace &&
+	\end{array}
+\end{equation}
 
 
-Relating to a specified function choreography $X$ belonging to resource owner $R$, a peer $P$ of our system can be in one of the following states:
-
-\begin{description}
-\item[Active State] When $P$ has been marked as responsible for manage all invocation requests of $X$ forwarded by end users.
-\item[Forwarder State] Otherwise
-\end{description}
-
-
-function choreographies (FCs) or workflows of
-functions. 
-
-As known, in server-less computing platforms, computation is done in \textbf{function instances}. These instances are completely managed by the server-less computing platform provider (SSP) and act as tiny servers where a function is been executed.
+\begin{equation}
+	\begin{array} {lllrr} 
+		\text{min} & \displaystyle\sum_{\pi \in \Pi} \sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} g(x)^{f_k^i} Y_{(\pi, x)}^{f_k^i} \\\\
+		& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} T(x)^{f_k^i} Y_x^{f_k^i} & \leq &  D_{\textbf{F}} \\
+		& \displaystyle\sum_{\pi \in \Pi} \sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} Y_{(\pi, x)}^{f_k^i} & = & 1 \\\\
+		& Y_{(\pi, x)}^{f_k^i} \in \lbrace 0, 1 \rbrace &&
+	\end{array}
+\end{equation}
 
 
-\section{Resources}
+\newpage
+
+\section{Serverless Computing Paradigm}
+
+In serverless computing platforms, computation is done by so-called \textit{function instances} which are completely managed by the serverless computing platform provider and act as tiny servers that can be invoked based on events forwarded by end-users \cite{PMSCP}.
+
+Serverless computing platforms handle almost every aspect of the system administration tasks needed to deploy a workload on the cloud, providing a new simplified programming model according to which developers can focus on the business aspects of their applications only \cite{COSE}.
+
+Moreover, the paradigm lowers the cost of deploying applications too, adopting a so-called “\textit{pay as you go}” pricing model, by charging for execution time rather than for allocated resources \cite{COSE}.
+
+
+\subsection{Serverless Function}
+
+A \textit{serverless function} represents a stateless, event-driven, self-contained unit of computation implementing a business functionality.
+
+Although a serverless function generally represents a unit of executable code, submitted to FaaS platforms by developers using one or a combination of the programming languages supported by FaaS providers, a serverless function can be any cloud services eventually necessary to business logic, like cloud storage, message queue services, pub/sub messaging service etc.
+
+When it represents executable code, developers can specify several configuration parameters, like timeout, memory size or CPU power \cite{COSE}.
+
+A serverless function can be triggered through events or HTTP requests following which the FaaS provider executes it in a containerized environment, like container, virtual machine or even processes, using the specified configuration.
+
+\subsection{Serverless Application}
+
+In serverless paradigm, the most basic scenario is to invoke a single function through a HTTP request; however, if you want to built more complex applications, constructing so-called \textit{serverless application}, serverless functions must be connected and appropriately coordinated.
+
+Formally, we define a serverless application as a stateless and event-driven software system made up of a serverless functions set hosted on one or more FaaS platforms and combined together by a so-called \textit{coordinator} (or \textit{orchestrator}).
+
+Generally, the coordinator is a broker needed to implement the business logic of any application: it chains together serverless function, handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
+
+Most public cloud providers for serverless computing have introduced platforms to define and coordinate serverless function in order to built serverless application, like AWS Step Functions which combines multiple Lambda functions and other serverless services offered by AWS into responsive serverless applications
+
+Although FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale providers resulting in mostly non-portable FaaS solutions 
+
+and provider lock-in
+
+occurs when transitioning data, products, or services to another vendor's platform is difficult and costly, making customers more dependent (locked-in) on a single cloud storage solution.
+
+FC languages and runtime systems are still in their
+infancy with numerous drawbacks. Current commercial and open
+source offerings of FC systems are dominated by a few large-
+scale providers who offer their own platforms, 
+
+As FaaS platforms take over operational responsibilities,
+besides uploading the source code of functions, users have
+limited control over resources on FaaS platforms. Taking
+AWS Lambda as an example, the amount of allocated mem-
+ory during execution and the concurrency level are only op-
+tions for tuning the performance of functions. The amount
+of allocated memory is between 128 MB and 3,008 MB
+in 64MB increments [13]. Previous researches have proven
+that computational power and network throughput are in
+proportion to the amount of allocated memory, and disk
+performance also increases with larger memory size due
+to less contention [14], [15]. By reserving and provisioning
+more instances to host functions, high concurrency level can
+decrease ﬂuctuations in the function performance incurred
+by cold starts (container initialization provisioning delay if
+no warm instance is available) and reduce the number of
+throttles under very heavy request loads
 
 
 
-
-
-\section{System's resources and actors}
-
-
-
-Given a resource owner $R$, there are two type of resources which he can manage:
-
-\begin{enumerate}
-\item Function choreographies.
-\item Server-less function implementations (also called \textit{concrete server-less functions})
-\end{enumerate}
+\subsection{fdsfsd}
 
 
 
-\subsection{Server-less function swarms}
-
-Informally, a so-called \textit{server-less function swarm} represent a set of concrete server-less function with very specific properties.
-
-Precisely, let $l \in \mathbb{N}$ such that $l \neq 0$, $R$ a resource owner, $P$ a server-less computing platform provider and  $X_R$ a set of concrete server-less functions. Moreover, let $\textbf{X}_R$ the set containing all concrete function implementations defined and deployed by $R$ on any provider. 
-
-A set $X_R \subseteq \textbf{X}_R$ is called a \textit{server-less function swarm}, or simply \textit{swarm}, if:
-
-\begin{enumerate}
-\item $|X_{R}| = n \geq 1$, that is $X_{R}$ must contain at least one concrete function.
-\item $X_{R}$ contain concrete functions that share the same platform provider $P$ where they will be executed.
-\item $X_{R}$ contain concrete functions that share the same limit $l$ in term of max number of server-less function instance runnable at the same time by the corresponding platform provider $P$. That limit is also called \textit{server-less function swarm's concurrency limit}, or simply, \textit{concurrency limit}. 
-\end{enumerate}
-
-Is very important to make clear that only at most $l$ concrete functions belonging to $X_R$ can be executed simultaneously by $P$. The value of $l$ depends by specific policies adopted by $P$; some of them imposed that limit \textit{per-account}, others \textit{per-functions}. Our model supports both approaches because:
 
 \begin{itemize}
-
-\item If $P$ imposed limits \textit{per-function}, then $|X_{R}| = 1$, that is, $X_{R}$ will contain only one function defined and deployed by $R$ in $P$, where $l$ will be represent the provider's per-function limit.
-
-\item If $P$ imposed a limit \textit{per-account}, then generally $|X_{R}| \geq 1$ and it include all concrete server-less function deployed on $P$ while $l$ will be represent the provider's global limit. 
+	\item 
 \end{itemize}
 
-\subsubsection{Server-less function sub-swarms}
+\subsection{title}
 
-A sub-swarm of ${X_{R}}$, which we will denote with $\Delta_{X_{R}}$, is the term with which we denote any element belong to the power set\footnote{The \textit{power set} $\mathcal{P}(S)$ of a set $S$ is the set of all subsets of $S$, including the empty set and $S$ itself.} of $X_{R}$, excluding the empty set. Formally, any $\Delta_{X_{R}} \in \mathcal{P}(X_{R}) \setminus \oslash$ is a sub-swarm.
 
-Is very important to remember that in our model any sub-swarm $\Delta_{X_{R}}$ of ${X_{R}}$ has the \textit{same} concurrency limit of ${X_{R}}$.
+Serverless computing has given a much-needed agility to
+developers, abstracted away the management and maintenance
+of physical resources, and provided them with a relatively
+small set of conﬁguration parameters: memory and CPU.
+While relatively simpler, conﬁguring the “best” values for
+these parameters while minimizing cost and meeting perfor-
+mance and delay constraints poses a new set of challenges.
+This is due to several factors that can signiﬁcantly aﬀect the
+running time of serverless functions.
 
-\section{Function choreography scheduler}
 
-\subsection{Schedulability condition}
+the run-time of these serverless
+functions decreases with the increase of memory size allocated
+to the function. However, the marginal improvement in the
+run-time decreases as the memory increases.
 
-Let $FC_R$ a function choreography belonging to a resource owner $R$ and $F_{abstract}$ its server-less abstract functions set. Moreover, be $\textbf{X}_R$ the set containing all functions deployed by $R$ in any provider.
+This behavior
+is because the pricing model as exposed by the cloud providers
+is tightly coupled with the amount of resources speciﬁed
+to execute the serverless function (c.f. Figure 1a), and the
+dependency between memory and CPU resource allocation –
+AWS Lambda allocates CPU power
 
-In order to effectively start the execution of a function choreography, is required that for each abstract function $f_{abstract} \in F$ \textit{at least one} concrete function $f$, which implements it, exists.
 
-Formally, a function choreography is said \textit{schedulable} when: 
+a model for each executable belonging to a given choreography.
+
+
+
+This helps developers decide if a developed
+workload would comply with their QoS agreements, and if
+not, how much performance improvement they would need
+to do so. The performance improvement decided could be
+achieved either by improving the design, quality of code, or
+by simply resizing the resource allocated to each instance,
+which is usually set by changing the allocated memory.
+
+
+A cold start 
+
+Cold/Warm start: as deﬁned in previous work [3], [8],
+[10], we refer to cold start request when the request goes
+through the process of launching a new function instance.
+For the platform, this could include launching a new virtual
+machine, deploying a new function, or creating a new
+instance on an existing virtual machine, which introduces an
+overhead to the response time experienced by users. In case
+the platform has an instance in the idle state when a new
+request arrives, it will reuse the existing function instance
+instead of spinning up a new one. This is commonly known
+as a warm start request. Cold starts could be orders of
+magnitude longer than warm starts for some applications.
+Thus, too many cold starts could impact the application’s
+responsiveness and user experience [3].
+
+
+
+his equation gives the probability of a request being
+rejected (blocked) by the warm pool, assuming there are m
+warm servers. If m is less than the maximum concurrency
+level, the request blocked by the warm pool causes a cold
+start. If the warm pool has reached the maximum concur-
+rency level, any request rejected by the warm pool will be
+rejected by the platform.
+
+
+
+\section{Orchestrator Model}
+
+\subsection{Resource owner}
+
+A \textit{resource owner}, henceforward denoted with $R$, represents an entity capable of \textit{creating}, \textit{modifying} and \textit{authorizing} access to several resources of our system.
+
+\newpage
+
+\chapter{Specification Mode}
+\section{Serverless Choreography}
+
+In this section we will introduce the notion of \textit{serverless choreography}, a very important \textit{resource} adopted to model and implement both serverless functions and serverless applications.
+
+Informally, the notion of serverless choreography has been derived from that of a control-flow graph; as known, the latter describes, using graph notation, all paths that might be traversed through a serverless application during its execution. Similarly, a serverless choreography describes calling relationships between serverless functions which can be combined using several types of control-flow connectors.
+
+\subsection{Preliminary Definitions}
+
+Before to define what we mean for serverless choreography, is necessary to introduce some very useful notations.
+
+Let $n \in \N$ and $G = (\Phi,E)$ a directed graph, where:
+
+\begin{itemize}
+	\item $\Phi$ is a finite set of vertices, such that $|\Phi| = n$;
+	\item  $E \subseteq \Phi \times \Phi $ is a finite set of ordered pairs of vertices $e_{ij} = \left( \phi_i, \phi_j \right)$, where $\phi_i \in \Phi$ to $\phi_j \in \Phi$ for any $i,j \in \N \cap \left[ 1, n \right]$. Any ordered pair of vertices is also called directed edge;
+\end{itemize}
+
+Then, we will adopt following notations:
+
+\begin{itemize}
+	\item A \textit{path} of $G$ is defined as a finite sequence of distinct vertices and edges. We will denote a path by $\pi$ which formally can be represented as follows:
+	
+	\begin{equation}
+		\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n
+	\end{equation}
+	
+	where:
+	
+	\begin{itemize}
+		\item $\phi_i \in \Phi$, for all $i \in \N \cap \left[ 1, n \right]$
+		\item $e_i = \left( \phi_i, \phi_{i+1} \right) \in E$, for all $i \in \N \cap \left[ 1, n-1 \right]$
+	\end{itemize}
+	
+	\item Let $\phi_i,\phi_j \in \Phi$ for any $i,j \in \N \cap \left[ 1, n \right]$, the set denoted by $\Pi(\phi_i, \phi_j)$ identifies all possible paths starting from vertex $\phi_i$ and ending at vertex $\phi_j$.
+	
+	\item For any $u \in \N \cap \left[ 1, n \right]$, the set $out(\phi_u)$ ($in(\phi_u)$) denotes all edges starting (ending) from (to) vertex $\phi_u$, while the set $succ(\phi_u)$ ($pred(\phi_u)$) includes all direct successor (predecessors) vertices of $\phi_u$. Formally:
+	
+	\begin{eqnarray}\label{outDef}
+		out(\phi_u) & \mathDef & \left\lbrace (\phi_u, \phi) \in E, \quad \forall \phi \in \Phi  \right\rbrace \\
+		in(\phi_u) & \mathDef & \left\lbrace (\phi, \phi_u) \in E, \quad \forall \phi \in \Phi  \right\rbrace \\
+		succ(\phi_u) & \mathDef & \left\lbrace \phi \in \Phi \mid (\phi_u, \phi) \in out(\phi_u)  \right\rbrace \\
+		pred(\phi_u) & \mathDef & \left\lbrace \phi \in \Phi \mid (\phi, \phi_u) \in in(\phi_u)  \right\rbrace 
+	\end{eqnarray}
+	
+	
+\end{itemize}
+
+\subsection{Definition}
+
+According to the serverless paradigm, the execution of a serverless application starts with a particular function, which we will call \textit{entry point}, while any other serverless functions, belonging to the application, will be invoked subsequently according to specified business logic defined by developers; as we will see shortly, the latter can be naturally modeled by a weighted directed graph.
+
+Clearly, the execution of a serverless application ends when the execution of the last function of the application ends; that ending function will be call as \textit{end point}. We assume that the entry point is unique.
+
+Let $n \in \N \setminus \left\lbrace 0 \right\rbrace $ and $R$ a resource owner.
+
+A \textit{serverless choreography} owned by $R$, or simply \textit{choreography} of $R$, is a resource represented by a weighted directed graph denoted as follows:
+
 \begin{equation}
-\label{eqn:SchedulabilityConditionOne}
-\begin{array}{lc}
-
-& \forall f_{abstract} \in F_{abstract} \\
-
-FC_R \text{ is schedulable } \Leftrightarrow & \\
- & \exists f \in \textbf{X}_R \mid  f \text{ implements } f_{abstract} \\
-\end{array}
+	\mathcal{C}_R \mathDef (\Phi,E)
 \end{equation}
 
-Although it is correct, the condition expressed by equation \ref{eqn:SchedulabilityConditionOne} is not very precise, because $\textbf{X}_R$ can contain some functions that doesn't implement any $f_{abstract} \in F_{abstract}$.
+where:
 
-Therefore, we define $\Omega_{FC_R}$ as the set containing only concrete functions that are needed to execute $FC_R$, which can both to belong to any provider and to have different concurrency limits.
+\begin{itemize}
+	\item $|\Phi| = n$;
+	
+	\item Each vertex $\phi \in \Phi$ is called \textit{abstract serverless function} and represents a computational unit; we will describe more in detail what we mean by abstract serverless function shortly;
+	
+	\item Let $i,j \in \N \cap \left[ 1, n \right]$ and $\phi_i, \phi_j \in \Phi$, any directed edge $e_{ij} = \left( \phi_i, \phi_j \right) \in E$ represents the calling relationship between two abstract serverless function which depends on the business logic defined by $R$. 
+	
+	In our context, any directed edge $\left( \phi_i, \phi_j \right) \in E$ states that the abstract serverless function $\phi_j$ \textit{can} be called by $\phi_i$;
+	
+	\item Let $i,j \in \N \cap \left[ 1, n \right]$, the number $p_{ij} \in \R \cap \left[ 0, 1 \right]$ is the weight assigned to the edge $\left(\phi_i, \phi_j \right) \in E$, where: 
+	
+	\begin{itemize}
+		
+		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ after finishing the execution of $\phi_i$;
+		
+		\item We will use a function $P : \Phi \times \Phi \to \left[ 0, 1 \right]$, called \textit{transition probability function}, such that $P\left(\phi_i, \phi_j \right) = p_{ij}$. When $P\left(\phi_i, \phi_j \right) = 0$, it implies that the directed edge $\left( \phi_i, \phi_j \right) \notin E$, therefore $\phi_i$ cannot invoke $\phi_j$;
+		
+		\item For any path $\pi = \phi_1 e_1 \ldots e_{n-1} \phi_n$ of $\mathcal{C}_R$, we define \textit{transition probability of the path $\pi$} the following quantity:
+		
+		\begin{equation}
+			TPP(\pi) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1} \right)
+		\end{equation}
+		
+	\end{itemize}
+	
+	\item $\Phi$ contains only one serverless abstract function, denoted by $\phi_{entry}$, acting as the entry point and at least one acting as the end point, which is denoted, instead, by $\phi_{end}$. Formally, we define aforementioned vertices as follows: 
+	
+	\begin{equation}
+		\begin{array}{lcll}
+			\phi \in \Phi & \text{ is the entry point of } \mathcal{C_R} & \Leftrightarrow & in(\phi) = \emptyset \\
+			\phi \in \Phi & \text{ is the end point of } \mathcal{C_R} & \Leftrightarrow & out(\phi) = \emptyset
+		\end{array}
+	\end{equation}
+	
+	Then, following conditions must be hold:
+	
+	\begin{eqnarray}
+		\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \label{cond1} \\
+		\exists   \phi \in \Phi & \mid & out(\phi) = \emptyset \label{cond2}
+	\end{eqnarray}
+	
+	Finally, we will also use the notation $\alpha(\mathcal{C}_R)$ to denote the entry point $\phi_{entry}$ of a choreography $\mathcal{C}_R$. Conversely, we will adopt the notation $\omega(\mathcal{C}_R)$ to denote the set of all end points of $\mathcal{C}_R$
+	
+	\item Must be hold the condition according to which the transition probabilities of all paths between the entry point and	the end point of $\mathcal{C}_R$ sum up to $1$. Formally:
+	
+	\begin{equation}\label{cond3}
+		\sum_{\phi_{end} \in \omega(\mathcal{C}_R)} \Big( \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \Big) = 1
+	\end{equation}
+	
+	In other words, above conditions guarantees that any execution starting from $\phi_{entry}$ will terminate.
+	
+	\item A function, denoted by $D : \Phi \times \Phi \to \left[ 0, \infty \right)$, represents a delay function according to which $D\left(\phi_i, \phi_j \right)$ identifies the delay from $\phi_i$ to $\phi_j$ due to network delay or orchestration task;  
+	
+\end{itemize} 
 
-Since multiple implementations of a same abstract function can exist at the same time, we can exploit the notion of swarm and sub-swarm to formally define the set $\Omega_{FC_R}$.
+A choreography $\mathcal{C}_R$ can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the name of the resource owner $R$, while $b$ is the function choreography name.
 
-Let $n \in \mathbb{N}$, such that $n \geq 1$, and $X_{R_i}$ the $i$-th swarm and $\Delta_{X_{R_i}}$ its sub-swarm which contains only concrete functions implementing one or more $f_{abstract} \in F_{abstract}$, where $1 \leq i \leq n$.
+Clearly, we say that choreography models a serverless function when $|\Phi| = 1$ and $|E| = 0$; conversely, it models a serverless function application when $|\Phi| > 1$ and $|E| > 0$.
 
-We define $\Omega_{FC_R}$ as follows: 
+From now, a choreography $\mathcal{C}_R$ will be briefly denoted by $\mathcal{C}$ when no confusion can arise about the resource owner $R$.
+
+\subsubsection{Abstract Serverless Function}
+
+Supposing that a choreography $\mathcal{C} = (\Phi,E)$ is given.
+
+As said previously, any $\phi \in \Phi$ is called \textit{abstract serverless function}, or simply \textit{abstract function}, that is a \textit{resource} representing a computational unit required by business logic provided by developers.
+
+According to our model, there are two types of abstract functions implementations:
+
+\begin{itemize}
+	
+	\item $\phi$ is called \textit{serverless executable functions}, or simply \textit{executable function}, when $\phi$ contains executable code; therefore, in that case, we said that an executable function models a serverless function.
+	
+	$\mathscr{F_E}$ is defined as the set containing all executable function of $\mathcal{C}$ and it is formally defined as follows:
+	
+	\begin{equation}
+		\mathscr{F_E} \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless executable function }\right\rbrace 
+	\end{equation}
+	
+	However, multiple different implementations of a given executable function can be provided by developers which, although they must be semantically and logically equivalent, may eventually expose different performance or cost behavior. 
+	
+	For any $\phi \in \mathscr{F_E}$, we will use $\textbf{F}_{\phi}$ notation to represent the so-called \textit{implementation-set} of $\phi$, that is the set containing any concrete implementation, denoted as $f_{\phi}$, of $\phi$.
+	
+	Later, we will explain how our framework is able to pick, for all $\phi \in \mathscr{F_E}$, exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS objective.
+	
+	\item $\phi$ is called \textit{serverless orchestration functions}, or simply \textit{orchestration functions}, when $\phi$ contains the so-called \textit{orchestration code}. 
+	
+	According to our model, orchestration code represents the logic required to chain together any components of an application, handling events and triggering executable functions in the correct order according to the business logic. In other words, orchestration code is used to manage the control-flow of any application; later we will describe how it is possible.
+	
+	$\mathscr{F_O}$ is defined as the set containing all orchestration functions of $\mathcal{C}$ and it is formally defined as follows:
+	
+	\begin{equation}
+		\mathscr{F_O} \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless orchestration function }\right\rbrace 
+	\end{equation}
+	
+\end{itemize}
+
+Clearly, based on above definitions, we can say: 
+
+\begin{eqnarray}
+	\mathscr{F_E} \cap \mathscr{F_O} & = & \emptyset \\
+	\mathscr{F_E} \cup \mathscr{F_O} & = & \Phi \\
+	|\mathscr{F_E}| + |\mathscr{F_O}| &=& |\Phi| 
+\end{eqnarray}
+
+Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$, where:
+\begin{itemize}
+	\item $a$ represents the identifier of the choreography $\mathcal{C}$;
+	\item $b$ is the name of the abstract serverless function $\phi$;
+\end{itemize}
+
+\subsubsection{Executability condition}
+
+Let $\mathcal{C} = (\Phi,E)$ a choreography.
+
+Obviously, in order to effectively start the execution of a choreography, is required that, for each executable function $\phi \in \mathscr{F_E}$, \textit{at least one} concrete implementation $f_{\phi}$ exists.
+
+Formally, we said that a choreography is \textit{executable} when: 
+
+\begin{eqnarray}
+	\label{eqn:SchedulabilityConditionOne}
+	\mathcal{C} \text{ is executable } & \Leftrightarrow & |\textbf{F}_{\phi}| \geq 1 \qquad \forall \phi \in \mathscr{F_E}
+\end{eqnarray}
+
+We will only deal with executable choreographies. Moreover, for all $\phi \in \mathscr{F_E}$, we always assume that all $f_{\phi} \in \textbf{F}_{\phi}$ are already deployed on one or more FaaS platform by developers.
+
+\subsubsection{Serverless Sub-choreography}
+
+Let $\mathcal{C} = (\Phi,E)$ a choreography. 
+
+The weighted directed sub-graph of $\mathcal{C}$ defined as follows:
 
 \begin{equation}
-\begin{array}{c}
-\Omega_{FC_R} \mathDef \Delta_{X_{R_1}} \cup  \ldots \cup \Delta_{X_{R_n}} = \bigcup_{i = 1}^n \Delta_{X_{R_i}} \\
-
-\text{ where } \\	
-
-\Delta_{X_{R_i}} \cap \Delta_{X_{R_j}} = \oslash \quad \text{ for } i,j \in \left[ 0, n \right] \mid i \neq j \\
-
-\forall f \in \Delta_{X_{R_s}} \quad f \text{ implements } f_{abstract} \text{ for } s \in \left[ 0, n \right] \\
-
-\end{array}
+	C^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
 \end{equation}
 
-Since belong to different swarms, please note that any $\Delta_{X_{R_i}}$ and $\Delta_{X_{R_j}}$, for any $i \neq j$, can belong to the same provider but they cannot share the same concurrency limit.
+is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
-Generally the schedulability condition for $FC_R$ can be written as follows:
+\subsubsection{Basic Serverless Choreography}\label{BasicDefinition}
+
+Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
+
+\begin{eqnarray}
+	|\mathscr{F_O}| = 0 \label{cond21} \\
+	|\omega(\mathcal{C})| = 1 \label{cond22}
+\end{eqnarray}
+
+We said that any choreography $\mathcal{C}$, satisfying the conditions \ref{cond21} and \ref{cond22}, represents a \textit{basic serverless choreography}, or simply a \textit{basic choreography}.
+
+\section{Serverless Choreography Configuration}
+
+Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine a so-called \textit{serverless choreography configuration}, called also \textit{choreography configuration} or, simply, \textit{configuration}, allowing us to meet user-specified QoS objectives.
+
+Informally, a configuration specifies which concrete function will be use for all executable function inside a choreography, specifying several parameters, like memory size or CPU power.
+
+\subsection{Executable Function Configuration}
+
+In this section, we will explain the concept of \textit{executable function configuration}. 
+
+Let $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
+
+Formally, an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
 
 \begin{equation}
-FC_R \text{ is schedulable } \Leftrightarrow \exists \Omega_{FC_R}
+	x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
 \end{equation}
 
+where:
 
-\subsection{The $\Delta_{X_{R}}$-Scheduler}
+\begin{itemize}
+	\item $f_{\phi} \in \textbf{F}_{\phi}$  denotes a particular concrete function implementing the executable function $\phi$.
+	\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
+\end{itemize}
 
-Let $R$ a resource owner, $P$ the server-less provider and $\Delta_{X_{R}}$ a sub-swarm of a $X_{R}$, where $k$ its concurrency limit.
+\subsection{Serverless Choreography Configuration}
 
-Let $m \in \mathbb{N}$, a \textit{$\Delta_{X_{R}}$-Scheduler}, denoted as $S_{(\Delta_{X_{R}},m)}$ represents a queuing system, implementing any scheduling discipline, equipped with $m$ so-called \textit{virtual function instance}, where $m \leq k$.
+Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
 
-Its aim is to decide when and which function, belonging to $\Delta_{X_{R}}$, must be performed on $P$. 
+Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
 
-The parameter $m$ is also called \textit{scheduler capacity}.
+\begin{eqnarray}
+	\textbf{X}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
+	& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
+	& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\}
+\end{eqnarray}
 
-\subsubsection{Virtual function instance}
+where:
 
-A \textit{virtual function instance} represents a real function instances, clearly belonging to the server-less computing platform provider, which is \textit{virtually} owned by $S_{(\Delta_{X_{R}},m)}$.
+\begin{itemize}
+	\item $x_{\phi_{i}}$ represents the executable function configuration for the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$.
+	
+	\item $f_{\phi_{i_j}}$ represent the $j$-th concrete function implementing the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$.
+	
+	\item $\textbf{M}_{f_{\phi_{i_j}}} \subseteq \N$ denotes the set containing all available memory size options, allowed by provider, during the execution of the concrete function $f_{\phi_{i_j}}$, for some $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$
+\end{itemize}
 
-Therefore, $m$ represents the max number of server-less function instances usable simultaneously by $S_{(\Delta_{X_{R}},m)}$.
+\section{Executable Function Performance}
 
-\subsubsection{Proprieties and constrains}
+In order to select an appropriate serverless choreography configuration able to effectively deliver and guarantee the QoS level required by our users, we need to evaluate the performance of any executable function inside a choreography when a particular concrete function is chosen to implement it. 
 
-According to our model, a $\Delta_{X_{R}}$-scheduler capable to manage any function belonging to $\Delta_{X_{R}}$, if exist, is \textit{not} unique, although it is unique inside a peer node. 
+\subsection{Concurrency level}
 
-In order to achieve better performance in terms of network delay experienced by end users, fault tolerance and load balance, any peer nodes can hold a $\Delta_{X_{R}}$-scheduler in order to manage incoming request sent by several users spread in different geographic regions. 
+Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
 
-However, despite there is no upper bound to the number of $\Delta_{X_{R}}$-schedulers existing at the same time in our system, there is a limitation regarding the scheduler capacity of each existing scheduler. 
+Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
 
-Let's start summarizing all rules regarding $\Delta_{X_{R}}$-schedulers:
+Informally speaking, there are two type of concurrency limit models:
 
-\begin{enumerate}
+\begin{description}
+	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
+	
+	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
+	
+	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
+	
+	This approach is adopted by Google Cloud Functions although there are reports stating that, despite there is no explicitly mentioned global concurrency limit, a kind of global concurrency limit, varying between $1000$ and $2000$, is observed.
+	
+\end{description}
 
-\item All peer node of our system can hold a $\Delta_{X_{R}}$-scheduler object.
+\subsection{Platform provider modelling}
 
-\item Each node can hold only one instance of type $\Delta_{X_{R}}$-scheduler.
+In order to formalize the notion of concurrency limit, explaining its role inside the way according to which serverless executable function performance are computed, is necessary to explain how FaaS platform providers had been modeled.
 
-\item Let $n \in \mathbb{N}$ such that $n \geq 1$, suppose that our system contains $n$ peer nodes holding a $\Delta_{X_{R}}$-scheduler.
+From our model point of view, any FaaS platform provider can acting as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, where:
 
-To be more precise, let's say that a sequence $S_{(1,(\Delta_{X_{R}},m_1))}, \ldots , S_{(i,(\Delta_{X_{R}},m_n))}$ exist at the same time in our system, where $S_{(i,(\Delta_{X_{R}},m_i))}$ represent the $\Delta_{X_{R}}$-scheduler owned by $i$-th node having scheduler capacity equal to $m_i$.
+\begin{itemize}
+	
+	\item $\textbf{C}_{max} \in \N$ represents the \textit{maximum value of queue concurrency limit}, that is the maximum number of function instances being in running state simultaneously at time $t$ inside that queue. 
+	
+	Please note that $\textbf{C}_{max}$ not necessary coincide with global concurrency limit because it can represents a local concurrency limit too.
+	
+	\item At time $t \geq 0$, there are $K(t)$ function instances that can each process one request and the system has capacity for $K(t)$ invocation requests in total. 
+	
+	In other words, the number of function instance, and consequently the capacity of system, can change over time. 
+	
+	At any time $t$, following condition must be hold:
+	
+	\begin{equation}
+		0 \leq K(t) \leq {C}_{\textbf{max}}
+	\end{equation}
+	
+	\item No queue is involved, therefore any incoming request at time $t$, which sees all $K(t)$ function instances busy and $K(t) = \textbf{C}_{\textbf{max}}$, is considered dropped.
+	
+	\item No priority is considered among incoming request.
+	
+	\item Service times have a general distribution while a Poisson arrival process is assumed.
+\end{itemize} 
 
-Following constraint must be hold:
+Please note that, according to our model, any FaaS platform can host several $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, many of which can belong to an unique resource owner.  
+
+\subsection{Serverless concrete function swarms}
+
+To complete the formalization of our model, is necessary to introduce another very important concept.
+
+Let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider and $\Omega_{P_R}$ the set of all concrete serverless functions hosted on $P$ and belonging to $R$. 
+
+A \textit{serverless concrete function swarms} is any set $\omega_{P_{R_l}} \subseteq \Omega_{P_R}$ containing all concrete functions belonging to $R$ that share the same limit $l$ in term of the max number of serverless function instance runnable at the same time by the corresponding platform provider $P$. 
+	
+That limit can be called \textit{server-less function swarm's concurrency limit}, or simply, \textit{concurrency limit}.
+	
+Is very important to make clear that only at most $l$ concrete functions belonging to $\omega_{P_{R_l}}$ can be executed simultaneously by $P$. Clearly, the value of $l$ depends on the concurrency model by $P$ and this kind of formalization make our model compatible with both approaches described previously. Formally:
+
+\begin{itemize}
+	
+	\item If $P$ imposed a \textit{per-function} limit, then $|\omega_{P_{R_l}}| = 1$, that is, $\omega_{P_{R_l}}$ contains only one function and $l$ will represent the provider's per-function limit. 
+	
+	In that case, there is a $M/G/K(t)_{l}/K(t)_{l}$ queuing system for each concrete function in $\Omega_{P_R}$, every of which will serve all invocation request regarding only one concrete function in $\omega_{P_{R_l}}$.
+	
+	In other words, there are $|\omega_{P_{R_l}}|$ different queues.
+	
+	\item If $P$ imposed a \textit{per-account} limit, then $\omega_{P_{R_l}} = \Omega_{P_R}$, that is the swarm includes all concrete serverless concrete function deployed on $P$ by $R$ and $l$ represents the provider's global concurrency limit. 
+	
+	In that case, there is only one $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation request regarding any concrete function in $\omega_{P_{R_l}}$.
+
+\end{itemize}
+
+\subsection{Executable function state}
+
+Similarly to previous studies, a function instance can be in one of the following states: 
+
+\begin{description}
+	
+	\item[Initialization state] which happens when the infrastructure is spinning up new function instances which are needed to handle incoming requests. 
+	
+	Generally, depending on the approach adopted by the FaaS provider, during this state is needed to set up new virtual machines, unikernels, containers, or even, processes, in order to be able to process new requests.
+	
+	A function instance will remain in the initializing state until it is able to handle incoming requests, entering into idle state. The time spent in this state is not billed. 
+	
+	\item[Idle State] After the fulfillment of all initialization task or when the processing of a previously received invocation request is over, the serverless platform keeps the instances in idle state, keeping the function instance able to handle future invocation request faster, since no initialization task is needed to be performed.
+	
+	FaaS platform provider keeps a function instance in idle state for a limited amount of time. The user is not charged for an instance that is in the idle state.
+	
+	\item[Running state] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
+	
+	Clearly, the time spent in the running state is billed by the provider.
+		
+\end{description}
+
+\subsection{Start/Cold start}
+
+When a request arrives on a FaaS platform, 
+
+\begin{description}
+	\item[Cold start] If the warm pool is busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, latter will trigger the launching of a new function instance, which will be added to the warm pool. This event is called \textit{cold start}.
+	
+	From the FaaS provider point of view, this operation requires to start either a new virtual	machine or a new container; in any case, regardless of the method adopted, a cold start introduces a very important overhead to the response time experienced by users. 
+	
+	\item[Warm start] When there is at least one serverless function instance in idle state, the FaaS platform reuses it to serve the incoming request without launching a new one. This is called \textit{warm start}.
+\end{description}  
+
+A very important aspect is that cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application’s responsiveness and user experience.
+
+To be more precise, let $k \in \N$ and $C_{\text{max},P}$ the maximum concurrency level imposed by FaaS provider $P$, when a new request arrives on the platform, one of the following events can occur:
+
+\begin{itemize}
+	\item If $k < C_{\text{max},P}$, that is the number of function instances into the warm pool is less than the maximum concurrency level, the request will be blocked by the system causing a cold start.
+	
+	\item If $k = C_{\text{max},P}$, that is the warm pool size reaches the maximum concurrency level, any further request will be rejected by the platform
+\end{itemize}
+
+\subsubsection{Cold start probability}
+
+As known, the rejection of a request by the warm pool triggers a cold start, which, subsequently, adds a new function instance to the warm pool in order to handle received request. 
+
+In order to fully describe how our framework works, we have to know the probability according to which a request is rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
+
+Let $k \in N$ the size of the warm pool, that is the number of existing function instances currently active on the provider.
+
+Formally, the cold start probability $\textbf{P}_{C_R}$ is the probability that an arrival finds all $k$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
 
 \begin{equation}
-\label{eqn:SchedulerConstrains}
-\sum_{i=1}^{n} m_i \leq k
+	\displaystyle \textbf{P}_{C} = \dfrac{\dfrac{\rho^k}{k!}}{\displaystyle\sum_{j=0}^k \dfrac{\rho^j}{j!}}
 \end{equation}
 
-where $k \in \mathbb{N}$, with $k > 0$, is the concurrency limit of the swarm $X_R$.
+where:
 
-Remember that any sub-swarm $\Delta_{X_{R}}$ share the same concurrency limit of $X_R$. Therefore, equation \ref{eqn:SchedulerConstrains} states that, the sum of all scheduler capacities which manage the functions belonging to $\Delta_{X_{R}}$, must be less or equal to the max number of function instances executable at the same time on the server-less computing platform provider.
+\begin{itemize}
+	
+	\item $\displaystyle \rho = \frac{\lambda}{\mu_{w}}$ represents system utilization or load of the pool where:
+	
+	\begin{itemize}
+		
+		\item $\lambda$ represents the \textit{average arrival rate}, that is the  rate at which serverless compound functions execution requests arrive to our system.
+		
+		\item $\mu_{w} = E[S_w]$ represents the \textit{warm start average service rate}, that is the rate at which executions requests are served when a warm start is occurred, while $E[S_w]$ is the \textit{warm start average time}, which is the average time required to complete aforementioned request.
+		
+	\end{itemize}
+	
+\end{itemize}
 
-\end{enumerate}
 
-\subsection{The $FC_R$-Scheduler}
 
-To support hybrid-scheduling, that is the ability to execute multiple concrete function implementations belonging to different providers or subjected to different concurrency limit, in order to select the most suitable concrete function implementation according to a given QoS, unfortunately only one ``\textit{scheduler}" is not enough.
 
-We call \textit{$FC_R$-Scheduler} a set of \textit{$\Delta_{X_{R}}$-Schedulers} where $\Delta_{X_{R}} \in \Omega_{FC_R}$. Is always required that $|FC_R| \geq 1$, that is, at least one scheduler must exist.
 
-\section{$FC_R$-Active Peer Node}
 
-According to our model, in order to effectively invoke all server-less concrete function belonging to a function choreography $FC_R$, is required that a peer node is ``active".
 
-We said that a peer node $A$ is $FC_R$-\textit{active peer node}, or, simply, \textit{active}, when it holds a $\Delta_{X_{R}}$-scheduler for any sub-swarm in $\Omega_{FC_R}$. Formally:
+
+
+
+
+At this point, we can define some useful functions:
+
+\begin{itemize}	
+	\item $C_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is the \textit{cost function} for any serverless functions belonging to the implementation-set $\textbf{F}_{\phi}$.
+	
+	Precisely, for all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $C_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the \textit{average cost} paid by developers to execute $f_{\phi}$ using an allocated memory size equal to $m$.
+	
+	
+	\item $RT_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is a \textit{delay function} for any serverless functions belonging to the implementation-set $\textbf{F}_{\phi}$.
+	
+	For all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $RT_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the \textit{average response time} when $f_{\phi}$ is invoked with memory size equal to $m$;
+\end{itemize}
+
+
+
+
+
+
+\section{The problem of cold starts}
+
+In order to find a suitable serverless choreography configuration capable to satisfy QoS imposed by end users, we must find a way to decide  
+
+
+
+
+
+\subsection{Metrics}
+
+Let $\mathcal{C} = (\Phi,E)$ a basic choreography as defined in section \ref{BasicDefinition}.
+
+
+
+Suppose to have a path $\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n$ and a choreography configuration $\textbf{X}$ for $\mathcal{S}$. 
+
+We can define the \textit{response time} of $\pi$ given $\textbf{X}$ as follows:
 
 \begin{equation}
-A \text{ is } FC_R\text{-active peer node } \Leftrightarrow \forall \Delta_{X_{R}} \in \Omega_{FC_R} \quad \exists S_{(\Delta_{X_{R}},m)} \text{ hold by } A
+	RT_P(\pi, \textbf{X}) = \sum_{i = 1}^n \left( RT_{\phi_i} (X(i) \right)  + \sum_{i = 1}^{n-1} D(\phi_i,\phi_{i+1})
 \end{equation}
 
-Multiple nodes can be active at the same time. Any node perform its scheduling decision independently.
+Similarly, we define the cost of $\pi$ given $\textbf{X}$ as follows:
 
+\begin{equation}
+	C_P(\pi, \textbf{X}) = \sum_{\substack{1\le i\le n\\ \phi_i \in \mathscr{F_E}}} N(\phi_i) \cdot C_{\textbf{F}_{\phi_i}} (X(i))
+\end{equation}
 
-\section{Architecture overview}
 
-Our system design is based on a network of nodes, or \textit{peers}, every of which has the \textit{same functionality}; in fact, any of them is able to handle request submission, request scheduling and, potentially, request execution. 
+Then the response time and the cost of the choreography $\mathcal{S}$ a follows:
 
-This is the reason according to which we can mark our proposal as a \textit{P2P system}.
+\begin{eqnarray}
+	RT_C(\mathcal{S}, \textbf{X}) & = & \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \cdot RT_{P}(\pi, \textbf{X}) \\
+	C_C(\mathcal{S}, \textbf{X}) & = & \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \cdot C_{P}(\pi, \textbf{X}) 
+\end{eqnarray}
 
-\subsection{Overlay network}
 
-Our system's nodes are connected by an \textit{overlay network}.
 
-\begin{definition}[Overlay network]
-An overlay network is a virtual network built on top of a physical network according to which each nodes can communicate with other if and only if they are connected by virtual links belonging to the virtual network. 
-\end{definition}
+\section{Serverless Choreography Structures}
 
-\begin{remark}
-A node may not be able to communicate directly with an arbitrary other node although they can communicate through physical network.
-\end{remark}
+Supposing to have a serverless choreography $\mathcal{S} = (\Phi,E)$, we call \textit{structure} any sub-choreography $\mathcal{S}^*= (\Phi^*,E^*)$ whose entry point and the end point are, respectively, an opening and a closing orchestration functions of the same type. Formally:
 
-To be more precise, we have adopt a fully \textit{centralized unstructured overlay network} because the \textit{peer-resource index}, sometimes called \textit{directory}, is centralized. 
+\begin{equation}
+	S^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{rlll}
+		\phi_{entry}^* & \in \mathscr{F_O^*} & \wedge & \mathscr{T}(\phi_{entry}^*) = \tau_{\alpha} \\ 
+		\phi_{end}^* & \in \mathscr{F_O^*} & \wedge & \mathscr{T}(\phi_{end}^*) = \tau_{\omega}
+	\end{array} \right.
+\end{equation}
 
-Please note that hybrid unstructured or fully decentralized solutions are technically possible, but guarantees about quality of service are very difficult.
+The most important aspect is that every structure can be viewed as a set of sub-choreographies of $\mathcal{S}^*$. Formally, suppose that $\Lambda = (A,B)$ is a graph such that:
 
-\subsubsection{Locality-awareness property}
+\begin{equation}
+	\begin{array}{lll}
+		A & \mathDef & \Phi^* \setminus \left\lbrace \phi_{entry}^*,\phi_{end}^* \right\rbrace   \\
+		B & \mathDef & E^* \setminus \left( out\left(\phi_{entry}^*\right) \cup in\left(\phi_{end}^*\right) \right)
+	\end{array}
+\end{equation}
 
-\textit{Locality-awareness} is one of the essential characteristics of our system. In fact, if each peer is able to select his neighbours exploiting a suitable locality aware algorithm, is possible to decrease user experienced delays.
+Let $c \in \N$ and suppose that $c$ is the number of connected components of the graph $\Lambda$.
 
-We have decided to adopt a multi-level based locality-aware neighbour selection called \textit{intra-AS lowest delay clustering algorithm} (ASLDC). 
+We denote by $\Theta_{\mathcal{S}^*}$ as the set containing all connected components of $\Lambda$ every of which is considered as a sub-choreography of $\mathcal{S}^*$. Formally:
 
-When ASLDC algorithm is used, each peer chooses nearby peers only from those within the same AS; then it ranks its neighbours in terms of transmission latency, preferring to o establish the connection with the node with the shortest latency to itself. 
+\begin{equation}
+	\begin{array}{c}
+		\Theta_{\mathcal{S}^*} \mathDef \left\lbrace \theta_i, \ldots ,\theta_c \right\rbrace \\\\
+		\text{ where } \\\\
+		
+		\theta_i \mathDef (\Phi^{**}_i, E^{**}_i) \text{ is a sub-choreography of } \mathcal{S}^* \\
+		\Phi^{**}_i \subset \Phi^{*} \wedge E^{**}_i \subset E^{*} \qquad \forall i \in \left[ 1, c \right] \\
+	\end{array}
+\end{equation} 
 
-TODO \cite{UnderstandingLocalityAwareness}
+\subsubsection{Parallel}
 
-\subsection{Fault Tolerance}
+A structure $\mathcal{P} = (\Phi,E,\Theta)$ is called \textit{parallel structure} when:
 
-Like in many other P2P implementation, there are two ways of detecting failures in our proposed solution:
+\begin{equation}
+	TPP(\pi) = 1 \qquad \forall \pi \in \Pi(\phi_{start}, \phi_{end})
+\end{equation}
 
-\begin{enumerate}
-\item If a node tries to communicate with a neighbour and fails.
-\item Since all nodes send to all his neighbour nodes so-called ``heartbeat" messages, that is messages sent at fixed time intervals to indicate that the sender is alive, is possible to detect a failure by not receiving aforementioned periodic update messages after a long time. 
+Let $n \in \N$, supposing that $|\Theta| = n$, the response time of a parallel structure is the longest response time of all sub-choreographies $\theta_i \in \Theta$ for all $i \in \left[ 1, n \right]$, while its cost is equal to the sum their costs of execution. Formally, being $\textbf{X}$ a configuration of  $\mathcal{P}$:
 
-\end{enumerate}
+\begin{equation}
+	RT_{parallel}(\mathcal{P}, \textbf{X}) = max \left\lbrace RT_C(\mathcal{\theta}, \textbf{X}) \mid \theta \in \Theta \right\rbrace 
+\end{equation}
 
-\subsubsection{Availability}
+\begin{equation}
+	C_{parallel}(\mathcal{P}, \textbf{X}) = \sum_{\theta \in \Theta} C_C(\theta, \textbf{X})
+\end{equation}
 
-Let $n \in \mathbb{N}$, $R$ a resource owner and $FC_R$ his function choreography, since multiple $FC_R$-Scheduler object can exist in $n$ different nodes, our proposed solution can guarantee an high degree of availability. 
 
-In fact, when a node node holding an $FC_R$-Scheduler fails, all end users requests related to $FC_R$ can be routed to any other node holding a $FC_R$-Scheduler. 
 
-\subsubsection{Replication}
+\subsubsection{Branch/Switch}
 
-Although multiple $FC_R$-Scheduler object can exist, it's not mean that $FC_R$-Scheduler object are replicated, because every of them manage different virtual function instances. 
+Let $\mathcal{B} = (\Phi,E,\Theta)$ a structure and suppose that $\alpha(\mathcal{B}) = \phi_{entry}$ and $\omega(\mathcal{B}) = \phi_{end}$. 
 
-Except the peer-resource index, any form of replication is performed by our system.
+$\mathcal{B}$ is called \textit{branch structure} when following conditions are hold:
 
+\begin{eqnarray}
+	TPP(\pi) \neq 1  & \quad \forall \pi \in \Pi(\phi_{entry}, \phi_{end}) \\
+	|\Theta| = n  & n \in \left\lbrace 1,2 \right\rbrace 
+\end{eqnarray}
 
+Let all $\theta_i \in \Theta$ sub-choreographies of $\mathcal{B}$, for all $i \in \left\lbrace 1,2 \right\rbrace $. Then the response time and the cost of a branch structure can be defined as follows:
 
+\begin{equation}
+	RT_{branch}(\mathcal{B}, \textbf{X}) = \sum_{i = 1}^n P(\phi_{entry}, \alpha(\theta_i)) RT_C(\theta_i, \textbf{X})
+\end{equation}
 
+\begin{equation}
+	C_{branch}(\mathcal{B}, \textbf{X}) = \sum_{i = 1}^n C_C(\phi_{entry}, \alpha(\theta_i)) C_C(\theta_i, \textbf{X})
+\end{equation}
 
+Finally, according to our model, $\mathcal{B}$ is called \textit{switch structure} when $|\Theta| > 2$.
 
+\subsubsection{Loop}
 
+Let $\mathcal{L} = (\Phi,E,\Theta)$ a structure and suppose that $\alpha(\mathcal{L}) = \phi_{entry}$ and $\omega(\mathcal{L}) = \phi_{end}$. 
 
+If $|\Theta| = 1$ and $(\phi_{end}, \phi_{entry}) \in E$, denoting by $\theta$ the unique sub-choreography of $\mathcal{L}$, $\mathcal{L}$ will be called \textit{loop structure} when following conditions are hold:
 
+\begin{eqnarray}
+	P(\phi_{start}, \alpha(\theta)) = 1 \\
+	P(\phi_{end}, \phi_{entry}) \neq 0 \\
+	P(\phi_{end}, \phi_{entry}) + \sum_{\phi \in succ(\phi_{end})} P(\phi_{end}, \phi) = 1
+\end{eqnarray}
 
+In order to compute the mean response time and the mean cost of a loop structure, we need to know $EI(\mathcal{L})$, that is the expected value of the number of iterations of $\mathcal{L}$.
 
+We know that geometric distribution gives the probability that the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event "we will not execute the loop body", we know that success probability $p$ is given by:
 
- and $\Delta_{X_{R}}$-Scheduler
+\begin{equation}
+	p = 1 - P(\phi_{end}, \phi_{entry})
+\end{equation}
 
+Then:
 
+\begin{eqnarray}
+	P(EI(\mathcal{L}) = k) & = & \Big[  1 - P(\phi_{end}, \phi_{entry}) \Big] \cdot \bigg[  P(\phi_{end}, \phi_{entry}) \bigg] ^{k-1} \\
+	& = & pq^{k-1}
+\end{eqnarray}
 
+\begin{eqnarray}
+	E[X] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
+	& = & p \sum_{k = 0}^\infty kq^{k} \nonumber \\
+	& = & p \cdot \frac{q}{(1-q)^2} \nonumber \\
+	& = & \dfrac{q}{p} \nonumber \\
+	& = & \dfrac{P(\phi_{end}, \phi_{entry})}{1 - P(\phi_{end}, \phi_{entry})} 
+\end{eqnarray}
 
+Then the response time and the cost of a loop structure can be defined as follows:
 
+\begin{equation}
+	RT_{loop}(\mathcal{L}, \textbf{X}) = E[I_{\mathcal{L}}] \cdot RT_C(\theta, \textbf{X})
+\end{equation}
 
+\begin{equation}
+	C_{loop}(\mathcal{L}, \textbf{X}) = E[I_{\mathcal{L}}] \cdot C_C(\theta, \textbf{X})
+\end{equation}
 
 
-The locality awareness of the overlay network is used in scheduling jobs, described in Section 3.2
+\section{Optimization}
 
 
+\subsection{Performance Modeling}
 
 
 
 
 
-physical network but with added properties such as fault tolerance and flexibility. 
 
+We define the utility function as follows:
 
+\begin{equation}
+	F(\textbf{x}) \mathDef w_{RT} \cdot \dfrac{RT_{max} - RT(\textbf{x})}{RT_{max} - RT_{min}} + w_{C} \cdot \dfrac{C_{max} - C(\textbf{x})}{C_{max} - C_{min}}
+\end{equation}
 
+where $w_{RT}, w_{C} \geq 0$, $w_{RT} + w_{C} = 1$, are weights for the different QoS attributes, while $RT_{max}$ ($RT_{min}$) and $C_{max}$ ($C_{min}$) denote, respectively, the maximum (minimum) value for the overall expected response time and cost.
 
 
+Following formulation is based on the enumeration of all possible choreography configurations, that is of all combinations of executable function configuration of a given choreography.
 
+For the sake of conciseness, in the following we use following notation: 
 
+p to define both a pattern and its index, and $\Omega$ to define both the set of patterns and the
+set of patterns indices.
 
 
 
+\begin{equation}
+	\begin{array} {rll} 
+		\displaystyle max & \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} F(\textbf{X}_{\omega}) \\\\
+		
+		\text{subject to} & \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} C(\textbf{X}_{\omega}) \leq C_{user} \\\\
+		
+		& \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} RT(\textbf{X}_{\omega}) \leq RT_{user} \\\\ 
+		
+		& \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} = 1 & \\\\
+		
+		
+		& x_{\omega} \in \lbrace 0, 1 \rbrace & \qquad \forall \omega \in \N \cap [1,|\Omega|]
+	\end{array}
+\end{equation}
 
-The first problem is scheduling. Since there
-is no central scheduler it is difficult
+Above formulation is based on the enumeration of all possible choreography configuration.
 
 
 
-Hybrid unstructured overlay
 
 
-\subsection{$FC_R$-Request}
 
 
+\subsection{Multi-dimensional Multi-choice Knapsack Problem}
 
 
+\begin{equation}
+	\begin{array} {rll} 
+		\displaystyle max & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} p_{\phi_{i_{j}}} \\\\
+		
+		\text{subject to} & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} c_{\phi_{i_{j}}} \leq C_{user} \\\\
+		
+		& \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} t_{\phi_{i_{j}}} \leq RT_{user} \\\\       
+		
+		& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} = 1 & \qquad \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\\\
+		
+		& x_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace & \qquad \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \wedge \forall j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]
+	\end{array}
+\end{equation}
 
 
+The MMKP is an NP-hard in the strong sense [2]. It is not
+always possible to find a feasible solution in a reasonable
+computing time especially for big instances. Since exact
+methods are reserved for limited scale problem, heuristic
+approaches are needed for solving it. 
 
- object with only one limitation:
 
-Suppose that globally there are a set of schedulers $S_{1,({R_{X}},m_1)}, \ldots , S_{p,({R_{X}},m_p)}$, where $p \in \mathbb{N}$ with $p \geq 1$
 
+Let $x_{\phi_{i_{j}}} = (f_j, m_j) $ an executable function configuration for the executable function $\phi_i$, for some $i \in \N \cap [1,|\mathscr{F_E}|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$.
 
+Basically, we can compute resource requirements $c_{\phi_{i_{j}}}$ and $t_{\phi_{i_{j}}}$ in the following ways:
 
-To be more precise, when a function $x_j$ must to be execute, let $s$ the current number of busy virtual instances, one of the following events may occur:
-\begin{enumerate}
-\item if $s < m$, the scheduler invoke directly the function $x_j$ on the provider.
-\item if $s = m$, the scheduler delay the execution of the function $x_j$ on the provider according to implemented scheduling discipline.
-\end{enumerate}
+\begin{equation}
+	c_{\phi_{i_{j}}} \mathDef C(x_{\phi_{i_{j}}}) \cdot \prod_{\theta \in \Theta_{\phi_i}} P \left( pred(\alpha(\theta)), \alpha(\theta) \right) \cdot E[I_{\theta}] 
+\end{equation}
 
+\begin{equation}
+	c_{\phi_{i_{j}}} \mathDef C(x_{\phi_{i_{j}}}) \cdot \prod_{\theta \in \Theta_{\phi_i}} P \left( pred(\alpha(\theta)), \alpha(\theta) \right) \cdot E[I_{\theta}] 
+\end{equation}
 
+where:
 
+\begin{itemize}
+	\item $\Pi(\phi_{entry},\phi_i)$ 
+\end{itemize}
 
 
+\begin{itemize}
+	\item $\Pi(\phi_{entry},\phi_i)$ denotes the set of all possible paths starting from the entry point of choreography $\mathcal{C_R}$ to the executable function $\phi_i$.
+\end{itemize}
 
+Finally, for any executable function configuration $x_{\phi_{i_j}}$, its profit $p_{\phi_{i_{j}}}$ is determined as follows;
 
+\begin{equation}
+	p_{\phi_{i_{j}}} \mathDef w_{RT} \cdot \dfrac{t_{\phi_{i_{\textbf{MAX}}}} - t_{\phi_{i_{j}}}}{t_{\phi_{i_{\textbf{MAX}}}} - t_{\phi_{i_{\textbf{MIN}}}}} + w_{C} \cdot \dfrac{c_{\phi_{i_{\textbf{MAX}}}} - c_{\phi_{i_{j}}}}{c_{\phi_{i_{\textbf{MAX}}}} - c_{\phi_{i_{\textbf{MIN}}}}}
+\end{equation}
 
-Let $R$ a resource owner and $R_x$ its function choreography made up of $R_{x_1}, R_{x_2}, \ldots, R_{x_n}$ unique server-less functions; it is said that a peer node $P$ is \textbf{responsible} for $R_x$ when it contains a sequence of schedulers $S_{R_1}, S_{R_2}, \ldots, S_{R_k}$ with $k \leq n$, belonging to $R$, capable to invoke all server-less function belonging to $R_x$. 
+where:
 
-It is said that a 
+\begin{itemize}
+	\item $t_{\phi_{i_{\textbf{MIN}}}}$ and $t_{\phi_{i_{\textbf{MAX}}}}$ represent, respectively, the minimum and maximum response time values registered during the execution of all concrete function implementing $\phi_i$.
+	
+	\item $c_{\phi_{i_{\textbf{MIN}}}}$ and $c_{\phi_{i_{\textbf{MAX}}}}$ represent, respectively, the minimum and maximum cost values spent by all concrete function implementing $\phi_i$.
+	
+	\item $w_{RT}$ and $w_{C}$ are weights for the different QoS attributes such that:
+	
+	\begin{eqnarray}
+		w_{C} \geq 0 \\
+		w_{RT} \geq 0 \\
+		w_{RT} + w_{C} = 1
+	\end{eqnarray}
+	
+\end{itemize}
 
-Depending on the definition of the function choreography provided by $R$ and the unique characteristics of back-end server-less providers which execute all serverless functions $R_{x_n}$ of 
 
 
 
+\begin{algorithm}
+	\KwData{this text}
+	\KwResult{Some solution}
+	Initialization pheromone trails\;
+	\While{Termination conditions not met}{
+		ConstructSolutions\;
+		ApplyLocalSearch\;
+		UpdatePheromoneTrails\;
+	}
+	\caption{Algorithmic skeleton for ACO algorithms}
+\end{algorithm}
 
-It is said that a scheduler $S$ is capable to invoke a server-less function when 
-, a scheduler $S$ can invoke multiple
 
+\begin{algorithm}
+	\KwData{this text}
+	\KwResult{Some solution}
+	\For{$k\gets0$ \KwTo $|\mathcal{A}|$ \KwBy $1$}{
+		
+		\BlankLine
+		
+		$S_k \leftarrow \emptyset $ \;
+		$G_{candidates} \leftarrow \mathcal{G} $\;
+		
+		\BlankLine
+		\BlankLine
+		
+		$\textbf{G}_i \leftarrow$ Randomly select a group from $G_{candidates}$ for some $i \in \left[1;|\mathcal{G}|\right]$\;
+		$o_{i_k} \leftarrow$ Randomly select an object from $\textbf{G}_i$ for some $k \in \left[1;|\textbf{G}_i|\right]$\;
+		
+		\BlankLine
+		\BlankLine
+		
+		$S_k \leftarrow \{o_{i_k}\} $ \;
+		$G_{candidates} \leftarrow G_{candidates} \setminus \textbf{G}_i $\;
+		
+		\BlankLine
+		
+		\While{$G_{candidates} \neq \emptyset$}{
+			
+			\BlankLine
+			
+			$\textbf{G}_i \leftarrow$ Randomly select a group from $G_{candidates}$\;
+			$\mathcal{O} \leftarrow $  without violating resource constraints \;
+			
+			
+			\BlankLine	
+		}
+		
+		
+	}
+\end{algorithm}
 
-
-
-When a peer $A$, placed ``\textit{at the edge}" of the network, receives a new request of invocation for $X$ by an end user, it performs following task in that order:
-
-\begin{enumerate}
-\item If it responsible It check for it is an already an \textit{active peer} to manage 
-\end{enumerate}
-
-
-
-
- has found the tracker for a file F, the tracker returns a subset
-of all the nodes currently involved in downloading F.
-
-
-
-
-Replication and Fault Tolerance. There are two ways of detecting failures in CAN,
-the first if a node tries to communicate with a neighbor and fails, it takes over that neighbor’s
-zone. The second way of detecting a failure is by not receiving the periodic update message
-after a long time. In the second case, the failure would probably be detected by all the
-neighbors, and all of them would try to take over the zone of the failed node, to resolve this,
-all nodes send to all other neighbors the size of their zone, and the node with the smallest
-zone takes over.
 
 \newpage
 
 
-\begin{equation}
-E[T] = \sum_{i = 0}^n E[S_i] + E[T_{Q_i}]
-\end{equation}
+\chapter{Computational Model}
 
-\section{Queuing system of a $\Delta_{X_{R}}$-scheduler}
 
-Let $k \in \mathbb{N}$ such that $k \geq 0$. Moreover, suppose that $R$ represents a resource owner, $P$ a server-less provider and $\Delta_{X_{R}}$ a sub-swarm of the swarm $X_{R}$ where $k$ its concurrency limit. Finally, let $S_{(\Delta_{X_{R}},m)}$ a $\Delta_{X_{R}}$-scheduler. 
 
-Obliviously, since there are only $m$ available virtual function instances, if there are more than $m$ server-less functions waiting to be execute, a choice has to be made about which server-less function has to run next to ensuring QoS guarantees for latency critical applications.
 
-Because we expect to execute server-less functions with different response-time requirements, which may have different scheduling needs, i have designed the $\Delta_{X_{R}}$-scheduler as a queuing system implementing a \textit{multilevel queue scheduling algorithm} which partitions the ready queue into several separate queues. 
 
-According to our solution, each queue has its own scheduling algorithm and any server-less function is permanently assigned to one queue according to his class.
 
-In addition, we have adopt \textit{round-robin} (\textit{RR}) scheduling algorithm to perform scheduling activity among the queues.
+We have adopted for follwoing reasons:
 
-\subsection{Server-less function preemption}
+\begin{enumerate}
+	\item We are able to guarantee access transparency. 
+	
+	In fact, hiding any difference regarding serverless compound functions representation and the way according to which the latter can be accessed, reaching an agreement on how a compound function is to be represented among different FaaS providers, we allow our users to access to any serverless function hosted on any supported provider using identical operations.
+	
+	\item We can significantly reduce the impact of vendor lock-in problem. 
+	
+	Providing an unique way to represent a serverless compound functions, if our final users wish, they will be able to use serverless functions hosted on another FaaS provider without rewriting their serverless compound functions entirely, because very little changes to FC representation code are needed to complete the switching process. 
+	
+	In that way, guaranteeing reduced switching costs, using our system is possible to mitigate provider lock-in.
+	
+\end{enumerate}
 
-A very important consideration regards server-less function preemption. 
+\section{Abstract Function Choreography Language}
 
-In our context, due to FaaS paradigm, which hides the complexity of servers where our functions will be executed, the ability to preempt functions is not naturally available.
+To overcome these weaknesses, we introduce a new Abstract
+Function Choreography Language (AFCL), which is a novel approach
+to specify FCs at a high-level of abstraction. 
 
-For that reason, only non-preemptive scheduling algorithms, according to which once a server-less function starts running it cannot be preempted, even if a higher priority server-less function comes along, can be adopted.
 
-Since many scheduling algorithms require job preemption to run optimally, this situation can lead to a suboptimal resource management. 
 
-\subsection{Queuing system design}
+From implementation point of view, our AFCL parser implementation is completely indepented from 
+garanteeing low level coupling betweeng AFLC parser and choreography implementation.
 
-A $\Delta_{X_{R}}$-scheduler is made up of three queues:
+
+
+\section{Pr}
+
+Data collection is a major bottleneck in machine learning and an active res
+
+
+f there are no existing datasets that can be used for training,
+then another option is to generate the datasets either manu-
+ally or automatically. For manual construction, crowdsourc-
+ing is the standard method where human workers are given
+tasks to gather the necessary bits of data that collectively
+become the generated dataset. Alternatively, automatic tech-
+niques can be used to generate synthetic datasets. Note that
+data generation can also be viewed as data augmentation if
+there is existing data where some missing parts needs to be
+filled in.
+
+\subsection{InfluxDB}
+
+A very important characteristic of our data-set it that it contains time series data, where the time of each instance, containing the attribute value regarding power consumption, is given by a timestamp attribute; thus our data-set represents a sequence of discrete-
+time data [8]. All data are listed in time order.
+
+
+InfluxDB is a TSDB that stores \textit{points}, that is single values indexed by time. 
+
+Using InfluxDB terminology, each point is uniquely identified by four components:
 
 \begin{itemize}
-
-\item One queue implements a \textit{Non-Preemptive Least-Slack-Time-First} (\textit{LST}) scheduling algorithm. We will refer to that queue using $Q_{LST}$ notation.
-
-That algorithm implements a \textit{dynamic priority scheduling approach} where priorities are assigned to server-less functions based on their \textit{slacks}.
-
-At any time $t$, the \textit{slack} of a job with deadline at $d$ is equal to $d - t - s$, where $s$ is the time required to complete the job. 
-
-Any job having strict latency requirements must to be assign to this queue.
-
-\item Another queue implements, instead, a \textit{Non-Preemptive Shortest-Job-First} (\textit{SJF}) scheduling algorithm. That queue is denoted with $Q_{SJF}$.
-
-That policy assigns priorities to jobs based on their size: the smaller the size, the higher the priority.
-
-This queue is reserved for any function choreography that tolerates high latency. However, according to queueing theory, since SJF performs very bad when service time distribution is heavy-tailed; in fact
-
-\begin{equation}
-E[T_Q(x)]^{SJF} = \dfrac{\rho E[S^2]}{2E [S]} \cdot \dfrac{1}{(1 - \rho x )^2}
-\end{equation}
-
-This queue is not suitable for very, very large server-less function. The variance in the job size distribution must be low.
-
-\item Finally, the third queue exploits the the simplest scheduling algorithm, that is the \textit{First-Come-First-Served} (\textit{FCFS}) policy, and it is denoted using $Q_{FCFS}$ notation.
-
-This queue is used for any heavy-tailed server-less function which can tolerate high latency.
+	\item A timestamp.
+	
+	\item Zero o more tags, key-value pairs that are used to store metadata associated with the point. 
+	 
+	\item One or more fields, that is scalars which represent the value recorded by that point.
+	
+	\item A measurement, which acts as a container used to group together all related points.
+	
 \end{itemize}
 
+Is very important to note that  
 
-\subsection{The virtual function instances allocation problem}
+In our implementation, data points 
 
-Let $n \in \mathbb{N}$ such that $n \geq 1$ and suppose that, at a certain time, a sequence including $n$ unique $\Delta_{X_{R}}$-schedulers exist in our system.
+A bucket is a named location where time series data is stored.
 
-Formally, that sequence is denoted with $S_{(1,(\Delta_{X_{R}},m_1))}, \ldots , S_{(i,(\Delta_{X_{R}},m_n))}$, where $S_{(i,(\Delta_{X_{R}},m_i))}$ represents the $\Delta_{X_{R}}$-scheduler owned by $i$-th node having scheduler capacity equal to $m_i$.
 
-We have already established that the following constraint must be hold:
 
-\begin{equation}
-\label{eqn:SchedulerConstrains}
-\sum_{i=1}^{n} m_i \leq k
-\end{equation}
 
-where $k \in \mathbb{N}$, with $k > 0$, is the concurrency limit of the swarm $X_R$.
 
-
-\subsubsection{Reactive scaling policy}
-
-Every node of the system monitors all queues belong to its $\Delta_{X_{R}}$-Scheduler and adjusts the number of reserved virtual function instances to preserve quality-of-service guarantees. This activity is called \textit{reactive scaling policy}.
-
-Although a $S_{(\Delta_{X_{R}},m)}$ owns $m$ virtual function instances, they are not equally shared between aforementioned run queue. 
-
-First of all, let be $v_{LST}$, $v_{SJF}$ and $v_{FCFS}$ the numbers of the virtual function instances bounded to the $Q_{LST}$, $Q_{SJF}$ and $Q_{FCFS}$ run-queue. 
-
-At any time, following constrains must be hold:
-
-\begin{equation}
-v_{LST} \mathDef \dfrac{N \cdot E[S]}{\sum slack} 
-\end{equation}
-
-\begin{equation}
-v_{SJF} \mathDef \dfrac{len(Q_{SJF})}{\alpha} 
-\end{equation}
-
-\begin{equation}
-v_{FCFS} \mathDef \dfrac{len(Q_{FCFS})}{\alpha} 
-\end{equation}
-
-\begin{equation}
-m = v_{LST} + v_{SJF} + v_{FCFS}
-\end{equation}
-
-\begin{enumerate}
-\item If the current number of virtual function instances is not enough to avoid deadline misses by latency constrained server-less function inside $Q_{LST}$, will be add to $VCPU_{LST}$ a number of virtual processor equal to 
-
-\begin{equation}
-v_{LST} < \dfrac{N \cdot E[S]}{\sum slack} 
-\end{equation}
-
-
-\end{enumerate}
-
-
-
-This form of aging prevents starvation. 
-
-
-Finally, suppose that a node peer $A$ holds a $S_{(\Delta_{X_{R}},m_A)}$, which represents the 
-$\Delta_{X_{R}}$-Scheduler object.
-
-\begin{enumerate}
-\item Once a request is received over HTTP
-\item Ask to the coordinator for 
-\end{enumerate}
-
-
-\begin{equation}
-m = \dfrac{\sum slack}{E[S] \cdot m_{current}} + \dfrac{N}{\alpha}
-\end{equation}
-
-\begin{equation}
-\lambda_{FC_R} \geq \lambda_{threshold} 
-\end{equation}
-
-
-\begin{equation}
-RTT_{(A,B)} > RTT_{(A,C)} + 
-\end{equation}
-
-\begin{equation}
-f_{abstract} = next 
-\end{equation}
-
-\begin{equation}
-f_{abstract} = min(E[f_{\Delta_{X_{R_i}}}] + E[T_{Q_{LST}}] F
-\end{equation}
-
-
-
-
-
-
-\subsubsection{Server-less function scheduling for QoS ``Minimum Response Time"}
-
-Let $n \in \mathbb{N}$, such that $n \geq 1$, supposing to have an $FC_R$-\textit{active peer node} and let $\Omega_{FC_R}$ the set of all sub-swarms containing at least one function implementing any $f_{abstract} \in \textbf{F}_{abstract}$, where $|\Omega_{FC_R}| = n$.
-
-Finally, suppose that $f_{abstract}$ is the next abstract function that have to be executed according to the control-flow logic described by $FC_R$.
-
-\begin{enumerate}
-\item For $1 \leq i \leq n$, let $\Delta_{(X_{R_i}, f_{abstract})} \subseteq \Delta_{X_{R_i}}$ containing all concrete functions implementing $f_{abstract}$.
-
-\item For $1 \leq i \leq n$, select $\textbf{f}_i \in \Delta_{(X_{R_i}, f_{abstract})}$ functions having the minimum response time $E[T_{\textbf{f}_i}]$.
-
-\item Found $i \in [0,m]$ such that: 
-
-\begin{equation}
-E[T_{\textbf{f}_i}] + E[T_{Q_i}]^{\textbf{LST}} < E[T_{\textbf{f}_j}] +E[T_{Q_j}]^{\textbf{LST}} \quad \text{ for } j \in \mathbb{N}, 1 \leq j \leq n, i \neq j
-\end{equation}
-
-\item Select the i-th \textit{$\Delta_{X_{R}}$-Schedulers} belonging to \textit{$FC_R$-Scheduler} of the node and add  $\textbf{f}_i$ into the $Q_{LST}$ run-queue.
-
-\end{enumerate}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\bibliographystyle{plain}
+\bibliography{Bibliography.bib}
 
 
 
