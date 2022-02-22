@@ -555,7 +555,7 @@ Similarly to previous studies, a function instance can be in one of the followin
 
 \begin{description}
 	
-	\item[Initialization state] which happens when the infrastructure is spinning up new function instances which are needed to handle incoming requests. 
+	\item[Initialization State] which happens when the infrastructure is spinning up new function instances which are needed to handle incoming requests. 
 	
 	Generally, depending on the approach adopted by the FaaS provider, during this state is needed to set up new virtual machines, unikernels, containers, or even, processes, in order to be able to process new requests.
 	
@@ -565,15 +565,13 @@ Similarly to previous studies, a function instance can be in one of the followin
 	
 	FaaS platform provider keeps a function instance in idle state for a limited amount of time. The user is not charged for an instance that is in the idle state.
 	
-	\item[Running state] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
+	\item[Running State] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
 	
 	Clearly, the time spent in the running state is billed by the provider.
 		
 \end{description}
 
 \subsection{Start/Cold start}
-
-When a request arrives on a FaaS platform, 
 
 \begin{description}
 	\item[Cold start] If the warm pool is busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, latter will trigger the launching of a new function instance, which will be added to the warm pool. This event is called \textit{cold start}.
@@ -585,12 +583,21 @@ When a request arrives on a FaaS platform,
 
 A very important aspect is that cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application’s responsiveness and user experience.
 
-To be more precise, let $k \in \N$ and $C_{\text{max},P}$ the maximum concurrency level imposed by FaaS provider $P$, when a new request arrives on the platform, one of the following events can occur:
+Precisely, let $\gamma \in \N$, $\omega_{P_{R(\gamma)}}$ a swarm where $\gamma$ is the maximum concurrency level of the swarm. Finally, let $M/G/K(t)_{\gamma}/K(t)_{\gamma}$ a queuing system, that is the swarm queue of $\omega_{P_{R(\gamma)}}$. 
+
+When a new invocation request, regarding any function belonging $\omega_{P_{R(\gamma)}}$, arrives on the FaaS platform $P$, one of the following events can occur:
 
 \begin{itemize}
-	\item If $k < C_{\text{max},P}$, that is the number of function instances into the warm pool is less than the maximum concurrency level, the request will be blocked by the system causing a cold start.
+	\item If at time $t$ is verified that $K(t) < \gamma$, that is the number of function instances into the warm pool is less than the maximum concurrency level, only one of following events can occur:
 	
-	\item If $k = C_{\text{max},P}$, that is the warm pool size reaches the maximum concurrency level, any further request will be rejected by the platform
+	\begin{itemize}
+		\item if $|\mathcal{R}(t)| = K(t)$, that is there, the request will be blocked by the system causing a cold start.
+		
+		\item if $|\mathcal{R}(t)| < K(t)$ a warm start will occur and $\mathcal{R}(t)$ is increased by one.
+	\end{itemize}
+	
+	\item If at time $t$ is true that $K(t) = \gamma$, that is the warm pool size reaches the maximum concurrency level admitted by provider $P$, and $|S(t)| = \gamma$, namely every there is no function instance in idle state, any further request will be rejected by the platform and therefore dropped by our controller.
+	
 \end{itemize}
 
 \subsubsection{Cold start probability}
@@ -604,18 +611,31 @@ Let $k \in N$ the size of the warm pool, that is the number of existing function
 Formally, the cold start probability $\textbf{P}_{C_R}$ is the probability that an arrival finds all $k$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
 
 \begin{equation}
-	\displaystyle \textbf{P}_{C} = \dfrac{\dfrac{\rho^k}{k!}}{\displaystyle\sum_{j=0}^k \dfrac{\rho^j}{j!}}
+	\displaystyle \textbf{P}_{C}(t) = \dfrac{\dfrac{\rho(t)^k}{k!}}{\displaystyle\sum_{j=0}^k \dfrac{\rho(t)^j}{j!}}
 \end{equation}
 
 where:
 
 \begin{itemize}
 	
-	\item $\displaystyle \rho = \frac{\lambda}{\mu_{w}}$ represents system utilization or load of the pool where:
+	\item $\displaystyle \rho(t) = \frac{\lambda(t)}{\mu_{w}}$ represents system utilization or load of the pool at time $t$ where:
 	
 	\begin{itemize}
 		
-		\item $\lambda$ represents the \textit{average arrival rate}, that is the  rate at which serverless compound functions execution requests arrive to our system.
+		\item $\lambda(t)$ represents the \textit{average arrival rate} at time $t$, that is the  rate at which serverless compound functions execution requests arrive to our system.
+		
+		Since we assume that arrival rate varies during the day, $\lambda(t)$ is estimate over multiple time intervals spent observing our system.
+		
+		Precisely, at time $t$, let $n \in \N$ the number of request arrived during last second 
+		
+		\begin{equation}
+			\lambda(t) \mathDef
+			\begin{cases}
+				0 & \text{if}\ t = 0\\ 
+				\alpha \cdot X + (1 - \alpha) \cdot \lambda(t-1) & \text{if}\ t > 0\\
+				
+			\end{cases}\,.
+		\end{equation}
 		
 		\item $\mu_{w} = E[S_w]$ represents the \textit{warm start average service rate}, that is the rate at which executions requests are served when a warm start is occurred, while $E[S_w]$ is the \textit{warm start average time}, which is the average time required to complete aforementioned request.
 		
@@ -624,14 +644,7 @@ where:
 \end{itemize}
 
 
-
-
-
-
-
-
-
-
+\section{Concrete function performance}
 
 At this point, we can define some useful functions:
 
