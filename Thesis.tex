@@ -1052,10 +1052,27 @@ Above formulation is based on the enumeration of all possible choreography confi
 
 
 
-
+\newpage
 \subsection{Multi-dimensional Multi-choice Knapsack Problem}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
+
+For the sake of consciousness, we will use $\mathcal{\widetilde{P}}$ to denote the set containing all parallel structures of $\mathcal{C}$, while $\mathcal{\widetilde{P}}_i$ is used to refer to $i$-th parallel structure of $\mathcal{\widetilde{P}}$, where $i \in \N \cap \left[1;|\mathcal{\widetilde{P}}| \right]$.
+
+Let's define $\Delta_{\mathcal{\widetilde{P}}_{i_j}}$ the set containing all executable functions $\phi \in \mathscr{F_E}$ belonging to the $j$-th sub-choreography of the parallel structure $\mathcal{\widetilde{P}}_i$. Formally:
+
+\begin{equation}
+	\Delta_{\mathcal{\widetilde{P}}_{i_j}} \mathDef \left\{ \phi \in \mathscr{F_E} \cap \mathscr{F_E}(\theta_j) \text{ where } \theta_j \in  \right\} 
+\end{equation}
+
+We 
+
+\begin{eqnarray}
+	\chi & \mathDef & \left\lbrace \Delta_{\mathcal{\widetilde{P}}_{1}}, \ldots, \Delta_{\mathcal{\widetilde{P}}_{n}} \right\rbrace \nonumber \\ 
+	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_i|} \Delta_{\mathcal{\widetilde{P}}_{1_j}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_n|} \Delta_{\mathcal{\widetilde{P}}_{n_j}} \right\} \right\}  \nonumber \\
+	& = & \Cross_{i = 1}^n  \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_i|} \Delta_{\mathcal{\widetilde{P}}_{1_j}} \right\}  \nonumber \\
+\end{eqnarray}
+
 
 
 
@@ -1065,7 +1082,11 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography.
 		
 		\text{subject to} & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} c_{\phi_{i_{j}}} \leq C_{user} \\\\
 		
-		& \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} t_{\phi_{i_{j}}} \leq RT_{user} \\\\       
+	    
+		
+		
+		& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \mathscr{F_E}(\mathcal{\widetilde{P}})}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} t_{\phi_{i_{j}}} + \sum_{\phi_i \in \chi}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} t_{\phi_{i_{j}}} \leq RT_{user} & \qquad \forall \xi \in \Xi \\\\    
+		 
 		
 		& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} = 1 & \qquad \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\\\
 		
