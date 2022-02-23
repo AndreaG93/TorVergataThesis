@@ -705,6 +705,11 @@ Then the response time and the cost of the choreography $\mathcal{S}$ a follows:
 
 \section{Serverless Choreography Structures}
 
+Let $\mathcal{C} = (\Phi,E)$ a serverless choreography. 
+
+Formally
+
+
 Supposing to have a serverless choreography $\mathcal{S} = (\Phi,E)$, we call \textit{structure} any sub-choreography $\mathcal{S}^*= (\Phi^*,E^*)$ whose entry point and the end point are, respectively, an opening and a closing orchestration functions of the same type. Formally:
 
 \begin{equation}
@@ -995,6 +1000,8 @@ Then the response time and the cost of a loop structure can be defined as follow
 \end{equation}
 
 
+
+
 \section{Optimization}
 
 
@@ -1075,28 +1082,79 @@ approaches are needed for solving it.
 
 
 
-Let $x_{\phi_{i_{j}}} = (f_j, m_j) $ an executable function configuration for the executable function $\phi_i$, for some $i \in \N \cap [1,|\mathscr{F_E}|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$.
+Let $\mathcal{C} = (\Phi,E)$ a serverless choreography, $x_{\phi_{i_{j}}} = (f_j, m_j) $ an executable function configuration for the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. 
 
-Basically, we can compute resource requirements $c_{\phi_{i_{j}}}$ and $t_{\phi_{i_{j}}}$ in the following ways:
+Let's define $\widehat{\theta_k}^{(\phi_i)} = {\theta^{(\phi_i)}_1, \ldots, \theta^{(\phi_i)}_n}$  as the sequence of all sub-choreographies of $\mathcal{C}$ such that:
 
 \begin{equation}
-	c_{\phi_{i_{j}}} \mathDef C(x_{\phi_{i_{j}}}) \cdot \prod_{\theta \in \Theta_{\phi_i}} P \left( pred(\alpha(\theta)), \alpha(\theta) \right) \cdot E[I_{\theta}] 
+	\phi_i \in \mathscr{F_E}(\theta^{(\phi_i)}_1)
 \end{equation}
 
 \begin{equation}
-	c_{\phi_{i_{j}}} \mathDef C(x_{\phi_{i_{j}}}) \cdot \prod_{\theta \in \Theta_{\phi_i}} P \left( pred(\alpha(\theta)), \alpha(\theta) \right) \cdot E[I_{\theta}] 
+	\theta^{(\phi_i)}_n = \mathcal{C}
 \end{equation}
 
-where:
+\begin{equation}
+	\theta^{(\phi_i)}_k \text{ is a sub-choreography of } \theta^{(\phi_i)}_{k+1} \qquad \forall k \in \left[1;n-1\right]
+\end{equation}
 
-\begin{itemize}
-	\item $\Pi(\phi_{entry},\phi_i)$ 
-\end{itemize}
+At this point, we can define $E[I_{\phi_i}]$, that is the expected value of the number of invocations of the executable function $\phi_i$, as follows.
+
+\begin{equation}	
+	E[I_{\phi_i}] \mathDef \left\{
+	\begin{array}{lcr}
+		1 & \text{\textit{if}} & n = 1 \\ 
+		\displaystyle \prod_{k = 2}^n E[I_{\theta_{k-1}^{(\phi_i)}}] & \text{\textit{if}} & n \geq 2 \\
+	\end{array} \right.
+\end{equation}
+
+For some $k \in \N \cap \left[1;n-1\right]$, we will use $P_{exe}^C(\theta^{(\phi_i)}_k)$ notation to refer to the probability to execute the abstract function entry point $\alpha(\theta^{(\phi_i)}_k)$ of the choreography $\theta^{(\phi_i)}_k$, when the abstract function $pred(\alpha(\theta^{(\phi_i)}_k))$ is invoked. That probability can be computed as follows:
+
+\begin{equation}	
+	P_{exe}^C(\theta^{(\phi_i)}_k) \mathDef \left\{
+	\begin{array}{lcr}
+		1 & \text{\textit{if}} & n = 1 \\ 
+	    P \bigg(  pred\Big( \alpha(\theta^{(\phi_i)}_{k}) \Big), \alpha(\theta^{(\phi_i)}_{k}) \bigg) & \text{\textit{if}} & n \geq 2 \\
+	\end{array} \right.
+\end{equation}
 
 
-\begin{itemize}
-	\item $\Pi(\phi_{entry},\phi_i)$ denotes the set of all possible paths starting from the entry point of choreography $\mathcal{C_R}$ to the executable function $\phi_i$.
-\end{itemize}
+Finally, we define $P_{exe}^{F}(\theta, \phi)$ as the probability to execute the executable function $\phi \in \mathscr{F_E}(\theta)$ when the abstract function $\alpha(\theta)$ is invoked. We can compute this probability using following formula:
+
+\begin{equation}
+	P_{exe}^{F}(\theta, \phi) \mathDef \prod_{\phi_k \in \mathscr{F_O}(\theta) \cap preds(\phi)} (1 - P_{exit}(\phi_k))
+\end{equation}
+
+At this point, let $x_{\phi_{i_{j}}} = (f_j, m_j) $ an executable function configuration for the executable function $\phi_i$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$.
+
+Defining:
+
+\begin{equation}
+	\Gamma_{\phi_{i_{j}}} \mathDef E[I_{\phi_i}] \prod_{k = 2}^{n}  P_{exe}^C(\theta^{(\phi_i)}_{k-1}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_{k}, pred(\alpha(\theta^{(\phi_i)}_{k-1})))
+\end{equation}
+
+we can compute resource requirements $c_{\phi_{i_{j}}}$ and $t_{\phi_{i_{j}}}$ in the following ways:
+
+
+\begin{eqnarray}
+	c_{\phi_{i_{j}}} & \mathDef & \left\{ 
+	\begin{array}{lcl}
+		C_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) & \text{\textbf{if}} & n = 1 \\ 
+		\displaystyle C_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) \cdot \Gamma_{\phi_{i_{j}}} & \text{\textbf{if}} & n \geq 2 \\ 
+	\end{array} \right.
+\end{eqnarray}
+
+\begin{eqnarray}
+	t_{\phi_{i_{j}}} & \mathDef & \left\{ 
+	\begin{array}{lcl}
+		T_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) & \text{\textbf{if}} & n = 1 \\ 
+		\displaystyle T_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) \cdot \Gamma_{\phi_{i_{j}}} & \text{\textbf{if}} & n \geq 2 \\ 
+	\end{array} \right.
+\end{eqnarray}
+
+
+
+
 
 Finally, for any executable function configuration $x_{\phi_{i_j}}$, its profit $p_{\phi_{i_{j}}}$ is determined as follows;
 
