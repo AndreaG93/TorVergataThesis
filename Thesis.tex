@@ -6,6 +6,7 @@
 \usepackage{amsthm}
 \usepackage{natbib}
 \usepackage{titlesec}
+\usepackage{tikz}
 \usepackage[ruled,linesnumbered]{algorithm2e}
 \SetKw{KwBy}{by}
 
@@ -405,7 +406,7 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography.
 The weighted directed sub-graph of $\mathcal{C}$ defined as follows:
 
 \begin{equation}
-	C^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
+	\mathcal{C}^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
 \end{equation}
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
@@ -744,6 +745,64 @@ A structure $\mathcal{P} = (\Phi,E,\Theta)$ is called \textit{parallel structure
 	TPP(\pi) = 1 \qquad \forall \pi \in \Pi(\phi_{start}, \phi_{end})
 \end{equation}
 
+
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		
+	
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+	
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParStartNode) at (0,0) {$\phi_1$};
+		
+	
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParNode1) at (4,2) {$\phi_2$};
+		\node[circle, draw, minimum width = 1cm]       					   
+		(ParNode2) at (4,-2) {$\phi_3$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParEndNode) at (8,0) {$\phi_4$};
+			
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (10,0) {};
+		
+		
+		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-15 ,yshift=15]{$P(\phi_1,\phi_2) = 1$} (ParNode1);
+		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-15 ,yshift=-15]{$P(\phi_1,\phi_3) = 1$} (ParNode2);
+		
+		\draw[ultra thick,->] (ParNode1) edge node[xshift=15 ,yshift=15]{$P(\phi_2,\phi_4) = 1$} (ParEndNode);
+		\draw[ultra thick,->] (ParNode2) edge node[xshift=15 ,yshift=-15]{$P(\phi_3,\phi_4) = 1$} (ParEndNode);
+		
+		\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
+		\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub1) at (4,2) {};
+		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+		
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub2) at (4,-2) {};
+		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
+		
+		%legend
+		
+		\matrix [below left] at (current bounding box.north east) {
+			\node [] {$\phi_1 = p_{\alpha} \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_3 = p_{\omega} \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_2, \phi_3 \in \mathscr{F_E}$}; \\
+		};
+		
+		
+\end{tikzpicture}
+\caption{Parallel structure in the serverless workflow.}
+\end{figure}
+
+
+
 Let $n \in \N$, supposing that $|\Theta| = n$, the response time of a parallel structure is the longest response time of all sub-choreographies $\theta_i \in \Theta$ for all $i \in \left[ 1, n \right]$, while its cost is equal to the sum their costs of execution. Formally, being $\textbf{X}$ a configuration of  $\mathcal{P}$:
 
 \begin{equation}
@@ -766,6 +825,61 @@ $\mathcal{B}$ is called \textit{branch structure} when following conditions are 
 	TPP(\pi) \neq 1  & \quad \forall \pi \in \Pi(\phi_{entry}, \phi_{end}) \\
 	|\Theta| = n  & n \in \left\lbrace 1,2 \right\rbrace 
 \end{eqnarray}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParStartNode) at (0,0) {$\phi_1$};
+		
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParNode1) at (4,2) {$\phi_2$};
+		\node[circle, draw, minimum width = 1cm]       					   
+		(ParNode2) at (4,-2) {$\phi_3$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParEndNode) at (8,0) {$\phi_4$};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (10,0) {};
+		
+		
+		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-20 ,yshift=15]{$P(\phi_1,\phi_2) = x$} (ParNode1);
+		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-20 ,yshift=-15]{$P(\phi_1,\phi_3) = 1-x$} (ParNode2);
+		
+		\draw[ultra thick,->] (ParNode1) edge node[xshift=15 ,yshift=15]{$P(\phi_2,\phi_4) = 1$} (ParEndNode);
+		\draw[ultra thick,->] (ParNode2) edge node[xshift=15 ,yshift=-15]{$P(\phi_3,\phi_4) = 1$} (ParEndNode);
+		
+		\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
+		\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub1) at (4,2) {};
+		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+		
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub2) at (4,-2) {};
+		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
+		
+		%legend
+		
+		\matrix [below left] at (current bounding box.north east) {
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
+			\node [] {$\phi_1 = b_{\alpha} \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_3 = b_{\omega} \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_2,\phi_3 \in \mathscr{F_E}$}; \\
+		};
+		
+		
+	\end{tikzpicture}
+	\caption{Branch/Switch structure in the serverless workflow.}
+\end{figure}
 
 Let all $\theta_i \in \Theta$ sub-choreographies of $\mathcal{B}$, for all $i \in \left\lbrace 1,2 \right\rbrace $. Then the response time and the cost of a branch structure can be defined as follows:
 
@@ -790,6 +904,62 @@ If $|\Theta| = 1$ and $(\phi_{end}, \phi_{entry}) \in E$, denoting by $\theta$ t
 	P(\phi_{end}, \phi_{entry}) \neq 0 \\
 	P(\phi_{end}, \phi_{entry}) + \sum_{\phi \in succ(\phi_{end})} P(\phi_{end}, \phi) = 1
 \end{eqnarray}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParStartNode) at (0,0) {$\phi_1$};
+		
+	
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParNode1) at (4,2) {$\phi_2$};
+	
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(ParEndNode) at (8,0) {$\phi_3$};
+		
+	
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (10,0) {};
+		
+		
+		\draw[bend left,above, ultra thick,->] (ParStartNode) edge node[xshift=-25]{$P(\phi_1,\phi_2) = x$} (ParNode1);
+		
+		\draw[bend left,below, ultra thick,->] (ParNode1) edge node[xshift=25]{$P(\phi_2,\phi_1) = 1$} (ParStartNode);
+		
+		\draw[bend right,below, ultra thick,->] (ParStartNode) edge node[]{$P(\phi_1,\phi_3) = 1 - x$} (ParEndNode);
+		
+		
+		
+		\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
+		\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub1) at (4,2) {};
+		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+	
+		%legend
+	
+		\matrix [below left] at (current bounding box.north east) {
+			\node [] {$\phi_1 = l_{\alpha} \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_3 = l_{\omega} \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_2 \in \mathscr{F_E}$}; \\
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
+		};
+		
+	\end{tikzpicture}
+	\caption{Parallel structure in the serverless workflow.}
+\end{figure}
+
+
 
 In order to compute the mean response time and the mean cost of a loop structure, we need to know $EI(\mathcal{L})$, that is the expected value of the number of iterations of $\mathcal{L}$.
 
@@ -877,6 +1047,9 @@ Above formulation is based on the enumeration of all possible choreography confi
 
 
 \subsection{Multi-dimensional Multi-choice Knapsack Problem}
+
+Let $\mathcal{C} = (\Phi,E)$ a choreography. 
+
 
 
 \begin{equation}
