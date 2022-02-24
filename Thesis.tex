@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{report}
+\documentclass[12pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -7,8 +7,13 @@
 \usepackage{natbib}
 \usepackage{titlesec}
 \usepackage{tikz}
+\usepackage{setspace}
+\usepackage[a4paper,left=3.5cm,right=2.5cm]{geometry}
 \usepackage[ruled,linesnumbered]{algorithm2e}
 \SetKw{KwBy}{by}
+
+\onehalfspacing
+
 
 \setcounter{secnumdepth}{4}
 
@@ -38,30 +43,14 @@
 \begin{document}
 	
 \tableofcontents
-\newpage
+
+\chapter{Introduction}
 
 
-\begin{equation}
-	\begin{array} {lllrr} 
-		\text{min} & \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} g(x)^{f_k^i} Y_x^{f_k^i} \\\\
-		& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} T(x)^{f_k^i} Y_x^{f_k^i} & \leq &  D_{\textbf{F}} \\
-		& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} Y_x^{f_k^i} & = & 1 \\\\
-		& Y_x^{f_k^i} \in \lbrace 0, 1 \rbrace &&
-	\end{array}
-\end{equation}
 
 
-\begin{equation}
-	\begin{array} {lllrr} 
-		\text{min} & \displaystyle\sum_{\pi \in \Pi} \sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} g(x)^{f_k^i} Y_{(\pi, x)}^{f_k^i} \\\\
-		& \displaystyle\sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} T(x)^{f_k^i} Y_x^{f_k^i} & \leq &  D_{\textbf{F}} \\
-		& \displaystyle\sum_{\pi \in \Pi} \sum_{n = 1}^N \sum_{k = 1}^K \sum_{x \in C} Y_{(\pi, x)}^{f_k^i} & = & 1 \\\\
-		& Y_{(\pi, x)}^{f_k^i} \in \lbrace 0, 1 \rbrace &&
-	\end{array}
-\end{equation}
 
 
-\newpage
 
 \section{Serverless Computing Paradigm}
 
@@ -135,15 +124,7 @@ throttles under very heavy request loads
 \subsection{title}
 
 
-Serverless computing has given a much-needed agility to
-developers, abstracted away the management and maintenance
-of physical resources, and provided them with a relatively
-small set of conﬁguration parameters: memory and CPU.
-While relatively simpler, conﬁguring the “best” values for
-these parameters while minimizing cost and meeting perfor-
-mance and delay constraints poses a new set of challenges.
-This is due to several factors that can signiﬁcantly aﬀect the
-running time of serverless functions.
+
 
 
 the run-time of these serverless
@@ -200,8 +181,226 @@ rency level, any request rejected by the warm pool will be
 rejected by the platform.
 
 
+\section{Motivation}
 
-\section{Orchestrator Model}
+Although serverless paradigm guarantees a cost-effective solution, giving to, FaaS platform generally exhibit variable performance which precludes their use in applications that must meet strict guarantees.
+ 
+\begin{enumerate}
+	\item scheduling policies today typically imple-
+	ment basic rst-come-rst-served algorithms
+\end{enumerate}
+
+
+
+
+FaaS and BaaS can exhibit variable
+performance which precludes their
+use in applications that must meet
+strict guarantees.
+
+
+
+Despite the fact that serverless solution is cost-effective
+and eases the resource management, there are pain points
+hindering its wide adoption by potential users, including
+the lack of performance and cost model [6], [7], [8], and
+the trade-off analysis between the performance and cost
+of serverless applications [8], [9]. Performance and cost
+modeling and optimization are non-trivial and necessary
+steps towards guaranteeing the service level agreement
+(SLA) of serverless applications in an economic manner,
+which is basically finding an acceptable trade-off between
+performance and cost. The difficulties of such modeling and
+optimization problems lie in the following aspects:
+
+
+
+Serverless computing has given a much-needed agility to
+developers, abstracted away the management and maintenance
+of physical resources, and provided them with a relatively
+small set of conﬁguration parameters: memory and CPU.
+While relatively simpler, conﬁguring the “best” values for
+these parameters while minimizing cost and meeting perfor-
+mance and delay constraints poses a new set of challenges.
+This is due to several factors that can signiﬁcantly aﬀect the
+running time of serverless functions.
+
+
+
+While many FaaS oerings exist [3, 4, 10, 12, 15, 17, 18, 20],
+relatively basic techniques to manage serverless function
+invocations are provided today. As function requests are re-
+ceived, the cloud provider schedules functions, mostly in
+a rst-in-rst-out manner. 
+
+
+Opportunities to invoke a more
+informed scheduling policy are missed, however, in chal-
+lenging scenarios such as when incoming demands cannot
+be satised by currently available resources. Such scenarios
+occur when providers cannot accommodate a rise of invo-
+cations due to cold starts or inecient resource allocation
+or alternatively when function invocation limits are imposed.
+Function invocation limits bound the number of functions
+running either instantaneously or over a time period. Be-
+cause serverless technologies automatically scale to meet
+demands, function invocation limits ensure a bug or miscon-
+guration in tenant workloads does not inappropriately scale.
+In addition, limits help developers manage costs and better
+
+
+Thus, a prospective user
+could choose the services that best suit his/her QoS
+requirements.
+
+\section{Contribution}
+
+Our work's contributions can be summarized as follows:
+
+\begin{itemize}
+	\item Firstly, we developed a formal definition of a serverless application workflow, abstracting sequences of serverless functions, parallelism, branch and loop structures.
+	
+	\item We formalized a performance model in order to predict a serverless application's performance, in term of economic cost and response time, when the latter is executed with a given ``\textit{configuration}". 
+	
+	Aforementioned model was been necessary to develop a methodological way to guarantee the service level agreement (SLA) of serverless applications in an economic manner.
+	
+	\item In order to significantly promote the use of serverless paradigm by applications that must meet strict guarantees, we present a methodology and a software framework capable to find the ``\textit{best configuration}" for a serverless application.
+	
+	This can be done, providing the suitable configuration of each serverless function within a serverless application by solving an optimization
+	problem, that is a LP problem, derived from our performance model.
+	
+	\item Generally, owing to he complexity of the problem, its very difficult to find an optimal configuration for a serverless applications that guarantees the respect of users performance constraints. 
+	
+	This situation can discourage the adoption of serverless paradigm, mostly by users that use real-time applications. 
+	
+	To provide a predictable and a very rapid system response, we developed a heuristic algorithm capable to find a near optimal solution exploiting a probabilistic technique belonging to colony optimization algorithm (ACO) family.  
+	
+	\item In order to mitigate the impact of vendor lock-in issue, primarily related to the high migration costs paid by users when they wish change FaaS provider to better meet their needs, our software system exploits an  unique way to represent a serverless application, in such a way that very little changes to that representation code are needed to complete any switching process.
+	
+	To further reduce vendor lock-in issue, the managing of serverless application 
+	
+	
+	exploiting diff serverless function hosted on any supported provider using identical operations.
+	
+	\item Since different FaaS platform providers can exhibit different performance imposing different billing methodology, in order to find the best possible configuration of a given serverless application capable to meet users expectations, we developed both our performance model and our software system compatible with a hybrid FaaS platform execution.
+	
+	In other words, to find the best possible serverless application's configuration, our solution is able to invoke the execution of serverless function hosted on different FaaS providers, exploiting their different characteristics in term of performance or billing system.
+		
+	\item Since serverless application decouples its business logic into a
+	group of serverless functions hosted on FaaS platforms 
+	
+	We have developed a software system acting as coordinator
+	
+	 
+	To complete the business logic of the application, in-
+	teractions among decoupled functions are indispensable.
+	In most cases, a coordinator is required to chain together
+	components of the application, handle events among func-
+	tions, and trigger functions in the correct order defined by
+	the business logic.
+	
+	
+	
+	
+	of provider migrati, owing to high from one provider to another, 
+	
+	
+	
+	
+		In fact, hiding any difference regarding serverless compound functions representation and the way according to which the latter can be accessed, reaching an agreement on how a compound function is to be represented among different FaaS providers, we allow our users to access to any serverless function hosted on any supported provider using identical operations.
+	
+	\item We can significantly reduce the impact of vendor lock-in problem. 
+	
+	Providing an unique way to represent a serverless compound functions, if our final users wish, they will be able to use serverless functions hosted on another FaaS provider without rewriting their serverless compound functions entirely, because very little changes to FC representation code are needed to complete the switching process.
+	
+	\item To improve access transparency to FaaS platform services, we have developed a middle-ware with following characteristics:
+
+	
+	
+	
+\end{itemize}
+
+
+The goal of our work is to propose a 
+
+
+
+Self-Adaptation (SA) has been widely rec-
+ognized [17], [18], [26] as an effective approach to deal
+with the increasing complexity, uncertainty and dynamicity
+of these systems. A well recognized engineering approach
+to realize self-adaptation is by means of a feedback control
+loop called MAPE-K [26], [13] and conceived as a sequence
+of four computations Monitor-Analyze-Plan-Execute over a
+Knowledge base.
+
+
+
+
+The goal of self-adaptation is to alleviate the manage-
+ment problem of complex software systems that operate
+in highly changing and evolving environments. Such
+systems should be able to dynamically adapt themselves
+to their environment with little or no human inter-
+vention, in order to meet both functional requirements
+concerning the overall logic to be implemented and non-
+functional requirements concerning the quality of service
+(QoS) levels that should be guaranteed.
+
+\chapter{Conceptual Model}
+
+
+From an architectural point of view, our software system uses a top-down approach based on MAPE-K feedback control loop. Re-
+searchers wrote that:
+
+
+This section details the architecture of Sequoia. Sequoia is a
+standalone scheduling framework that can be deployed as a
+proxy to existing cloud services or directly integrated into
+platforms such as OpenWhisk. The framework consists of
+three main logical entities (Figure 9): a QoS Scheduler, a Log-
+ging Framework, and a Policy Framework. The QoS Scheduler
+decides where, when, and how to run specic functions or
+function chains. The QoS Scheduler integrates tightly with
+the Logging Framework, whose responsibility is to store
+real-time metrics that describe the current and historical
+state of the serverless environment. Both the QoS Scheduler
+and Logging Framework interface with the Policy Frame-
+work to make scheduling decisions. All three components
+are highlighted below.
+
+
+Modern software systems typically operate in dynamic
+environments and deal with highly changing operational con-
+ditions: 
+
+ well recognized engineering approach
+to realize self-adaptation is by means of a feedback control
+loop called MAPE-K [26], [13] and conceived as a sequence
+of four computations Monitor-Analyze-Plan-Execute over a
+Knowledge base.
+
+
+Why. The basic goal of adaptation is to make the system
+able to fulfill its functional and/or non functional require-
+ments, despite variations in its operating environment,
+which are very likely to occur in the SOA domain. As
+pointed out in the introduction, our focus in this paper is
+on non functional requirements concerning the delivered
+QoS and cost. In the SOA domain, these requirements
+are usually the result of a negotiation process engaged
+between the service provider and user, which culmi-
+nates in the definition of a Service Level Agreement (SLA)
+concerning their respective obligations and expectations
+[39]. In a stochastic setting, a SLA specifies guarantees
+about the average value of quality attributes, or more
+tough guarantees about the higher moments or percentiles
+of these attributes.
+
+
+
+
+
 
 \subsection{Resource owner}
 
@@ -209,7 +408,49 @@ A \textit{resource owner}, henceforward denoted with $R$, represents an entity c
 
 \newpage
 
-\chapter{Specification Mode}
+\chapter{Performance Model Formalization}
+
+\section{SLAs model formalization}
+
+Our framework considers SLAs whose conditions should be hold at \textit{local level}, focusing only on the fulfillment of the requirements regard a single serverless application invocation request forwarded by one user.
+
+Consequently, since the adaptation actions regards a single request, the framework acts irrespectively of whether aforementioned request belongs to some flow generated by one or more users.
+
+As known, a SLA may include a large set of parameters, referring to different kinds of functional and non-functional attributes, including several ways of measuring them.
+
+One of our framework's goal is to exploit its self-adaptation capability to fulfill \textit{non-functional SLA requirements}, considering the \textit{average values} of the following attributes:
+
+\begin{description}
+	\item[Response time] the interval of time elapsed from the
+	serverless application invocation to its completion;
+	\item[Cost] the price charged for the execution of all serverless function belonging to an application;
+\end{description}
+
+According to our model, let $u$ an user, a SLA can be defined as follows:
+
+\begin{equation}
+	SLA_u \mathDef \left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle 
+\end{equation}
+   
+where:
+
+\begin{itemize}
+	\item $RT \in \mathbb{R}^+$ is the upper bound on the average
+	response time of the serverless application.
+	
+	\item $C \in \mathbb{R}^+$ is the upper bound on average service cost per invocation.
+	
+	\item $w_{RT}$ and $w_{C}$ are weights for the different SLAs attributes such that:
+	
+	\begin{eqnarray}
+		w_{C} \geq 0 \\
+		w_{RT} \geq 0 \\
+		w_{RT} + w_{C} = 1
+	\end{eqnarray}
+\end{itemize}
+
+The goal of our framework is to guarantee guarantees that thresholds $RT$ and $C$ will hold on average. Informally, to meet aforementioned objective, our framework have to identify a suitable configuration when it have to execute an serverless application.
+
 \section{Serverless Choreography}
 
 In this section we will introduce the notion of \textit{serverless choreography}, a very important \textit{resource} adopted to model and implement both serverless functions and serverless applications.
@@ -1269,11 +1510,7 @@ We have adopted for follwoing reasons:
 \begin{enumerate}
 	\item We are able to guarantee access transparency. 
 	
-	In fact, hiding any difference regarding serverless compound functions representation and the way according to which the latter can be accessed, reaching an agreement on how a compound function is to be represented among different FaaS providers, we allow our users to access to any serverless function hosted on any supported provider using identical operations.
-	
-	\item We can significantly reduce the impact of vendor lock-in problem. 
-	
-	Providing an unique way to represent a serverless compound functions, if our final users wish, they will be able to use serverless functions hosted on another FaaS provider without rewriting their serverless compound functions entirely, because very little changes to FC representation code are needed to complete the switching process. 
+ 
 	
 	In that way, guaranteeing reduced switching costs, using our system is possible to mitigate provider lock-in.
 	
