@@ -993,10 +993,10 @@ Clearly, when at time $tn$ a execution's request has been completed by a functio
 
 In the same way, if a function instance has not been received in the last expiration threshold units of time, it will be expired causing the decreasing of warm pool size, that is $K(t_{n+1}) = K(t_n) -1$.
 
-Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all $K(t)$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
+Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}_{\omega_{P_R}^{(l)}}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all $K(t)$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
 
 \begin{equation}
-	\displaystyle \textbf{P}(t) = \dfrac{\dfrac{\rho(t)^{K(t)}}{K(t)!}}{\displaystyle\sum_{j=0}^{K(t)} \dfrac{\rho(t)^j}{j!}}
+	\displaystyle \textbf{P}_{\omega_{P_R}^{(l)}}(t) = \dfrac{\dfrac{\rho(t)^{K(t)}}{K(t)!}}{\displaystyle\sum_{j=0}^{K(t)} \dfrac{\rho(t)^j}{j!}}
 \end{equation}
 
 where:
@@ -1029,19 +1029,54 @@ where:
 \end{itemize}
 
 
-\subsection{Concrete function performance}
+\subsection{Concrete Function Performance Computation}
 
-At this point, we can define some useful functions:
+Finally, we can introduce how concrete function performance can be computed according to our model.
+
+Let $f_{\phi} \in \omega_{P_R}^{(l)} \subset \textbf{F}_{\phi}$ a concrete function implementing the executable function $\phi$ and belonging to the swarm $\omega_{P_R}^{(l)}$ where $l \in \N$ is its concurrency limit.
+
+Moreover, suppose that $m \in \textbf{M}_{f_{\phi}} \subseteq \N$ representing the value of the memory size selected by our framework for the execution of $f_{\phi}$ while $t \in \mathbb{R}^+$ is the time.
+
+Let's define following functions:
 
 \begin{itemize}	
-	\item $C_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is the \textit{cost function} for any serverless functions belonging to the implementation-set $\textbf{F}_{\phi}$.
+	\item $C : \textbf{F}_{\phi} \times \textbf{M}_{f_{\phi}} \times \mathbb{R}^+ \to \mathbb{R}^+$ is the \textit{cost function} for any serverless concrete functions belonging to the implementation-set $\textbf{F}_{\phi}$. 
 	
-	Precisely, for all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $C_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the \textit{average cost} paid by developers to execute $f_{\phi}$ using an allocated memory size equal to $m$.
+	It returns the \textit{average cost} paid by users when $f_{\phi}$ is executed using an allocated memory size equal to $m$ at time $t$. 
+	
+	It can be defined as follows:
+	
+	\begin{equation}
+		C(f_{\phi},m,t) \mathDef C_{avg}^{(c)}(f_{\phi}, m) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + C_{avg}^{(w)}(f_{\phi}, m) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
+	\end{equation}
+	
+	where:
+	
+	\begin{itemize}
+		\item When $f_{\phi}$ is executed with an allocated memory size equal to $m$, 
+		$C_{avg}^{(c)}(f_{\phi}, m)$ represents the average cost paid when a cold start is occurred. Conversely, $C_{avg}^{(w)}(f_{\phi}, m)$ represents the average cost paid in case of warm start.
+	\end{itemize}
 	
 	
-	\item $RT_{\textbf{F}_{\phi}} : \textbf{F}_{\phi} \times \N \to \left[ 0, \infty \right)$ is a \textit{delay function} for any serverless functions belonging to the implementation-set $\textbf{F}_{\phi}$.
+	\item $RT : \textbf{F}_{\phi} \times \textbf{M}_{f_{\phi}} \times \mathbb{R}^+ \to \mathbb{R}^+$ is the \textit{delay function} for any serverless concrete functions belonging to the implementation-set $\textbf{F}_{\phi}$. 
 	
-	For all $f_{\phi} \in \textbf{F}_{\phi}$ and $m \in \N$, $RT_{\textbf{F}_{\phi}}(f_{\phi}, m)$ returns the \textit{average response time} when $f_{\phi}$ is invoked with memory size equal to $m$;
+	It returns the \textit{average response time} paid by users when $f_{\phi}$ is executed using an allocated memory size equal to $m$ at time $t$. 
+	
+	It can be defined as follows:
+	
+	\begin{equation}
+		RT(f_{\phi},m,t) \mathDef RT_{avg}^{(c)}(f_{\phi}, m) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + RT_{avg}^{(w)}(f_{\phi}, m) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
+	\end{equation}
+
+	where:
+	
+	\begin{itemize}
+		\item When $f_{\phi}$ is executed with an allocated memory size equal to $m$, 
+		$RT_{avg}^{(c)}(f_{\phi}, m)$ represents the average response time paid when a cold start is occurred. Conversely, $RT_{avg}^{(w)}(f_{\phi}, m)$ represents the average response time paid in case of warm start.
+	\end{itemize}
+
+
+	
 \end{itemize}
 
 
@@ -1049,9 +1084,14 @@ At this point, we can define some useful functions:
 
 
 
-\section{The problem of cold starts}
 
-In order to find a suitable serverless choreography configuration capable to satisfy QoS imposed by end users, we must find a way to decide  
+The logging framework of our software system, whose responsibility is to store
+real-time data containing historical performance data.
+
+
+
+
+
 
 
 
