@@ -706,7 +706,7 @@ In simple terms, a choreography configuration specifies which concrete function 
 
 In this section, we will explain the concept of \textit{executable function configuration}. 
 
-Let $\phi \in \mathscr{F_E}$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
+Let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
 
 Formally, an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
 
@@ -744,32 +744,155 @@ where:
 	\item $\textbf{M}_{f_{\phi_{i_j}}} \subseteq \N$ denotes the set containing all available memory size options, allowed by provider, during the execution of the concrete function $f_{\phi_{i_j}}$, for some $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$
 \end{itemize}
 
-\section{Executable Function Performance}
+\section{Concrete Function Performance}
 
-In order to select an appropriate serverless choreography configuration able to effectively deliver and guarantee the QoS level required by our users, we need to evaluate the performance of any executable function inside a choreography when a particular concrete function is chosen to implement it. 
+Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete serverless, in terms of average values regarding response time and invocation cost.
 
-\subsection{Concurrency level}
+However, to develop both an analytical way and a software framework capable to evaluate concrete serverless function performance, we first need to understand
+how they are managed by FaaS platforms.
 
-Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
+\subsection{Function Instances}
 
-Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
+According to serverless computing paradigm, computation is done inside isolated environments, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes, called \textit{function instances}.
 
-Informally speaking, there are two type of concurrency limit models:
+As known, these instances can be considered as lightweight servers which management, provisioning and the fulfillment of any other infrastructure issues are the responsibilities of serverless computing platform provider.
+
+We can identify three states for each function instance:
 
 \begin{description}
-	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
 	
-	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
+	\item[Initialization State] which happens when the infrastructure is spinning up new function instance, which is needed to handle incoming requests. 
 	
-	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
+	A function instance will remain in the initializing state until it is able to handle incoming requests. According to FaaS policies, the time spent in this state is not billed. 
 	
-	This approach is adopted by Google Cloud Functions although there are reports stating that, despite there is no explicitly mentioned global concurrency limit, a kind of global concurrency limit, varying between $1000$ and $2000$, is observed.
+	\item[Idle State] After the fulfillment of all initialization tasks or when the processing of a previously received serverless function invocation request is over, the serverless platform keeps a function instances in idle state.
+	
+	In that way, the FaaS provider keep aforementioned function instance able to handle future invocation request faster, since no initialization task is needed to be performed.
+	
+	However, FaaS platform provider keeps a function instance in idle state for a limited amount of time; after that, all resources used to execute the function instance will be deallocated.
+	
+	The user is not charged for an instance that is in the idle state.
+	
+	\item[Running State] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
+	
+	Clearly, the time spent in the running state is billed by the provider.
 	
 \end{description}
 
-\subsection{Platform provider modelling}
+In order to be clear, we will use the expression \textit{warm pool} when referring to the set of all function instances whose state is either idle or running state.
+
+\subsection{FaaS auto-scaling technique}
+
+According to serverless computing paradigm, the FaaS platform provider has the responsibility to manage the amount of function instances required to allow users to perform their computation.
+
+In this dissertation, we assume that all FaaS providers adopt an auto-scaling technique called \textit{scale-per-request}.
+
+If such technique is adopted, when a request comes in, only one of the following events can occur:
+
+\begin{description}
+	
+	\item[Warm start] if there is at least one function instance in idle state, the FaaS platform reuses it to serve the incoming request without launching a new one.
+	
+	\item[Cold start] If the warm pool is empty or busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, FaaS platform will trigger the launching of a new function instance, which will be added to the warm pool.
+	
+	As said previously, from the FaaS provider point of view, this operation requires the start of a virtualized and isolated execution environment (i.e. virtual machine, container and so on) where user code will be run; in any case, regardless of the virtualization solution adopted, a cold start introduces a very important overhead to the response time experienced by users. 
+	
+	Therefore, due to initialization tasks performed to spin up a new function instance, cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application’s responsiveness and user experience.
+\end{description} 
+
+As long as, for a given instance, requests are received within an interval time less than an \textit{expiration threshold}, the function instance will be not deallocated.
+
+At the same time, for each instance, at any moment in time, if a request has not been received in the last \textit{expiration threshold} units of time, it will be expired and thus terminated by the platform, and the consumed resources will be released. 
+
+This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions. 
+
+\subsection{FaaS platform modeling}
 
 In order to formalize the notion of concurrency limit, explaining its role inside the way according to which serverless executable function performance are computed, is necessary to explain how FaaS platform providers had been modeled.
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+		
+		\node[circle, minimum width = 1cm]        					   
+		(startNode) at (-2,0) {$\lambda$};
+		
+		\node[circle, inner sep=0pt]        					   
+		(startNode2) at (1,0) {};
+		
+		% Node
+		
+		\node[circle, draw, minimum width = 1.5cm]        					   
+		(f1) at (4,3) {$f_1$};
+		\node[circle, draw, minimum width = 1.5cm]       					   
+		(f2) at (4,1) {$f_2$};
+		\node[circle, minimum width = 1.5cm]       					   
+		(fxxx) at (4,-1) {$\cdots$};
+		\node[circle, draw, minimum width = 1.5cm]       					   
+		(fn) at (4,-3) {$f_n$};
+		\node[circle, draw, minimum width = 1.5cm]       					   
+		(fn2) at (4,-5) {$f_{n+1}$};
+		
+		% Exit node
+		
+		\node[circle, minimum width = 1.5cm]        					   
+		(Ef1) at (6.5,3) {};
+		\node[circle, minimum width = 1.5cm]       					   
+		(Ef2) at (6.5,1) {};
+	
+
+		\node[circle, minimum width = 1.5cm]       					   
+		(Efn) at (6.5,-3) {};
+		\node[circle, minimum width = 1.5cm]       					   
+		(Efn2) at (6.5,-5) {};
+		
+	
+		% EDGE
+	
+		\draw[dashed, ultra thick,->] (startNode) -- (startNode2);
+		\draw[dashed, ultra thick,->] (startNode2) -- (f1);
+		\draw[dashed, ultra thick,->] (startNode2) -- (f2);
+		\draw[dashed, ultra thick,->] (startNode2) -- (fn);
+		
+		% Exit EDGE
+		
+		\draw[dashed, ultra thick,->] (f1) -- (Ef1);
+		\draw[dashed, ultra thick,->] (f2) -- (Ef2);
+		\draw[dashed, ultra thick,->] (fn) -- (Efn);
+		\draw[dashed, ultra thick,->] (fn2) -- (Efn2);
+		
+		
+		%\node[circle,below of=sub1, yshift=10] (label1) {$\theta_1$};
+		\node[rectangle, draw, dashed, minimum width =2cm, minimum height=2cm] (sub1) at (4,-5) {};
+		
+		\node[rectangle, draw, dashed, minimum width =2cm, minimum height=8cm] (sub1) at (4,0) {};
+		
+		%\draw[ultra thick,->] (ParNode1) edge node[xshift=15 ,yshift=15]{$P(\phi_2,\phi_4) = 1$} (ParEndNode);
+		%\draw[ultra thick,->] (ParNode2) edge node[xshift=15 ,yshift=-15]{$P(\phi_3,\phi_4) = 1$} (ParEndNode);
+		
+		%\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
+		%\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		
+	
+		
+		
+		%legend
+		
+		%\matrix [below left] at (current bounding box.north east) {
+		%	\node [] {$\phi_1 = p_{\alpha} \in \mathscr{F_O}$}; \\
+		%	\node [] {$\phi_3 = p_{\omega} \in \mathscr{F_O}$}; \\
+		%	\node [] {$\phi_2, \phi_3 \in \mathscr{F_E}$}; \\
+		%};
+		
+		
+	\end{tikzpicture}
+	\caption{Parallel structure in the serverless workflow.}
+\end{figure}
+
 
 From our model point of view, any FaaS platform provider can acting as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, where:
 
@@ -798,6 +921,37 @@ From our model point of view, any FaaS platform provider can acting as a ``\text
 
 Please note that, according to our model, any FaaS platform can host several $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, many of which can belong to an unique resource owner.  
 
+
+
+
+
+
+
+
+
+
+
+\subsection{Concurrency level}
+
+Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
+
+Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
+
+Informally speaking, there are two type of concurrency limit models:
+
+\begin{description}
+	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
+	
+	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
+	
+	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
+	
+	This approach is adopted by Google Cloud Functions although there are reports stating that, despite there is no explicitly mentioned global concurrency limit, a kind of global concurrency limit, varying between $1000$ and $2000$, is observed.
+	
+\end{description}
+
+
+
 \subsection{Serverless concrete function swarms}
 
 To complete the formalization of our model, is necessary to introduce another very important concept.
@@ -824,27 +978,7 @@ Is very important to make clear that only at most $l$ concrete functions belongi
 
 \end{itemize}
 
-\subsection{Executable function state}
 
-Similarly to previous studies, a function instance can be in one of the following states: 
-
-\begin{description}
-	
-	\item[Initialization State] which happens when the infrastructure is spinning up new function instances which are needed to handle incoming requests. 
-	
-	Generally, depending on the approach adopted by the FaaS provider, during this state is needed to set up new virtual machines, unikernels, containers, or even, processes, in order to be able to process new requests.
-	
-	A function instance will remain in the initializing state until it is able to handle incoming requests, entering into idle state. The time spent in this state is not billed. 
-	
-	\item[Idle State] After the fulfillment of all initialization task or when the processing of a previously received invocation request is over, the serverless platform keeps the instances in idle state, keeping the function instance able to handle future invocation request faster, since no initialization task is needed to be performed.
-	
-	FaaS platform provider keeps a function instance in idle state for a limited amount of time. The user is not charged for an instance that is in the idle state.
-	
-	\item[Running State] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
-	
-	Clearly, the time spent in the running state is billed by the provider.
-		
-\end{description}
 
 \subsection{Start/Cold start}
 
@@ -1331,7 +1465,7 @@ Above formulation is based on the enumeration of all possible choreography confi
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
 
-For the sake of consciousness, we will use $\mathcal{\widetilde{P}}$ to denote the set containing all parallel structures of $\mathcal{C}$, while $\mathcal{\widetilde{P}}_i$ is used to refer to $i$-th parallel structure of $\mathcal{\widetilde{P}}$, where $i \in \N \cap \left[1;|\mathcal{\widetilde{P}}| \right]$.
+For the sake of dasdasdsadsadasdsadasdas, we will use $\mathcal{\widetilde{P}}$ to denote the set containing all parallel structures of $\mathcal{C}$, while $\mathcal{\widetilde{P}}_i$ is used to refer to $i$-th parallel structure of $\mathcal{\widetilde{P}}$, where $i \in \N \cap \left[1;|\mathcal{\widetilde{P}}| \right]$.
 
 Let's define $\Delta_{\mathcal{\widetilde{P}}_{i_j}}$ the set containing all executable functions $\phi \in \mathscr{F_E}$ belonging to the $j$-th sub-choreography of the parallel structure $\mathcal{\widetilde{P}}_i$. Formally:
 
