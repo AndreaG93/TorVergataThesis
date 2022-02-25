@@ -806,9 +806,62 @@ At the same time, for each instance, at any moment in time, if a request has not
 
 This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions. 
 
+\subsection{FaaS Request Routing}
+
+In this dissertation, we assume that, in order to minimize the number of
+function instances that are kept warm and thus to free up system resources, the FaaS routes requests giving priority to instances which they have been idle for less time.
+
+In other words the FaaS request routeing give low priority to function instances being in idle state for long time, increasing thus the chances of resource deallocation referring aforementioned instances.
+
+\subsection{Concurrency limit}
+
+Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
+
+Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
+
+Informally speaking, there are two type of concurrency limit models:
+
+\begin{description}
+	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
+	
+	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
+	
+	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
+	
+	This approach is adopted by Google Cloud Functions although there are reports stating that, despite there is no explicitly mentioned global concurrency limit, a kind of global concurrency limit, varying between $1000$ and $2000$, is observed.
+	
+\end{description}
+
 \subsection{FaaS platform modeling}
 
-In order to formalize the notion of concurrency limit, explaining its role inside the way according to which serverless executable function performance are computed, is necessary to explain how FaaS platform providers had been modeled.
+At this point, we can provide an analytical model to better understand how FaaS platforms work.
+
+According to our model point of view, any FaaS platform provider act as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, that is a  \textit{$K(t)$-server loss systems}, where:
+
+\begin{itemize}
+	
+	\item $\textbf{C}_{max} \in \N \setminus \left\{0\right\}$ is a scalar representing the queuing system's concurrency limit.
+	
+	In other words, $\textbf{C}_{max}$ is the maximum size of the warm pool, representing therefore the maximum number of function instances being in running state simultaneously at time $t$. 
+	
+	Please note that $\textbf{C}_{max}$ not necessary coincide with global concurrency limit because it can represents a local concurrency limit too. We will give more details about this very soon.
+	
+	\item At any time $t \geq 0$, there are $K(t)$ function instances. Since each instance can process only one request, we can say that the system has capacity for $K(t)$ invocation requests in total.   
+	
+	In other words, the number of function instance, and consequently the capacity of system, can change over time. 
+	
+	At any time $t$, following condition must be hold:
+	
+	\begin{equation}
+		0 \leq K(t) \leq {C}_{\textbf{max}}
+	\end{equation}
+	
+	\item Since no queue is involved, if the maximum concurrency level is reached, that is $K(t) = {C}_{\textbf{max}}$, any incoming request at time $t$ which sees all $K(t)$ function instances in running state, will be permanently dropped.
+	
+	\item No priority is considered among incoming request.
+	
+	\item Service times have a general distribution while a Poisson arrival process is assumed.
+\end{itemize} 
 
 \begin{figure}[h!]
 	\centering
@@ -893,155 +946,78 @@ In order to formalize the notion of concurrency limit, explaining its role insid
 	\caption{Parallel structure in the serverless workflow.}
 \end{figure}
 
+\subsection{Serverless Concrete Function Swarms}
 
-From our model point of view, any FaaS platform provider can acting as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, where:
+To complete the formalization of our model and understand how concrete function performances are evaluated, is necessary to introduce another very important concept, which is needful to make our model compatible with all concurrency limit models adoptable by FaaS providers.
 
-\begin{itemize}
-	
-	\item $\textbf{C}_{max} \in \N$ represents the \textit{maximum value of queue concurrency limit}, that is the maximum number of function instances being in running state simultaneously at time $t$ inside that queue. 
-	
-	Please note that $\textbf{C}_{max}$ not necessary coincide with global concurrency limit because it can represents a local concurrency limit too.
-	
-	\item At time $t \geq 0$, there are $K(t)$ function instances that can each process one request and the system has capacity for $K(t)$ invocation requests in total. 
-	
-	In other words, the number of function instance, and consequently the capacity of system, can change over time. 
-	
-	At any time $t$, following condition must be hold:
-	
-	\begin{equation}
-		0 \leq K(t) \leq {C}_{\textbf{max}}
-	\end{equation}
-	
-	\item No queue is involved, therefore any incoming request at time $t$, which sees all $K(t)$ function instances busy and $K(t) = \textbf{C}_{\textbf{max}}$, is considered dropped.
-	
-	\item No priority is considered among incoming request.
-	
-	\item Service times have a general distribution while a Poisson arrival process is assumed.
-\end{itemize} 
+Let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider and $\Omega_{P_R}$ the set of all concrete serverless functions hosted on $P$ belonging to $R$.
 
-Please note that, according to our model, any FaaS platform can host several $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, many of which can belong to an unique resource owner.  
+A \textit{serverless concrete function swarm}, or simply \textit{swarm}, is the set $\omega_{P_R}^{(l)} \subseteq \Omega_{P_R}$ containing all concrete functions sharing the same limit $l$ in term of the max number of serverless function instance runnable at the same time by $P$; in that case, we call $l$ as \textit{swarm's concurrency limit}.
 
-
-
-
-
-
-
-
-
-
-
-\subsection{Concurrency level}
-
-Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
-
-Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
-
-Informally speaking, there are two type of concurrency limit models:
-
-\begin{description}
-	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
-	
-	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
-	
-	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
-	
-	This approach is adopted by Google Cloud Functions although there are reports stating that, despite there is no explicitly mentioned global concurrency limit, a kind of global concurrency limit, varying between $1000$ and $2000$, is observed.
-	
-\end{description}
-
-
-
-\subsection{Serverless concrete function swarms}
-
-To complete the formalization of our model, is necessary to introduce another very important concept.
-
-Let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider and $\Omega_{P_R}$ the set of all concrete serverless functions hosted on $P$ and belonging to $R$. 
-
-A \textit{serverless concrete function swarms} is any set $\omega_{P_{R_l}} \subseteq \Omega_{P_R}$ containing all concrete functions belonging to $R$ that share the same limit $l$ in term of the max number of serverless function instance runnable at the same time by the corresponding platform provider $P$. 
-	
-That limit can be called \textit{server-less function swarm's concurrency limit}, or simply, \textit{concurrency limit}.
-	
-Is very important to make clear that only at most $l$ concrete functions belonging to $\omega_{P_{R_l}}$ can be executed simultaneously by $P$. Clearly, the value of $l$ depends on the concurrency model by $P$ and this kind of formalization make our model compatible with both approaches described previously. Formally:
+In simple terms, only at most $l$ executions of all concrete functions belonging to $\omega_{P_R}^{(l)}$ can be performed simultaneously by $P$. The value of $l$ depends on the concurrency model adopted by $P$. 
 
 \begin{itemize}
 	
-	\item If $P$ imposed a \textit{per-function} limit, then $|\omega_{P_{R_l}}| = 1$, that is, $\omega_{P_{R_l}}$ contains only one function and $l$ will represent the provider's per-function limit. 
+	\item If $P$ imposed a \textit{per-function} limit, then $|\omega_{P_{R_l}}| = 1$, that is, $\omega_{P_R}^{(l)}$ contains only one function and $l$ will represent the provider's per-function limit. 
 	
-	In that case, there is a $M/G/K(t)_{l}/K(t)_{l}$ queuing system for each concrete function in $\Omega_{P_R}$, every of which will serve all invocation request regarding only one concrete function in $\omega_{P_{R_l}}$.
+	In that case, to each concrete function belonging to $\omega_{P_R}^{(l)}$ corresponds a dedicated $M/G/K(t)_{l}/K(t)_{l}$ queuing system, which will serve all invocation request regarding only its corresponding concrete function.  
 	
-	In other words, there are $|\omega_{P_{R_l}}|$ different queues.
+	\item If $P$ imposed a \textit{per-account} limit, then $\omega_{P_R}^{(l)} = \Omega_{P_R}$, that is the swarm includes all concrete serverless concrete function deployed on $P$ by $R$, while $l$ represents the provider's global concurrency limit. 
 	
-	\item If $P$ imposed a \textit{per-account} limit, then $\omega_{P_{R_l}} = \Omega_{P_R}$, that is the swarm includes all concrete serverless concrete function deployed on $P$ by $R$ and $l$ represents the provider's global concurrency limit. 
-	
-	In that case, there is only one $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation request regarding any concrete function in $\omega_{P_{R_l}}$.
+	In that case, there is only one $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation request regarding any concrete function belonging to $\Omega_{P_R}$.
 
 \end{itemize}
 
-
-
-\subsection{Start/Cold start}
-
-\begin{description}
-	\item[Cold start] If the warm pool is busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, latter will trigger the launching of a new function instance, which will be added to the warm pool. This event is called \textit{cold start}.
-	
-	From the FaaS provider point of view, this operation requires to start either a new virtual	machine or a new container; in any case, regardless of the method adopted, a cold start introduces a very important overhead to the response time experienced by users. 
-	
-	\item[Warm start] When there is at least one serverless function instance in idle state, the FaaS platform reuses it to serve the incoming request without launching a new one. This is called \textit{warm start}.
-\end{description}  
-
-A very important aspect is that cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application’s responsiveness and user experience.
-
-Precisely, let $\gamma \in \N$, $\omega_{P_{R(\gamma)}}$ a swarm where $\gamma$ is the maximum concurrency level of the swarm. Finally, let $M/G/K(t)_{\gamma}/K(t)_{\gamma}$ a queuing system, that is the swarm queue of $\omega_{P_{R(\gamma)}}$. 
-
-When a new invocation request, regarding any function belonging $\omega_{P_{R(\gamma)}}$, arrives on the FaaS platform $P$, one of the following events can occur:
-
-\begin{itemize}
-	\item If at time $t$ is verified that $K(t) < \gamma$, that is the number of function instances into the warm pool is less than the maximum concurrency level, only one of following events can occur:
-	
-	\begin{itemize}
-		\item if $|\mathcal{R}(t)| = K(t)$, that is there, the request will be blocked by the system causing a cold start.
-		
-		\item if $|\mathcal{R}(t)| < K(t)$ a warm start will occur and $\mathcal{R}(t)$ is increased by one.
-	\end{itemize}
-	
-	\item If at time $t$ is true that $K(t) = \gamma$, that is the warm pool size reaches the maximum concurrency level admitted by provider $P$, and $|S(t)| = \gamma$, namely every there is no function instance in idle state, any further request will be rejected by the platform and therefore dropped by our controller.
-	
-\end{itemize}
-
-\subsubsection{Cold start probability}
+\subsection{Cold Start Probability}
 
 As known, the rejection of a request by the warm pool triggers a cold start, which, subsequently, adds a new function instance to the warm pool in order to handle received request. 
 
 In order to fully describe how our framework works, we have to know the probability according to which a request is rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
 
-Let $k \in N$ the size of the warm pool, that is the number of existing function instances currently active on the provider.
+Precisely, let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider, $\omega_{P_R}^{(l)}$ a swarm and $M/G/K(t)_{l}/K(t)_{l}$ the queuing system associated to that swarm. Moreover, let $r(t)$ the number of function instances being in running state at time $t$.
 
-Formally, the cold start probability $\textbf{P}_{C_R}$ is the probability that an arrival finds all $k$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
+When a new request of invocation of a function belonging $\omega_{P_R}^{(l)}$, arrives on the FaaS platform $P$, one of the following events can occur:
+
+\begin{itemize}
+	\item If at time $t_n$ is verified that $K(t_n) < l$ and $r(t_n) < K(t_n)$, that is the number of function instances into the warm pool is less than the swarm's maximum concurrency level and there are some function instance in idle state, a warm start will occur, resulting that $r(t_{n+1}) = r(t_n) + 1$.
+	
+	
+	\item If at time $t_n$ is verified that $K(t_n) < l$ and $r(t_n) = K(t_n)$, that is the number of function instances into the warm pool is once again less than the swarm's maximum concurrency level but there is no function instance in idle state, a cold start will occur and the size of the warm pool will be increased by one, that is $K(t_{n+1}) = K(t_n) + 1$.
+	
+	The newly accepted request will be managed by the newly spinned up function instance, causing that $r(t_{n+1}) = r(t_n) + 1$.
+	
+	\item If at time $t_n$ is true that $K(t) = l$ and $r(t_n) = K(t_n)$, that is the warm pool reaches is maximum possible size according to FaaS policies, aforementioned request will be rejected.
+\end{itemize}
+
+Clearly, when at time $tn$ a execution's request has been completed by a function instance, that event cause that $r(t_{n+1}) = r(t_n) - 1$. 
+
+In the same way, if a function instance has not been received in the last expiration threshold units of time, it will be expired causing the decreasing of warm pool size, that is $K(t_{n+1}) = K(t_n) -1$.
+
+Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all $K(t)$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
 
 \begin{equation}
-	\displaystyle \textbf{P}_{C}(t) = \dfrac{\dfrac{\rho(t)^k}{k!}}{\displaystyle\sum_{j=0}^k \dfrac{\rho(t)^j}{j!}}
+	\displaystyle \textbf{P}(t) = \dfrac{\dfrac{\rho(t)^{K(t)}}{K(t)!}}{\displaystyle\sum_{j=0}^{K(t)} \dfrac{\rho(t)^j}{j!}}
 \end{equation}
 
 where:
 
 \begin{itemize}
 	
-	\item $\displaystyle \rho(t) = \frac{\lambda(t)}{\mu_{w}}$ represents system utilization or load of the pool at time $t$ where:
+	\item $\displaystyle \rho(t) = \frac{\lambda(t)}{\mu_{w}}$ represents system utilization or load of the warm pool at time $t$ where:
 	
 	\begin{itemize}
 		
-		\item $\lambda(t)$ represents the \textit{average arrival rate} at time $t$, that is the  rate at which serverless compound functions execution requests arrive to our system.
+		\item $\lambda(t)$ represents the \textit{average arrival rate} at time $t$, that is the rate at which invocation requests, regarding serverless concrete functions belonging to $\omega_{P_R}^{(l)}$, arrive to our system. It is expressed in $invocations \cdot s^{-1}$.
+				
+		Since arrival rate varies during the day, $\lambda(t)$ must be estimate at runtime, over multiple time intervals spent observing our system.
 		
-		Since we assume that arrival rate varies during the day, $\lambda(t)$ is estimate over multiple time intervals spent observing our system.
-		
-		Precisely, at time $t$, let $n \in \N$ the number of request arrived during last second 
+		We have adopt the exponential moving average approach to compute an estimation of $\lambda(t)$. Periodically, at any time $t$, our framework compute the number $Y_t$ of all received invocation requests for any function belonging to $\omega_{P_R}^{(l)}$ within last second. Then $\lambda(t)$ is estimated as follows:
 		
 		\begin{equation}
 			\lambda(t) \mathDef
 			\begin{cases}
-				0 & \text{if}\ t = 0\\ 
-				\alpha \cdot X + (1 - \alpha) \cdot \lambda(t-1) & \text{if}\ t > 0\\
+				Y_o & \text{if}\ t = 0\\ 
+				\alpha \cdot Y_t + (1 - \alpha) \cdot \lambda(t-1) & \text{if}\ t > 0\\
 				
 			\end{cases}\,.
 		\end{equation}
@@ -1053,7 +1029,7 @@ where:
 \end{itemize}
 
 
-\section{Concrete function performance}
+\subsection{Concrete function performance}
 
 At this point, we can define some useful functions:
 
