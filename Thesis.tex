@@ -1082,9 +1082,6 @@ Let's define following functions:
 
 
 
-
-
-
 The logging framework of our software system, whose responsibility is to store
 real-time data containing historical performance data.
 
@@ -1097,11 +1094,11 @@ real-time data containing historical performance data.
 
 
 
-\subsection{Metrics}
+\section{Serverless Choreography Performance}
 
 Let $\mathcal{C} = (\Phi,E)$ a basic choreography as defined in section \ref{BasicDefinition}.
 
-
+$\subseteq \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\}$
 
 Suppose to have a path $\pi = \phi_1 e_1 \phi_2 e_2 \ldots e_{n-2}\phi_{n-1} e_{n-1} \phi_n$ and a choreography configuration $\textbf{X}$ for $\mathcal{S}$. 
 
@@ -1168,11 +1165,14 @@ We denote by $\Theta_{\mathcal{S}^*}$ as the set containing all connected compon
 
 \subsubsection{Parallel}
 
-A structure $\mathcal{P} = (\Phi,E,\Theta)$ is called \textit{parallel structure} when:
+Let $\mathcal{P} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{P}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{P}) = \phi_{y}$. 
 
-\begin{equation}
-	TPP(\pi) = 1 \qquad \forall \pi \in \Pi(\phi_{start}, \phi_{end})
-\end{equation}
+The structure $\mathcal{P}$ is called \textit{parallel structure} when:
+
+\begin{eqnarray}
+	TPP(\pi) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
+	P_{exit}^{(C)}(t) = 0 & \qquad \forall \theta \in \Theta
+\end{eqnarray}
 
 
 
@@ -1180,79 +1180,109 @@ A structure $\mathcal{P} = (\Phi,E,\Theta)$ is called \textit{parallel structure
 	\centering
 	\begin{tikzpicture}
 		
-	
+		
 		\node[circle,draw=white,minimum width = 1cm] 
 		(start) at (-2,0) {};
-	
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParStartNode) at (0,0) {$\phi_1$};
 		
-	
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParNode1) at (4,2) {$\phi_2$};
-		\node[circle, draw, minimum width = 1cm]       					   
-		(ParNode2) at (4,-2) {$\phi_3$};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParEndNode) at (8,0) {$\phi_4$};
-			
 		\node[circle,draw=white,minimum width = 1cm] 
-		(end) at (10,0) {};
+		(end) at (12,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchStartNode) at (0,0) {$\phi_x$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchEndNode) at (10,0) {$\phi_y$};
 		
 		
-		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-15 ,yshift=15]{$P(\phi_1,\phi_2) = 1$} (ParNode1);
-		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-15 ,yshift=-15]{$P(\phi_1,\phi_3) = 1$} (ParNode2);
+		\node[circle, draw, minimum width = 1cm]        					   
+		(Node1) at (3.8,2) {$\phi_a$};
 		
-		\draw[ultra thick,->] (ParNode1) edge node[xshift=15 ,yshift=15]{$P(\phi_2,\phi_4) = 1$} (ParEndNode);
-		\draw[ultra thick,->] (ParNode2) edge node[xshift=15 ,yshift=-15]{$P(\phi_3,\phi_4) = 1$} (ParEndNode);
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node2) at (5,2) {...};
 		
-		\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
-		\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node3) at (6.2,2) {$\phi_b$};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node4) at (3.8,-2) {$\phi_c$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node5) at (5,-2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node6) at (6.2,-2) {$\phi_d$};
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a) = 1$} (Node1);
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c) = 1$} (Node4);
+		
+		\draw[ultra thick,->] (Node3) edge node[xshift=10 ,yshift=20]{$P(\phi_b,\phi_y) = 1$} (branchEndNode);
+		
+		\draw[ultra thick,->] (Node6) edge node[xshift=10 ,yshift=-20]{$P(\phi_d,\phi_y) = 1$} (branchEndNode);
+		
+		% Dashed lines
+		
+		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
+		
+		\draw[ultra thick, ->] (branchEndNode) -- (end);
+		
+		\draw[ultra thick, ->] (Node1) -- (Node2);
+		
+		\draw[ultra thick, ->] (Node2) -- (Node3);
+		
+		\draw[ultra thick, ->] (Node4) -- (Node5);
+		
+		\draw[ultra thick, ->] (Node5) -- (Node6);
 		
 		% Frames
 		
-		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub1) at (4,2) {};
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
 		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
 		
-		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub2) at (4,-2) {};
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
 		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
 		
-		%legend
+		legend
 		
 		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$\phi_1 = p_{\alpha} \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_3 = p_{\omega} \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_2, \phi_3 \in \mathscr{F_E}$}; \\
+			\node [] {$\phi_x = \tau_{\alpha}(\mathcal{P}) \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_y = \tau_{\omega}(\mathcal{P}) \in \mathscr{F_O}$}; \\
 		};
 		
 		
-\end{tikzpicture}
-\caption{Parallel structure in the serverless workflow.}
+	\end{tikzpicture}
+	\caption{Parallel structure in the serverless workflow.}
 \end{figure}
 
+Clearly, the response time of a parallel structure is equal to the longest response time of all its sub-choreographies.
 
-
-Let $n \in \N$, supposing that $|\Theta| = n$, the response time of a parallel structure is the longest response time of all sub-choreographies $\theta_i \in \Theta$ for all $i \in \left[ 1, n \right]$, while its cost is equal to the sum their costs of execution. Formally, being $\textbf{X}$ a configuration of  $\mathcal{P}$:
+Formally, let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{P}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of $\mathcal{P}$ can be computed as follows:
 
 \begin{equation}
-	RT_{parallel}(\mathcal{P}, \textbf{X}) = max \left\lbrace RT_C(\mathcal{\theta}, \textbf{X}) \mid \theta \in \Theta \right\rbrace 
+	RT_{parallel}(\textbf{X}, t) \mathDef max \left\lbrace RT_C(\textbf{X}, \theta_i, t) \mid \theta \in \Theta \right\rbrace 
 \end{equation}
 
 \begin{equation}
-	C_{parallel}(\mathcal{P}, \textbf{X}) = \sum_{\theta \in \Theta} C_C(\theta, \textbf{X})
+	C_{parallel}(\textbf{X}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot C_C(\textbf{X}, \theta_i, t)
+\end{equation}
+
+We always assume that the exit probability of the a parallel structure is zero. Formally
+
+\begin{equation}
+	P_{exit}^{(parallel)}(t) \mathDef 0
 \end{equation}
 
 
+\subsubsection{Branch}
 
-\subsubsection{Branch/Switch}
+Let $\mathcal{B} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{B}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{B}) = \phi_{y}$. 
 
-Let $\mathcal{B} = (\Phi,E,\Theta)$ a structure and suppose that $\alpha(\mathcal{B}) = \phi_{entry}$ and $\omega(\mathcal{B}) = \phi_{end}$. 
-
-$\mathcal{B}$ is called \textit{branch structure} when following conditions are hold:
+$\mathcal{B}$ is called ``\textit{branch structure}'' when following conditions are hold:
 
 \begin{eqnarray}
-	TPP(\pi) \neq 1  & \quad \forall \pi \in \Pi(\phi_{entry}, \phi_{end}) \\
-	|\Theta| = n  & n \in \left\lbrace 1,2 \right\rbrace 
+	TPP(\pi) \neq 1  & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
+	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta
 \end{eqnarray}
 
 \begin{figure}[h!]
@@ -1263,46 +1293,70 @@ $\mathcal{B}$ is called \textit{branch structure} when following conditions are 
 		\node[circle,draw=white,minimum width = 1cm] 
 		(start) at (-2,0) {};
 		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParStartNode) at (0,0) {$\phi_1$};
-		
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParNode1) at (4,2) {$\phi_2$};
-		\node[circle, draw, minimum width = 1cm]       					   
-		(ParNode2) at (4,-2) {$\phi_3$};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParEndNode) at (8,0) {$\phi_4$};
-		
 		\node[circle,draw=white,minimum width = 1cm] 
-		(end) at (10,0) {};
+		(end) at (12,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchStartNode) at (0,0) {$\phi_x$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchEndNode) at (10,0) {$\phi_y$};
 		
 		
-		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-20 ,yshift=15]{$P(\phi_1,\phi_2) = x$} (ParNode1);
-		\draw[ultra thick,->] (ParStartNode) edge node[xshift=-20 ,yshift=-15]{$P(\phi_1,\phi_3) = 1-x$} (ParNode2);
+		\node[circle, draw, minimum width = 1cm]        					   
+		(Node1) at (3.8,2) {$\phi_a$};
 		
-		\draw[ultra thick,->] (ParNode1) edge node[xshift=15 ,yshift=15]{$P(\phi_2,\phi_4) = 1$} (ParEndNode);
-		\draw[ultra thick,->] (ParNode2) edge node[xshift=15 ,yshift=-15]{$P(\phi_3,\phi_4) = 1$} (ParEndNode);
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node2) at (5,2) {...};
 		
-		\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
-		\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node3) at (6.2,2) {$\phi_b$};
+	
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node4) at (3.8,-2) {$\phi_c$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node5) at (5,-2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node6) at (6.2,-2) {$\phi_d$};
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a) = x(t)$} (Node1);
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c) = 1-x(t)$} (Node4);
+		
+		\draw[ultra thick,->] (Node3) edge node[xshift=10 ,yshift=20]{$P(\phi_b,\phi_y) = 1$} (branchEndNode);
+		
+		\draw[ultra thick,->] (Node6) edge node[xshift=10 ,yshift=-20]{$P(\phi_d,\phi_y) = 1$} (branchEndNode);
+		
+		% Dashed lines
+		
+		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
+		
+		\draw[ultra thick, ->] (branchEndNode) -- (end);
+		
+		\draw[ultra thick, ->] (Node1) -- (Node2);
+		
+		\draw[ultra thick, ->] (Node2) -- (Node3);
+		
+		\draw[ultra thick, ->] (Node4) -- (Node5);
+		
+		\draw[ultra thick, ->] (Node5) -- (Node6);
 		
 		% Frames
 		
-		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub1) at (4,2) {};
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
 		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
 		
-		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub2) at (4,-2) {};
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
 		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
 		
-		%legend
+		legend
 		
 		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
-			\node [] {$\phi_1 = b_{\alpha} \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_3 = b_{\omega} \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_2,\phi_3 \in \mathscr{F_E}$}; \\
+			\node [] {$x(t) \in \mathbb{R} : 0 \leq x(t) \leq 1$}; \\
+			\node [] {$\phi_x = \tau_{\alpha}(\mathcal{B}) \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_y = \tau_{\omega}(\mathcal{B}) \in \mathscr{F_O}$}; \\
 		};
 		
 		
@@ -1310,17 +1364,21 @@ $\mathcal{B}$ is called \textit{branch structure} when following conditions are 
 	\caption{Branch/Switch structure in the serverless workflow.}
 \end{figure}
 
-Let all $\theta_i \in \Theta$ sub-choreographies of $\mathcal{B}$, for all $i \in \left\lbrace 1,2 \right\rbrace $. Then the response time and the cost of a branch structure can be defined as follows:
+Let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{B}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of the branch structure $\mathcal{B}$ can be computed as follows:
 
 \begin{equation}
-	RT_{branch}(\mathcal{B}, \textbf{X}) = \sum_{i = 1}^n P(\phi_{entry}, \alpha(\theta_i)) RT_C(\theta_i, \textbf{X})
+	RT_{branch}(\textbf{X}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot  RT_C(\textbf{X}, \theta_i, t)
 \end{equation}
 
 \begin{equation}
-	C_{branch}(\mathcal{B}, \textbf{X}) = \sum_{i = 1}^n C_C(\phi_{entry}, \alpha(\theta_i)) C_C(\theta_i, \textbf{X})
+	C_{branch}(\textbf{X}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot C_C(\textbf{X}, \theta_i, t)
 \end{equation}
 
-Finally, according to our model, $\mathcal{B}$ is called \textit{switch structure} when $|\Theta| > 2$.
+The exit probability of the a branch/switch structure can be computed as follows:
+
+\begin{equation}
+	P_{exit}^{(branch)} \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot P_{exit}(\theta_i, t)
+\end{equation}
 
 \subsubsection{Loop}
 
@@ -1501,6 +1559,7 @@ We
 
 
 \begin{equation}
+	\label{MMKP}
 	\begin{array} {rll} 
 		\displaystyle max & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} p_{\phi_{i_{j}}} \\\\
 		
@@ -1519,11 +1578,7 @@ We
 \end{equation}
 
 
-The MMKP is an NP-hard in the strong sense [2]. It is not
-always possible to find a feasible solution in a reasonable
-computing time especially for big instances. Since exact
-methods are reserved for limited scale problem, heuristic
-approaches are needed for solving it. 
+
 
 
 
@@ -1622,6 +1677,24 @@ where:
 	
 \end{itemize}
 
+
+
+\section{ACO Algorithm}
+
+The Multidimensional Multiple-choice Knapsack Problem
+(MMKP) is a variant of the classical 0–1 KP. Here we have n groups of items.
+Group i has `i items. Each item of the group has a particular value and it
+requires m resources. The objective of the MMKP is to pick exactly one item
+from each group for maximum total value of the collected items, subject to
+m resource constraints of the knapsack.
+
+The MMKP is an NP-hard in the strong sense [2]. It is not
+always possible to find a feasible solution in a reasonable
+computing time especially for big instances. Since exact
+methods are reserved for limited scale problem, heuristic
+approaches are needed for solving it. 
+
+$\mathbf{b}$
 
 
 
