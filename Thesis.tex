@@ -632,6 +632,15 @@ According to our model, there are two types of abstract functions implementation
 
 	Later, we will explain how our framework is able to pick, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS objective.
 	
+	According to our model, for any executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, following constraints must be hold:
+	
+	\begin{eqnarray}
+		|succ(\phi)| = n & \qquad n \in \left\{0,1\right\} \\
+		P(\phi, \phi_x) = 1 & \qquad \phi_x \in succ(\phi)
+	\end{eqnarray}
+	
+	
+	
 	\item $\phi$ is called \textit{serverless orchestration functions}, or simply \textit{orchestration functions}, when $\phi$ contains \textit{orchestration code}. 
 	
 	According to our model, orchestration code represents the logic required to chain together any components of an application, evaluate branch and loop conditions, handling events and triggering executable functions in the correct order according to the business logic. In other words, orchestration code is used to manage the control-flow of any application.
@@ -641,6 +650,12 @@ According to our model, there are two types of abstract functions implementation
 	\begin{equation}
 		\mathscr{F_O}(\mathcal{C}) \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless orchestration function }\right\rbrace 
 	\end{equation}
+
+	According to our model, several types of orchestration functions exist, like branch, loop and parallel types.
+
+	Orchestration function type is determined by certain characteristics of $\mathcal{C}$; we will give a better explanation about this very soon.
+	
+	Finally, according to our model, orchestration functions \textit{usually} travel in pairs. Each $phi \in \mathscr{F_O}(\mathcal{C})$ can be either an \textit{opening} or a \textit{closing} orchestration function, where the first indicates the beginning of particular section of $\mathcal{C}$, called \textit{structure}, and the second ends it. We will talk about this later.
 	
 \end{itemize}
 
@@ -688,6 +703,24 @@ The weighted directed sub-graph of $\mathcal{C}$ defined as follows:
 \end{equation}
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
+
+\subsubsection{Basic Serverless Choreography}\label{BasicDefinition}
+
+Any choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
+
+\begin{eqnarray}
+	|\mathscr{F_O}| = 0 \label{cond21} \\
+	|\omega(\mathcal{C})| = 1 \label{cond22}
+\end{eqnarray}
+
+is called \textit{basic serverless choreography}, or simply a \textit{basic choreography}. 
+
+A very important property of a basic choreography is that the set $\Pi(\alpha(\mathcal{C}), \omega(\mathcal{C}))$, identifying all possible paths starting from vertex $\alpha(\mathcal{C})$ and ending at vertex $\omega(\mathcal{C})$, contains only path $\pi$ such that:
+
+\begin{equation}
+	TPP(\pi) = 1
+\end{equation}
+
 
 \section{Serverless Choreography Configuration}
 
@@ -1130,17 +1163,31 @@ Let $\mathcal{C} = (\Phi,E)$ a serverless choreography.
 
 Formally
 
+\subsection{Definition}
 
-Supposing to have a serverless choreography $\mathcal{S} = (\Phi,E)$, we call \textit{structure} any sub-choreography $\mathcal{S}^*= (\Phi^*,E^*)$ whose entry point and the end point are, respectively, an opening and a closing orchestration functions of the same type. Formally:
+
+
+Informally, supposing to have a serverless choreography $\mathcal{C} = (\Phi,E)$, a \textit{structure} can be defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*)$ of $\mathcal{C}$ whose entry point is an opening orchestration function. Eventually, if an end point belonging to $\omega(\mathcal{C}^*)$ exits, it will be a closing orchestration function whose type must be the same as of the opening orchestration function.
+
+Formally:
 
 \begin{equation}
-	S^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{rlll}
-		\phi_{entry}^* & \in \mathscr{F_O^*} & \wedge & \mathscr{T}(\phi_{entry}^*) = \tau_{\alpha} \\ 
-		\phi_{end}^* & \in \mathscr{F_O^*} & \wedge & \mathscr{T}(\phi_{end}^*) = \tau_{\omega}
-	\end{array} \right.
+	C^* \text{ is a structure } \Leftrightarrow \exists \phi_{entry}^* \in \alpha(C^*)  \in \mathscr{F_O} :  \mathscr{T}(\phi_{entry}^*) = \tau_{\alpha}
 \end{equation}
 
-The most important aspect is that every structure can be viewed as a set of sub-choreographies of $\mathcal{S}^*$. Formally, suppose that $\Lambda = (A,B)$ is a graph such that:
+where:
+
+\begin{itemize}
+	\item $\phi_{entry} = \alpha(\mathcal{C}^*)$, that is $\phi_{entry}$ is the entry point of $\mathcal{C}^*$.
+	\item $\mathscr{T}$ is a function returning the orchestration function type denoted by $\tau$.
+	\item $\tau_{\alpha}$ ($\tau_{\omega}$) denotes,  an opening (closing) orchestration function of type $\tau$.
+\end{itemize}
+
+We always assume that a structure has both an opening and a closing orchestration functions
+
+The most important aspect is that every structure can be viewed as a set of sub-choreographies. 
+
+Formally, suppose that $\Lambda = (A,B)$ is a graph such that:
 
 \begin{equation}
 	\begin{array}{lll}
@@ -1149,21 +1196,24 @@ The most important aspect is that every structure can be viewed as a set of sub-
 	\end{array}
 \end{equation}
 
-Let $c \in \N$ and suppose that $c$ is the number of connected components of the graph $\Lambda$.
+Let $c \in \N \setminus \left\{0\right\}$ and suppose that $c$ is the number of connected components of the graph $\Lambda$. We will use $\Theta$ to denote the set containing all connected components of $\Lambda$ every of which is considered as a sub-choreography of $\mathcal{C}^*$. 
 
-We denote by $\Theta_{\mathcal{S}^*}$ as the set containing all connected components of $\Lambda$ every of which is considered as a sub-choreography of $\mathcal{S}^*$. Formally:
+Formally:
 
 \begin{equation}
 	\begin{array}{c}
 		\Theta_{\mathcal{S}^*} \mathDef \left\lbrace \theta_i, \ldots ,\theta_c \right\rbrace \\\\
 		\text{ where } \\\\
 		
+		\forall i \in \left[ 1, c \right] \\
+		
+		\text{the connected component $\theta_i$ of $\Lambda$ } \\ 	
 		\theta_i \mathDef (\Phi^{**}_i, E^{**}_i) \text{ is a sub-choreography of } \mathcal{S}^* \\
-		\Phi^{**}_i \subset \Phi^{*} \wedge E^{**}_i \subset E^{*} \qquad \forall i \in \left[ 1, c \right] \\
+		\Phi^{**}_i \subset \Phi^{*} \wedge E^{**}_i \subset E^{*}  \\
 	\end{array}
 \end{equation} 
 
-\subsubsection{Parallel}
+\subsection{Parallel}
 
 Let $\mathcal{P} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{P}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{P}) = \phi_{y}$. 
 
@@ -1171,10 +1221,10 @@ The structure $\mathcal{P}$ is called \textit{parallel structure} when:
 
 \begin{eqnarray}
 	TPP(\pi) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
+	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
 	P_{exit}^{(C)}(t) = 0 & \qquad \forall \theta \in \Theta
 \end{eqnarray}
-
-
 
 \begin{figure}[h!]
 	\centering
@@ -1273,7 +1323,7 @@ We always assume that the exit probability of the a parallel structure is zero. 
 \end{equation}
 
 
-\subsubsection{Branch}
+\subsection{Branch}
 
 Let $\mathcal{B} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{B}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{B}) = \phi_{y}$. 
 
@@ -1282,7 +1332,8 @@ $\mathcal{B}$ is called ``\textit{branch structure}'' when following conditions 
 \begin{eqnarray}
 	TPP(\pi) \neq 1  & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
 	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
-	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
+	P_{exit}^{(C)}(t) \neq 0 & \qquad \forall \theta \in \Theta
 \end{eqnarray}
 
 \begin{figure}[h!]
@@ -1380,16 +1431,18 @@ The exit probability of the a branch/switch structure can be computed as follows
 	P_{exit}^{(branch)} \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot P_{exit}(\theta_i, t)
 \end{equation}
 
-\subsubsection{Loop}
+\subsection{Loop}
 
-Let $\mathcal{L} = (\Phi,E,\Theta)$ a structure and suppose that $\alpha(\mathcal{L}) = \phi_{entry}$ and $\omega(\mathcal{L}) = \phi_{end}$. 
+Let $\mathcal{L} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{L}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{L}) = \phi_{y}$. 
 
-If $|\Theta| = 1$ and $(\phi_{end}, \phi_{entry}) \in E$, denoting by $\theta$ the unique sub-choreography of $\mathcal{L}$, $\mathcal{L}$ will be called \textit{loop structure} when following conditions are hold:
+Being $\theta \in \Theta$ the unique sub-choreography of $\mathcal{L}$, the structure $\mathcal{L}$ is called ``\textit{loop structure}" when following conditions are hold:
 
 \begin{eqnarray}
-	P(\phi_{start}, \alpha(\theta)) = 1 \\
-	P(\phi_{end}, \phi_{entry}) \neq 0 \\
-	P(\phi_{end}, \phi_{entry}) + \sum_{\phi \in succ(\phi_{end})} P(\phi_{end}, \phi) = 1
+	TPP(\pi) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
+	|\Theta| = 1  &  \\
+	P(\phi_{x}, \alpha(\theta)) = x(t) & \\
+	P(\phi_{x}, \phi_{y}) = 1 - x(t) & \\
+	P(\phi_{c}, \phi_{z}) = 1 & \phi_{c} \in \omega(\theta)\\
 \end{eqnarray}
 
 \begin{figure}[h!]
@@ -1400,86 +1453,110 @@ If $|\Theta| = 1$ and $(\phi_{end}, \phi_{entry}) \in E$, denoting by $\theta$ t
 		\node[circle,draw=white,minimum width = 1cm] 
 		(start) at (-2,0) {};
 		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParStartNode) at (0,0) {$\phi_1$};
-		
-	
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParNode1) at (4,2) {$\phi_2$};
-	
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(ParEndNode) at (8,0) {$\phi_3$};
-		
-	
-		
 		\node[circle,draw=white,minimum width = 1cm] 
 		(end) at (10,0) {};
 		
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(startLoopNode) at (0,0) {$\phi_x$};
 		
-		\draw[bend left,above, ultra thick,->] (ParStartNode) edge node[xshift=-25]{$P(\phi_1,\phi_2) = x$} (ParNode1);
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(endLoopNode) at (8,0) {$\phi_y$};
+	
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(node1) at (4,2) {$\alpha(\theta)$};
 		
-		\draw[bend left,below, ultra thick,->] (ParNode1) edge node[xshift=25]{$P(\phi_2,\phi_1) = 1$} (ParStartNode);
+		\node[circle, minimum width = 0.5cm, rotate=90]        					   
+		(node2) at (4,3.5) {...};
 		
-		\draw[bend right,below, ultra thick,->] (ParStartNode) edge node[]{$P(\phi_1,\phi_3) = 1 - x$} (ParEndNode);
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(node3) at (4,5) {$\phi_c$};
+	
+		% Edges...
+	
+		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[xshift=40]{$P(\phi_x,\alpha(\theta)) = x(t)$} (node1);
+		
+		\draw[bend right,above, ultra thick,->] (node3) edge node[xshift=-40]{$P(\phi_c,\phi_x) = 1$} (startLoopNode);
+		
+		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[]{$P(\phi_x,\phi_y) = 1 - x(t)$} (endLoopNode);
 		
 		
 		
-		\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
-		\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
+		\draw[dashed,ultra thick, ->] (start) -- (startLoopNode);
+		\draw[dashed,ultra thick, ->] (endLoopNode) -- (end);
+		
+		
+		\draw[ultra thick, ->] (node1) -- (node2);
+		\draw[ultra thick, ->] (node2) -- (node3);
 		
 		% Frames
 		
-		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=1.8cm] (sub1) at (4,2) {};
-		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=5cm] (sub1) at (4,3.5) {};
+		\node[circle,above of=sub1, yshift=50] (label1) {$\theta$};
 	
 		%legend
 	
-		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$\phi_1 = l_{\alpha} \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_3 = l_{\omega} \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_2 \in \mathscr{F_E}$}; \\
-			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
+			\matrix [below left] at (current bounding box.north east) {
+			\node [] {$x(t) \in \mathbb{R} : 0 \leq x(t) \leq 1$}; \\
+			\node [] {$\phi_x = \tau_{\alpha}(\mathcal{L}) \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_y = \tau_{\omega}(\mathcal{L}) \in \mathscr{F_O}$}; \\
+			\node [] {$\phi_c \in \omega(\theta)$}; \\
 		};
 		
 	\end{tikzpicture}
 	\caption{Parallel structure in the serverless workflow.}
 \end{figure}
 
+In order to compute performance data of a loop structure, $E[I_{\theta}]$, that is the expected value of the number of iterations of $\mathcal{L}$, is required.
 
+To compute aforementioned information, we can model our problem using geometric distribution, which gives the probability according to which the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event ``\textit{we will not execute the loop body}", we know that success probability $p$ is given by:
 
-In order to compute the mean response time and the mean cost of a loop structure, we need to know $EI(\mathcal{L})$, that is the expected value of the number of iterations of $\mathcal{L}$.
-
-We know that geometric distribution gives the probability that the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event "we will not execute the loop body", we know that success probability $p$ is given by:
-
-\begin{equation}
-	p = 1 - P(\phi_{end}, \phi_{entry})
-\end{equation}
+\begin{eqnarray}
+	p = P(\phi_x,\phi_y) = 1 - P\Big(\phi_{x}, \alpha(\theta)\Big) \\
+\end{eqnarray}
 
 Then:
 
 \begin{eqnarray}
-	P(EI(\mathcal{L}) = k) & = & \Big[  1 - P(\phi_{end}, \phi_{entry}) \Big] \cdot \bigg[  P(\phi_{end}, \phi_{entry}) \bigg] ^{k-1} \\
-	& = & pq^{k-1}
+	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \\
+	& = & pq^{k-1} \\
+	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta)\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta)\Big) \bigg] ^{k-1} \\
 \end{eqnarray}
 
 \begin{eqnarray}
-	E[X] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
+	E[I_{\theta}] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
 	& = & p \sum_{k = 0}^\infty kq^{k} \nonumber \\
 	& = & p \cdot \frac{q}{(1-q)^2} \nonumber \\
 	& = & \dfrac{q}{p} \nonumber \\
-	& = & \dfrac{P(\phi_{end}, \phi_{entry})}{1 - P(\phi_{end}, \phi_{entry})} 
+	& = & \dfrac{P\Big(\phi_{x}, \alpha(\theta)\Big)}{1 - P\Big(\phi_{x}, \alpha(\theta)\Big)} 
 \end{eqnarray}
 
-Then the response time and the cost of a loop structure can be defined as follows:
+More precisely, at any time $t$, the expected value regarding the number of iterations of $\mathcal{L}$, involving the execution of the sub-choreography $\theta$, can be computed as follows:
 
 \begin{equation}
-	RT_{loop}(\mathcal{L}, \textbf{X}) = E[I_{\mathcal{L}}] \cdot RT_C(\theta, \textbf{X})
+	E[I_{\theta}](t) = \dfrac{x(t)}{1 - x(t)}
+\end{equation}
+
+
+At any time $t$, the response time and the cost of the loop structure $\mathcal{L}$ can be computed as follows:
+
+\begin{equation}
+	RT_{loop}(\textbf{X}, t) \mathDef E[I_{\theta}](t) \cdot  RT_C(\textbf{X}, \theta, t)
 \end{equation}
 
 \begin{equation}
-	C_{loop}(\mathcal{L}, \textbf{X}) = E[I_{\mathcal{L}}] \cdot C_C(\theta, \textbf{X})
+	C_{loop}(\textbf{X}, t) \mathDef E[I_{\theta}](t) \cdot C_C(\textbf{X}, \theta, t)
 \end{equation}
+
+The exit probability of the a loop structure can be computed as follows:
+
+\begin{equation}
+	P_{exit}^{(loop)} \mathDef E[I_{\theta}](t) \cdot P_{exit}(\theta, t)
+\end{equation}
+
+
+
+
+
 
 
 
