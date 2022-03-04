@@ -25,11 +25,17 @@
 
 \newcommand{\Cross}{\mathbin{\tikz [x=2.5ex,y=2.5ex,line width=.10ex] \draw (0,0) -- (1,1) (0,1) -- (1,0);}}
 
-\newcommand*{\N}{\mathbb{N}}
-\newcommand*{\R}{\mathbb{R}}
+\newcommand{\mathDef}{\overset{\textit{def}}{=}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rplus}{\mathbb{R}^+}
+\newcommand{\SetMinusZero}{\setminus \left\{0\right\}}
+\newcommand{\SetFromOneTo}[1]{\N \cap \left[1,#1\right]}
+\newcommand{\ItalicQuotMark}[1]{``\textit{#1}"}
+
 \DeclareMathOperator*{\argminA}{arg\,min}
 
-\newcommand{\mathDef}{\overset{\textit{def}}{=}}
+
 
 \usepackage{hyperref}
 \hypersetup{
@@ -1773,25 +1779,22 @@ Finally, wa are able to formulate our MMKP instance problem, which can be expres
 
 \begin{align}
 	\label{MMKP}
-	\displaystyle max \quad & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} p_{\phi_{i_{j}}} & \\	
-	\text{subject to} \quad  & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} c_{\phi_{i_{j}}} \leq C_{user} & \\
-	& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \mathscr{F_E}(\mathcal{\widetilde{P}})}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} t_{\phi_{i_{j}}} + \nonumber \\
-	& \qquad + \sum_{\phi_h \in \xi}  \sum_{j = 1}^{|\textbf{F}_{\phi_{h}} \times \N|} x_{\phi_{h_{j}}} t_{\phi_{h_{j}}} \leq RT_{user} & 
+	\displaystyle max \quad & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} p_{\phi_{i_{j}}} & \\	
+	\text{subject to} \quad  & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} c_{\phi_{i_{j}}} \leq C_{user} & \\
+	& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \mathscr{F_E}(\mathcal{\widetilde{P}})}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} t_{\phi_{i_{j}}} + \nonumber \\
+	& \qquad + \sum_{\phi_h \in \xi}  \sum_{j = 1}^{|\textbf{F}_{\phi_{h}} \times \N|} y_{\phi_{h_{j}}} t_{\phi_{h_{j}}} \leq RT_{user} & 
 	\forall \xi \in \Xi \\	
-	& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} x_{\phi_{i_{j}}} = 1 & \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\
-	& x_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace &
+	& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} = 1 & \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\
+	& y_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace &
 	\begin{array}{r}
 		\forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\ \forall j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]
 	\end{array}
 \end{align}
 
 
+To simplify our notations, from now, we will use $o_{i_j}$ notation to denote the $i$-th item belonging to the $j$-th group, the latter denoted with $g_i$; clearly, in our context, the item $o_{i_j}$ coincides with the $j$-th executable function configuration $x_{\phi_{i_j}}$ for the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. 
 
-
-
-
-
-
+A solution of a MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldots o_{n} \right\}$ where, clearly, an object $o_{i_j}$ is selected if the corresponding decision variable $y_{\phi_{i_j}}$ has been set to 1.
 
 
 \subsubsection{The heuristic approach based on ACO}
@@ -1814,12 +1817,67 @@ In very simple terms, each ant incrementally constructs the partial solution to 
  
 \subsubsection{Definition}
 
-To solve MMKPs with ACO, the key point is to decide which com-
-ponents of the constructed solutions should be rewarded, and how to
-exploit these rewards when constructing new solutions. A solution of a
-MKP is a set of selected objects S = {o1, . . . , ok } (we shall say that an
-object oi is selected if the corresponding decision variable xoi has been
-set to 1). 
+To solve MMKPs with ACO, we have to define how pheromone trails are laid by artificial ants, explaining how they follow them when constructing new partial solutions. In other words we need to decide which components of the constructed solutions should be rewarded, and how to exploit these rewards when constructing new solutions.
+
+We define the \textit{solution's components graph} $\mathcal{G}=(\textbf{O},\textbf{E})$, on which ants lay pheromone trails, as a directed weighted graph such that:
+
+\begin{equation}
+	\textbf{O} \mathDef \bigcup_{j=1}^n \bigcup_{j=1}^{|g_i|} \left\{ o_{i_j} \right\}
+\end{equation}
+
+\begin{equation}
+	(o_{i_j}, o_{k_m}) \in E \Leftrightarrow i \neq k \qquad \forall i,k \in \N \cap \left\{1,n\right\}, \forall m,j \in \N
+\end{equation}
+
+where: 
+
+\begin{itemize}
+	
+	\item The set of vertices $\textbf{O}$ is made up all items belonging to each group. 
+	
+	Moreover, any object $o_{i_j}$ is adjacent to all other objects belonging to any group except those which belong to its same group.
+	
+	\item The weight $w \in \Rplus$ associated to each edge $(o_{i_j}, o_{k_m}) \in \textbf{E}$ is the value of the \textit{pheromone trail} laid by our artificial ants and it can change during algorithm execution. 
+	
+	The value of pheromone trail associated to each edge $(o_{i_j}, o_{k_m})$ during the $k$-th iteration of the algorithm is denoted as follows:
+	
+	\begin{equation}
+		\tau_k(o_{i_j}, o_{k_m}) = w_k
+	\end{equation}
+	
+	Intuitively, the pheromone value associated to the edge $(o_{i_j}, o_{k_m}) \in E$ represents the desirability to select the object $o_{k_m}$ when $o_{i_j}$ was been previously selected as part of the solution.
+	
+	We have adopted the so-called $\mathcal{MAX} - \mathcal{MIN}$ Ant System, according to which following constrain must be hold:
+	
+	\begin{equation}
+		w_{\textbf{min}} \leq w_k \leq w_{\textbf{max}} 
+	\end{equation}
+
+	\begin{equation}
+		\tau_0(o_{i_j}, o_{k_m}) = w_{\textbf{max}} \qquad \forall i,k \in \N \cap \left\{1,n\right\}, \forall m,j \in \N 
+	\end{equation}
+	
+	that is, we explicitly impose lower and upper bounds $w_{\textbf{min}}$ and $w_{\textbf{max}}$ on pheromone
+	trails, and pheromone trails are set to $w_{\textbf{max}}$ at the beginning of the search.
+	
+	
+	the beginning of the search.
+	At each cycle of this algorithm, every ant constructs a solution. 
+	
+	It first randomly chooses an initial object, and then iteratively adds objects that are chosen within a set Candidates that contains all the objects that can be selected without violating resource constraints. Once each ant has constructed a solution, pheromone trails are updated. 
+	
+	
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1837,43 +1895,271 @@ set to 1).
 
 
 \begin{algorithm}
-	\KwData{this text}
-	\KwResult{Some solution}
-	\For{$k\gets0$ \KwTo $|\mathcal{A}|$ \KwBy $1$}{
+	%\KwData{this text}
+	%\KwResult{Some solution}
+	
+	\For{$l\gets0$ \KwTo $m$ \KwBy $1$}{
 		
 		\BlankLine
 		
-		$S_k \leftarrow \emptyset $ \;
-		$G_{candidates} \leftarrow \mathcal{G} $\;
-		
-		\BlankLine
-		\BlankLine
-		
-		$\textbf{G}_i \leftarrow$ Randomly select a group from $G_{candidates}$ for some $i \in \left[1;|\mathcal{G}|\right]$\;
-		$o_{i_k} \leftarrow$ Randomly select an object from $\textbf{G}_i$ for some $k \in \left[1;|\textbf{G}_i|\right]$\;
+		$z \leftarrow 0$ \;
+		$\textbf{S}_{k_l}^{(z)} \leftarrow \emptyset $ \;
+		$\textbf{G} \leftarrow \mathcal{G} $\;
 		
 		\BlankLine
 		\BlankLine
 		
-		$S_k \leftarrow \{o_{i_k}\} $ \;
-		$G_{candidates} \leftarrow G_{candidates} \setminus \textbf{G}_i $\;
+		$\textbf{G}_i \leftarrow$ Randomly select a group from $\textbf{G}$\;
+		$o_{i_j} \leftarrow$ Randomly select an object from $\textbf{G}_i$\;
+		
+		\BlankLine
+		\BlankLine
+		
+		$z \leftarrow z + 1$ \;
+		$\textbf{S}_{k_l}^{(z)} \leftarrow \{o_{i_j}\} $ \;
+		$\textbf{G} \leftarrow \textbf{G} \setminus \textbf{G}_i $\;
 		
 		\BlankLine
 		
-		\While{$G_{candidates} \neq \emptyset$}{
+		\While{$\textbf{G} \neq \emptyset$}{
 			
 			\BlankLine
 			
-			$\textbf{G}_i \leftarrow$ Randomly select a group from $G_{candidates}$\;
-			$\mathcal{O} \leftarrow $  without violating resource constraints \;
-			
+			$\textbf{G}_a \leftarrow$ Randomly select a group from $\textbf{G}$\;
 			
 			\BlankLine	
+			
+			$\mathcal{O} \leftarrow $ Select a group of candidates objects belonging to $\textbf{G}_a$ which do not viotale resource constraints \;
+			
+			\BlankLine
+			
+			$o_{a_b} \leftarrow$ Select an object from $\textbf{G}_a$ having highest transition probability $P(o_{a_b}, \textbf{S}_{k_l}^{(z)}, \pi_{k_l}^{(z)})$\;
+			
+			\BlankLine	
+			
+			$z \leftarrow z + 1$\;
+			
+			\BlankLine	
+			
+			$\textbf{S}_{k_l}^{(z)} \leftarrow \textbf{S}_{k_l}^{(z)} \cup o_{a_b} $\;
+			
+			\BlankLine
+			
+			$\textbf{G} \leftarrow \textbf{G} \setminus \textbf{G}_a $\;
 		}
-		
-		
 	}
+	
+	$S_k \leftarrow$ Select $\textbf{S}_{k_l}^{(z)}$ having maximum profit\;
+	
+	\Return $S_k$
+	\caption{Pseudo-code regarding partial solution generation performed by ants}
 \end{algorithm}
+
+\newpage
+
+\subsubsection{Transition Probabilities}
+
+Although firstly each ants selects randomly a object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depend on several parameters, like the 
+attractiveness of the objects, the path traveled by the ant and the pheromone trail laid on the solution components graph $G_{S\textbf{}}$.
+
+Let $z \in \SetFromOneTo{n-1}$ the number of items selected by an ant where $n$, we recall, represents the number of groups. Formally, during the $k$-th iteration of our algorithm, the path $\pi_{k_l}^{(z)}$, traversed by the $l$-th ant on the solution components graph $G_{\textbf{S}}(\textbf{O},E)$ after the $z$-th object selection, can be defined as follows:
+
+\begin{equation}
+	\pi_{k_l}^{(z)} = o_1e_1o_2 \ldots o_{z-1}e_{z}o_{z+1}
+\end{equation} 
+
+where:
+
+\begin{eqnarray}
+	o_s \in \textbf{O} & \qquad \forall s \in \SetFromOneTo{z} \\
+	e_s = (o_s,o_{s+1}) \in E  & \qquad \forall s \in \SetFromOneTo{z} \\
+	g(o_s) \neq g(o_r)   &\qquad \forall s,r \in \SetFromOneTo{z} : s \neq r
+\end{eqnarray}
+
+The last property state that each selected object belonging to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
+
+Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represents the partial solution built so far by the $l$-th ant after the $z$-th object selection; therefore, $|\textbf{S}_{k_l}^{(z)}| = z + 1$.  
+
+Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in \textbf{O}$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
+
+\begin{equation}
+	P(o_{i_j}, \textbf{S}_{k_l}^{(z)}, \pi_{k_l}^{(z)}) \mathDef \frac{\left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}{\displaystyle \sum_{o_{i_j} \in \mathcal{C}(\textbf{G}_i, \textbf{S}_{k_l}^{(z)})} \left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $\tau( o_{i_j}, \pi_{k_l}^{(z)})$ is the pheromone factor.
+	\item $\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)})$ is the heuristic factor.
+	\item $\alpha, \beta \in \Rplus$ are two parameter that determine, respectively, the relative importance of pheromone and heuristic factors.
+\end{itemize}
+
+The pheromone factor $\tau( o_{i_j}, \pi_{k_l}^{(z)})$ depends on the path $\pi_{k_l}^{(z)}$ and, in particular, on the quantity of pheromone laid on edges connecting the objects that already are in the partial solution $\textbf{S}_{k_l}^{(z)}$.
+
+Formally, be $o_{z+1}$ the last vertex of the path $\pi_{k_l}^{(z)}$, the pheromone factor can be computed as follows:
+
+\begin{equation}
+	\tau( o_{i_j}, \pi_{k_l}^{(z)}) \mathDef \tau(o_{z+1}, o_{i_j}) + \sum_{e \in \pi_{k_l}^{(z)}} \tau(e) 
+\end{equation}
+
+The heuristic factor $\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)})$ also depends on the whole set $\textbf{S}_{k_l}^{(z)}$ of selected objects. 
+
+
+
+The following ratio:
+
+\begin{equation}
+	h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) \mathDef \displaystyle \sum_{y=0}^{Y} \frac{c_{y_j}}{\displaystyle  b_y - \sum_{o_s \in \textbf{S}_{k_l}^{(z)}} c_y(o_z)}
+\end{equation}
+
+represents the tightness of the object $o_{i_j}$ on the problem's constraints relatively to the constructed solution $\textbf{S}_{k_l}^{(z)}$; thus, the lower this ratio is, the
+more the object is profitable.
+
+We can now define the heuristic factor formula as follows:
+
+\begin{equation}
+	\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \mathDef \frac{p_{i_j}}{h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j})}
+\end{equation}
+
+
+\subsubsection{Local Search}
+
+According to \ref{}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current iteration best solution, performing a local search, 
+
+We have adopted two different local:
+
+\begin{description}
+	\item[Random Local Search]  an exhaustive search within a group to improve the solution. 
+	
+	It replaces current selected object of a group with every other object that do not violate resource constraints and checks if it is a better solution. 
+	
+	The total procedure is repeated a number of times, each time for a random group.
+	
+	\item[Random Item Swap] is an extended version of the
+	random local search. 
+	
+	In this case, a specified number ($> 1$) of objects are swapped with other random objects from the same group without checking the resource constraints, then it checks if it is a valid solution and if it improves the solution.
+\end{description}
+
+\begin{algorithm}
+	
+	\For{a specified number of times}{
+		
+		\BlankLine
+		
+		$\textbf{G}_i \leftarrow$ Randomly select a group from $\mathcal{G}$\;
+		
+		\For{each object $o_{i_j} \in \textbf{G}_i$ other than the one in $\textbf{S}_k$}{
+			
+			\BlankLine
+			
+			$o_{i_s} \leftarrow $ The object belonging to $\textbf{S}_k$ such that $g(o_{i_s}) = g(o_{i_j})$
+			
+			\BlankLine
+			
+			$\textbf{S}_k^{(temp)} \leftarrow \left\{ \textbf{S}_k \setminus \left\{ o_{i_s} \right\} \right\} \cup \left\{ o_{i_j} \right\}$ 
+			
+			\BlankLine
+			\BlankLine
+			
+			\If{$\textbf{S}_k^{(temp)}$ not violate MMKP constraints}{
+				
+				\BlankLine
+				\BlankLine
+				
+				\If{$profit(\textbf{S}_k^{(temp)}) > profit(\textbf{S}_k) $}{
+					$\textbf{S}_k \leftarrow \textbf{S}_k^{(temp)}$
+				}
+				
+			}
+		}	
+	}
+	\Return $\textbf{S}_k$
+\end{algorithm}
+
+\begin{algorithm}
+	
+	\For{a specified number of times}{
+		
+		\BlankLine
+		
+		$\textbf{G}_i \leftarrow$ Randomly select a group from $\mathcal{G}$\;
+		
+		\For{each object $o_{i_j} \in \textbf{G}_i$ other than the one in $\textbf{S}_k$}{
+			
+			\BlankLine
+			
+			$o_{i_s} \leftarrow $ The object belonging to $\textbf{S}_k$ such that $g(o_{i_s}) = g(o_{i_j})$
+			
+			\BlankLine
+			
+			$\textbf{S}_k^{(temp)} \leftarrow \left\{ \textbf{S}_k \setminus \left\{ o_{i_s} \right\} \right\} \cup \left\{ o_{i_j} \right\}$ 
+			
+			\BlankLine
+			\BlankLine
+			
+			\If{$\textbf{S}_k^{(temp)}$ not violate MMKP constraints}{
+				
+				\BlankLine
+				\BlankLine
+				
+				\If{$profit(\textbf{S}_k^{(temp)}) > profit(\textbf{S}_k) $}{
+					$\textbf{S}_k \leftarrow \textbf{S}_k^{(temp)}$
+				}
+				
+			}
+		}	
+	}
+	\Return $\textbf{S}_k$
+\end{algorithm}
+
+\subsubsection{Pheromone Trail Update}
+
+Let $m \in \N \SetMinusZero$ the amount of ants, $l \in \SetFromOneTo{m}$, $S_{best}$ the best solution, having maximal profit, constructed from the beginning of the algorithm and $\textbf{S}_k = \left\{S_{k_1}, \ldots, S_{k_m} \right\}$ the set containing all partial solutions constructed by ants during $k$-th iteration, where $S_{k_l}$ is the partial solution found by $l$-th ant. Finally, if the $l$-th ant fails to discover a partial solution, we will assume that $S_{k_l} = \emptyset$. 
+
+For any $a,b \in \N$ and $i,j \in \SetFromOneTo{n}$ such that $i \neq j$, during $k$-th iteration of the algorithm, when solutions construction phase is complete, all pheromone trails associated to any edge $(o_{i_j}, o_{a_b})$, belonging to the solution components graph $G_{\textbf{S}}$, are updated using following formula:
+
+\begin{equation}
+	\tau(o_{i_a}, o_{j_b})_k = \tau(o_{i_a}, o_{j_b})_{k-1} \cdot \rho + \Delta \tau(o_{i_a}, o_{j_b})_{k} 
+\end{equation}
+
+where:
+
+\begin{itemize}
+	
+	\item $\rho \in \mathbb{R} \cap \left[0,1\right]$ represents the so called \textit{evaporation coefficient}. 
+	
+	That coefficient is involved into the performing of a a mechanism called \textit{evaporation} according to which, lowering the pheromone trails by a constant factor, is possible to avoid unlimited accumulation of pheromone trail over components, decreasing their desirability during future algorithm's iterations.
+	
+	\item $\Delta \tau(o_{i_a}, o_{j_b})_{k}$ is the amount of pheromones laid on edge $(o_{i_a}, o_{j_b})$ by all ants who have traversed that edge for their solution construction. It can be computed as follows:
+	
+	\begin{equation}
+		\Delta \tau(o_{i_a}, o_{j_b})_{k} \mathDef \sum_{l=1}^{m} \tau(o_{i_a}, o_{j_b})_k^{(l)}
+	\end{equation}
+	
+	where: 
+	
+	\begin{itemize}
+		\item $\tau(o_{i_a}, o_{j_b})_k^{(l)}$ is the amount of pheromones laid on edge $(o_{i_a}, o_{j_b})$ by $l$-th ant, which, letting $\pi_{k_l}$ the path traversed by that ant, can be computed as follows:
+		
+		\begin{equation}
+			\tau(o_{i_j}, o_{a_b})_{k-1}^{l} \mathDef \left\{ 
+			\begin{array}{ll}
+				0 & \text{\textbf{if }} S_{k_l} = \emptyset \\ 
+				\displaystyle \frac{1}{1 + profit(S_{best}) - profit(S_{k_l})} & \text{\textbf{if }} S_{k_l} \neq \emptyset \wedge (o_{i_j}, o_{a_b}) \in \pi_{k_l} \\ 
+			\end{array} \right.
+		\end{equation}
+		
+		
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Termination Conditions}
+
+Since for each item $o_{i_j}$ is true that $0 \leq p_{i_j} \leq 1$, 
+
+The algorithm stops either when an ant has found an optimal solution (when the optimal bound is known), or when a maximum number of cycles has been performed.
+
 
 
 \newpage
