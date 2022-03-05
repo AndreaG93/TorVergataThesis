@@ -42,15 +42,16 @@
 	
 \begin{frontespizio} 
 	\Universita{Roma ``Tor Vergata'' } 
-	\Logo[3cm]{logo}
+	\Logo[3cm]{./images/logo}
 	\Facolta{Ingegneria} 
 	\Corso[Laurea Magistrale]{Ingegneria Informatica} 
-	\Annoaccademico{2018--2019} 
-	\Titolo{Performance Modeling of\\Computer Systems and Networks\\Project}
+	\Annoaccademico{2020--2021} 
+	\Titolo{??}
 	\NCandidato{Studente} 
 	\Candidato[0273395]{Andrea Graziani} 
 	\NRelatore{Docente}{} 
-	\Relatore{Vittoria de Nitto Personè} 
+	\Relatore{Prof.ssa Valeria Cardellini}
+	\Correlatore{Dott. Gabriele Russo Russo}
 \end{frontespizio} 
 	
 	
@@ -58,19 +59,41 @@
 
 \chapter{Introduction}
 
+\section{The Serverless Computing Paradigm}
+
+In recent years, thanks to an increased popularity of several lightweight virtualization solutions, specifically containers and container-orchestration systems, many public cloud providers have launched a new set of cloud computing services belonging to new service's type category called \textit{Function-as-a-Service} (\textit{FaaS}), where almost every aspect of the system administration tasks needed to deploy a workload on the cloud, like provisioning, monitoring, resource management and scaling, are directly managed by the provider with a minimum involvement of the user.
+
+With the development of FaaS platforms, the \textit{serverless computing paradigm}, a new application service model according to which any application is abstracted as a group of functions hosted on FaaS platforms orchestrated in a workflow, has emerged. 
+
+Regarding cloud application development, serverless computing paradigm provides many advantages, among which:
+
+\begin{itemize}
+	
+	\item the providing of a new simplified programming model which helps  developers to focus on logic and business aspects of their applications only, without worry about the managing of servers. 
+	
+	This can lead to a development cost reduction decreasing go-to-market time of the software products.
+	
+	\item the adopting of a very small-granularity billing pricing model called “\textit{pay as you go}”, by charging for execution time rather than for allocated resources. which can decrease the cost substantially.
+	
+	The small-granularity billing and scaling in
+	FaaS platforms can also decrease the cost substantially
+	
+	
+	
+	
+	\item Moreover, the paradigm lowers the cost of deploying applications too, adopting a so-called “\textit{pay as you go}” pricing model, by charging for execution time rather than for allocated resources \cite{COSE}.
+\end{itemize}
+
+ 
 
 
 
 
-
-
-\section{Serverless Computing Paradigm}
 
 In serverless computing platforms, computation is done by so-called \textit{function instances} which are completely managed by the serverless computing platform provider and act as tiny servers that can be invoked based on events forwarded by end-users \cite{PMSCP}.
 
-Serverless computing platforms handle almost every aspect of the system administration tasks needed to deploy a workload on the cloud, providing a new simplified programming model according to which developers can focus on the business aspects of their applications only \cite{COSE}.
 
-Moreover, the paradigm lowers the cost of deploying applications too, adopting a so-called “\textit{pay as you go}” pricing model, by charging for execution time rather than for allocated resources \cite{COSE}.
+
 
 
 \subsection{Serverless Function}
@@ -193,9 +216,177 @@ rency level, any request rejected by the warm pool will be
 rejected by the platform.
 
 
-\section{Motivation}
+\section{Motivations}
 
-Although serverless paradigm guarantees a cost-effective solution, giving to, FaaS platform generally exhibit variable performance which precludes their use in applications that must meet strict guarantees.
+Although serverless computing paradigm makes cloud application developing easier guaranteeing a cost-effective solution, there are several obstacles that prevent FaaS platforms to support more general workloads.
+
+Scientific literature have already reported a huge amount of limitations preventing a worldwide adoption, among which we recall:
+
+\begin{itemize}
+	
+	\item the lack of support for those applications having fine-grained state sharing needs, which is primarily due to stateless nature of serverless platforms.
+	
+	\item the absence of fine-grained coordination capabilities between serverless functions.
+	
+	\item very unpredictable performance due  is the variability in the hardware resources that
+	results from giving the cloud provider flexibility to choose the underlying server. 
+	
+	
+
+\end{itemize}
+
+
+The examples above highlights some factors that can affect
+the performance of running serverless functions. However,
+they are not the only factors. A recent study [9] showed
+that the underlying infrastructure and resource provisioning
+can vary significantly depending on multiple factors including
+function placement, cold starts, I/O and network conditions,
+type of VMs/containers, and co-location with other functions.
+
+
+Obliviously, the user cannot control  no control 
+
+is oblivious to all these other factors, and has only
+limited control over a few parameters affecting performance,
+i.e. memory and processing power.
+
+
+, especially those that must meet strict guarantees.
+
+
+
+First of all, when cloud application developers want to run a serverless function, is necessary to specify several configuration's parameters regarding its execution environment, like RAM memory size, time limits or CPU power; unfortunately configuring such parameters correctly, meeting cost and response time constraints, is not trivial. 
+
+In fact, several studies have already shown that aforementioned configuration parameters significantly affect the cost and response time of any serverless functions. 
+
+\ref{COSE} have shown that serverless function's response time decreases when the RAM memory size, allocated to the function, is increased; however, due to pricing models adopted by the vast majority of FaaS providers, according to which cost depends proportionally on the amount of RAM memory size allocated to a serverless function, a too large value for memory can result in higher costs.
+
+Nevertheless, serverless function's configuration parameters problem is quite more complicated than that, because, due to the tight coupling between the pricing model and the amount of allocated resources, even setting a small value of RAM memory size can lead to higher costs, due to a longer execution time of the functions. Moreover, the marginal improvement in response time decreases as the memory increases.
+
+
+\subsection{dsadasdasda}
+
+is used, owing to a longer duration, it can lead to higher costs.  
+
+
+
+
+despite a too large a value for memory can result in higher costs for running the function
+
+
+
+
+run-time of these serverless
+functions decreases with the increase of memory size allocated
+to the function.
+
+
+
+
+FaaS platforms generally exhibit variable performance which precludes their use in applications that must meet strict guarantees.
+
+
+
+In fact, despite almost all infrastructure issue are managed by FaaS provider,
+
+Despite there are several factors that can significantly affect the cost and response time of serverless functions, one of the most important is the configuration parameters
+
+Several 
+We ran this
+function for different memory sizes and studied the effect of
+varying memory sizes on the performance of the function, i.e.
+run-time. Figure 1b shows how the run-time of these serverless
+functions decreases with the increase of memory size allocated
+to the function. However, the marginal improvement in the
+run-time decreases as the memory increases.
+
+
+
+any FaaS provider  requires users to configure
+multiple parameters, such as memory, CPU
+
+
+
+pricing model as exposed by the cloud providers
+is tightly coupled with the amount of resources specified
+to execute the serverless function 
+
+
+
+
+Running serverless functions requires users to configure
+multiple parameters, such as memory, CPU, cloud provider, etc.
+While relatively simpler, configuring such parameters correctly
+while minimizing cost and meeting delay constraints is not
+trivial. 
+
+
+
+
+Several previous works, have state We ran this
+function for different memory sizes and studied the effect of
+varying memory sizes on the performance of the function, i.e.
+run-time. Figure 1b shows how the run-time of these serverless
+functions decreases with the increase of memory size allocated
+to the function. However, the marginal improvement in the
+run-time decreases as the memory increases. 
+
+
+
+
+
+
+
+Serveless provder performance depend on paramenter that 
+
+
+
+In order to meet both functional requirements, concerning the overall logic to be implemented, and non-functional requirements, concerning the quality of service (QoS) levels that should be guaranteed, a system, able to dynamically 
+
+ Such
+systems should be able to dynamically adapt themselves
+to their environment with little or no human inter-
+vention, in order to meet both functional requirements
+concerning the overall logic to be implemented and non-
+functional requirements concerning the quality of service
+(QoS) levels that should be guaranteed.
+
+
+
+
+Serverless computing has given a much-needed agility to
+developers, abstracted away the management and maintenance
+of physical resources, and provided them with a relatively
+small set of configuration parameters: memory and CPU.
+While relatively simpler, configuring the “best” values for
+these parameters while minimizing cost and meeting perfor-
+mance and delay constraints poses a new set of challenges.
+This is due to several factors that can significantly affect the
+running time of serverless functions.
+
+
+
+
+guarantees both a cost-effective solution and make developing services easier, giving to, FaaS platform generally exhibit variable performance which precludes their use in applications that must meet strict guarantees.
+ 
+ 
+ Serverless computing is poised to
+ make developing services easier, but
+ providing QoS guarantees remains
+ difficult. 17,27 While the serverless plat-
+ form needs to offer some guarantees
+ of scalability, performance, and avail-
+ ability, this is of little use if the ap-
+ plication relies on an ecosystem of
+ services, such as identity providers,
+ messaging queues, and data persis-
+ tence, which are outside the control
+ of the serverless platform.
+ 
+ 
+ 
+ 
  
 \begin{enumerate}
 	\item scheduling policies today typically imple-
@@ -264,6 +455,20 @@ In addition, limits help developers manage costs and better
 Thus, a prospective user
 could choose the services that best suit his/her QoS
 requirements.
+
+
+
+The main goal of our work is to mitigate 
+
+self-adaptation is to alleviate the manage-
+ment problem of complex software systems that operate
+in highly changing and evolving environments. Such
+systems should be able to dynamically adapt themselves
+to their environment with little or no human inter-
+vention, in order to meet both functional requirements
+concerning the overall logic to be implemented and non-
+functional requirements concerning the quality of service
+(QoS) levels that should be guaranteed.
 
 \section{Contribution}
 
