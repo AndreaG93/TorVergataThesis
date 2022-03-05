@@ -8,6 +8,9 @@
 \usepackage{titlesec}
 \usepackage{tikz}
 \usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{frontespizio} 
+\usepackage[mathscr]{euscript}
 \usepackage[a4paper,left=3.5cm,right=2.5cm]{geometry}
 \usepackage[ruled,linesnumbered]{algorithm2e}
 \SetKw{KwBy}{by}
@@ -17,14 +20,8 @@
 
 \onehalfspacing
 
-
-\setcounter{secnumdepth}{4}
-
-\usepackage[mathscr]{euscript}
-\usepackage{tikz}
-
+% Custom commands...
 \newcommand{\Cross}{\mathbin{\tikz [x=2.5ex,y=2.5ex,line width=.10ex] \draw (0,0) -- (1,1) (0,1) -- (1,0);}}
-
 \newcommand{\mathDef}{\overset{\textit{def}}{=}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
@@ -33,23 +30,29 @@
 \newcommand{\SetFromOneTo}[1]{\N \cap \left[1,#1\right]}
 \newcommand{\ItalicQuotMark}[1]{``\textit{#1}"}
 
-\DeclareMathOperator*{\argminA}{arg\,min}
 
-
-
-\usepackage{hyperref}
 \hypersetup{
     colorlinks=true, %set true if you want colored links
     linktoc=all,     %set to all if you want both sections and subsections linked
     linkcolor=black,  %choose some color if you want links to stand out
 }
 
-\theoremstyle{definition}
-
-\newtheorem{definition}{Definition}[section]
-\newtheorem*{remark}{Remark}
 
 \begin{document}
+	
+\begin{frontespizio} 
+	\Universita{Roma ``Tor Vergata'' } 
+	\Logo[3cm]{logo}
+	\Facolta{Ingegneria} 
+	\Corso[Laurea Magistrale]{Ingegneria Informatica} 
+	\Annoaccademico{2018--2019} 
+	\Titolo{Performance Modeling of\\Computer Systems and Networks\\Project}
+	\NCandidato{Studente} 
+	\Candidato[0273395]{Andrea Graziani} 
+	\NRelatore{Docente}{} 
+	\Relatore{Vittoria de Nitto Personè} 
+\end{frontespizio} 
+	
 	
 \tableofcontents
 
