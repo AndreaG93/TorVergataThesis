@@ -28,6 +28,7 @@
 \newcommand{\Rplus}{\mathbb{R}^+}
 \newcommand{\SetMinusZero}{\setminus \left\{0\right\}}
 \newcommand{\SetFromOneTo}[1]{\N \cap \left[1,#1\right]}
+\newcommand{\SetFromZeroToOne}{\left[0,1\right]}
 \newcommand{\ItalicQuotMark}[1]{``\textit{#1}"}
 
 
@@ -93,7 +94,8 @@ Scientific literature have already reported a huge amount of limitations prevent
 	
 	\item the absence of fine-grained coordination capabilities between serverless functions.
 	
-	\item too simple scheduling policies which, being mainly based on first-come-first-served algorithms, limit how serverless function have to be managed under challenging conditions.
+	\item too simple scheduling policies which, being mainly based on first-come-first-served algorithms, limit how serverless function have to be managed in scenarios such as when incoming demands cannot
+	be satisfied by currently available resources.
 	
 	\item very unpredictable performance due to multiple factors, including
 	function placement, \textit{cold starts}, namely the delay incurred due to set-up time required to get a function instance up and running when it is invoked for the first time within a defined period, I/O and network conditions, type of VMs/containers, variability in the hardware and co-location with other functions.
@@ -112,331 +114,18 @@ Several studies have already shown that aforementioned configuration parameters 
 
 Serverless function's configuration parameters problem is quite more complicated than that because, due to the tight coupling between the pricing model and the amount of allocated resources, even setting a small value of RAM memory size can lead to higher costs, due to a longer execution time of the functions. Moreover, the marginal improvement in response time decreases as the memory increases. Despite several solutions, based on statistical learning, like in \ref{}, or greedy algorithms, as in \ref{}, already exist, none of them seem to consider the changing of execution environment over the time. In fact, besides parameters configuration, serverless functions performance is affected by several other factors like traffic, \textit{cold starts} and network conditions. Sometimes, in order to meet QoS levels, due to changing regarding execution environments on FaaS platform, can be useful to change, at runtime, serverless functions configuration. There is no existing solution capable to dynamically adapt itself when execution environments on FaaS platform changes.
 
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Serverless Application}
-
-
-
-Although FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale providers resulting in mostly non-portable FaaS solutions 
-
-and provider lock-in
-
-occurs when transitioning data, products, or services to another vendor's platform is difficult and costly, making customers more dependent (locked-in) on a single cloud storage solution.
-
-FC languages and runtime systems are still in their
-infancy with numerous drawbacks. Current commercial and open
-source offerings of FC systems are dominated by a few large-
-scale providers who offer their own platforms, 
-
-As FaaS platforms take over operational responsibilities,
-besides uploading the source code of functions, users have
-limited control over resources on FaaS platforms. Taking
-AWS Lambda as an example, the amount of allocated mem-
-ory during execution and the concurrency level are only op-
-tions for tuning the performance of functions. The amount
-of allocated memory is between 128 MB and 3,008 MB
-in 64MB increments [13]. Previous researches have proven
-that computational power and network throughput are in
-proportion to the amount of allocated memory, and disk
-performance also increases with larger memory size due
-to less contention [14], [15]. By reserving and provisioning
-more instances to host functions, high concurrency level can
-decrease ﬂuctuations in the function performance incurred
-by cold starts (container initialization provisioning delay if
-no warm instance is available) and reduce the number of
-throttles under very heavy request loads
-
-
-
-\subsection{fdsfsd}
-
-
-
-
-\begin{itemize}
-	\item 
-\end{itemize}
-
-\subsection{title}
-
-
-
-
-
-the run-time of these serverless
-functions decreases with the increase of memory size allocated
-to the function. However, the marginal improvement in the
-run-time decreases as the memory increases.
-
-This behavior
-is because the pricing model as exposed by the cloud providers
-is tightly coupled with the amount of resources speciﬁed
-to execute the serverless function (c.f. Figure 1a), and the
-dependency between memory and CPU resource allocation –
-AWS Lambda allocates CPU power
-
-
-a model for each executable belonging to a given choreography.
-
-
-
-This helps developers decide if a developed
-workload would comply with their QoS agreements, and if
-not, how much performance improvement they would need
-to do so. The performance improvement decided could be
-achieved either by improving the design, quality of code, or
-by simply resizing the resource allocated to each instance,
-which is usually set by changing the allocated memory.
-
-
-
-
-
-
-
-
-\section{Motivations}
-
-
-
-\subsection{dsadasdasda}
-
-is used, owing to a longer duration, it can lead to higher costs.  
-
-
-
-
-despite a too large a value for memory can result in higher costs for running the function
-
-
-
-
-run-time of these serverless
-functions decreases with the increase of memory size allocated
-to the function.
-
-
-
-
-FaaS platforms generally exhibit variable performance which precludes their use in applications that must meet strict guarantees.
-
-
-
-In fact, despite almost all infrastructure issue are managed by FaaS provider,
-
-Despite there are several factors that can significantly affect the cost and response time of serverless functions, one of the most important is the configuration parameters
-
-Several 
-We ran this
-function for different memory sizes and studied the effect of
-varying memory sizes on the performance of the function, i.e.
-run-time. Figure 1b shows how the run-time of these serverless
-functions decreases with the increase of memory size allocated
-to the function. However, the marginal improvement in the
-run-time decreases as the memory increases.
-
-
-
-any FaaS provider  requires users to configure
-multiple parameters, such as memory, CPU
-
-
-
-pricing model as exposed by the cloud providers
-is tightly coupled with the amount of resources specified
-to execute the serverless function 
-
-
-
-
-Running serverless functions requires users to configure
-multiple parameters, such as memory, CPU, cloud provider, etc.
-While relatively simpler, configuring such parameters correctly
-while minimizing cost and meeting delay constraints is not
-trivial. 
-
-
-
-
-Several previous works, have state We ran this
-function for different memory sizes and studied the effect of
-varying memory sizes on the performance of the function, i.e.
-run-time. Figure 1b shows how the run-time of these serverless
-functions decreases with the increase of memory size allocated
-to the function. However, the marginal improvement in the
-run-time decreases as the memory increases. 
-
-
-
-
-
-
-
-Serveless provder performance depend on paramenter that 
-
-
-
-In order to meet both functional requirements, concerning the overall logic to be implemented, and non-functional requirements, concerning the quality of service (QoS) levels that should be guaranteed, a system, able to dynamically 
-
- Such
-systems should be able to dynamically adapt themselves
-to their environment with little or no human inter-
-vention, in order to meet both functional requirements
-concerning the overall logic to be implemented and non-
-functional requirements concerning the quality of service
-(QoS) levels that should be guaranteed.
-
-
-
-
-Serverless computing has given a much-needed agility to
-developers, abstracted away the management and maintenance
-of physical resources, and provided them with a relatively
-small set of configuration parameters: memory and CPU.
-While relatively simpler, configuring the “best” values for
-these parameters while minimizing cost and meeting perfor-
-mance and delay constraints poses a new set of challenges.
-This is due to several factors that can significantly affect the
-running time of serverless functions.
-
-
-
-
-guarantees both a cost-effective solution and make developing services easier, giving to, FaaS platform generally exhibit variable performance which precludes their use in applications that must meet strict guarantees.
- 
- 
- Serverless computing is poised to
- make developing services easier, but
- providing QoS guarantees remains
- difficult. 17,27 While the serverless plat-
- form needs to offer some guarantees
- of scalability, performance, and avail-
- ability, this is of little use if the ap-
- plication relies on an ecosystem of
- services, such as identity providers,
- messaging queues, and data persis-
- tence, which are outside the control
- of the serverless platform.
- 
- 
- 
- 
- 
-\begin{enumerate}
-	\item scheduling policies today typically imple-
-	ment basic rst-come-rst-served algorithms
-\end{enumerate}
-
-
-
-
-FaaS and BaaS can exhibit variable
-performance which precludes their
-use in applications that must meet
-strict guarantees.
-
-
-
-Despite the fact that serverless solution is cost-effective
-and eases the resource management, there are pain points
-hindering its wide adoption by potential users, including
-the lack of performance and cost model [6], [7], [8], and
-the trade-off analysis between the performance and cost
-of serverless applications [8], [9]. Performance and cost
-modeling and optimization are non-trivial and necessary
-steps towards guaranteeing the service level agreement
-(SLA) of serverless applications in an economic manner,
-which is basically finding an acceptable trade-off between
-performance and cost. The difficulties of such modeling and
-optimization problems lie in the following aspects:
-
-
-
-Serverless computing has given a much-needed agility to
-developers, abstracted away the management and maintenance
-of physical resources, and provided them with a relatively
-small set of conﬁguration parameters: memory and CPU.
-While relatively simpler, conﬁguring the “best” values for
-these parameters while minimizing cost and meeting perfor-
-mance and delay constraints poses a new set of challenges.
-This is due to several factors that can signiﬁcantly aﬀect the
-running time of serverless functions.
-
-
-
-While many FaaS oerings exist [3, 4, 10, 12, 15, 17, 18, 20],
-relatively basic techniques to manage serverless function
-invocations are provided today. As function requests are re-
-ceived, the cloud provider schedules functions, mostly in
-a rst-in-rst-out manner. 
-
-
-Opportunities to invoke a more
-informed scheduling policy are missed, however, in chal-
-lenging scenarios such as when incoming demands cannot
-be satised by currently available resources. Such scenarios
-occur when providers cannot accommodate a rise of invo-
-cations due to cold starts or inecient resource allocation
-or alternatively when function invocation limits are imposed.
-Function invocation limits bound the number of functions
-running either instantaneously or over a time period. Be-
-cause serverless technologies automatically scale to meet
-demands, function invocation limits ensure a bug or miscon-
-guration in tenant workloads does not inappropriately scale.
-In addition, limits help developers manage costs and better
-
-
-Thus, a prospective user
-could choose the services that best suit his/her QoS
-requirements.
-
-
+Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions which exacerbates the provider lock-in problem. There is no agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution. We believe that a prospective user must be able to choose the FaaS platform that best suit his/her QoS requirements.
 
 The main goal of our work is to mitigate 
 
-self-adaptation is to alleviate the manage-
-ment problem of complex software systems that operate
-in highly changing and evolving environments. Such
-systems should be able to dynamically adapt themselves
-to their environment with little or no human inter-
-vention, in order to meet both functional requirements
-concerning the overall logic to be implemented and non-
-functional requirements concerning the quality of service
-(QoS) levels that should be guaranteed.
 
-\section{Contribution}
+
+\section{Contributions}
 
 Our work's contributions can be summarized as follows:
 
 \begin{itemize}
-	\item Firstly, we developed a formal definition of a serverless application workflow, abstracting sequences of serverless functions, parallelism, branch and loop structures.
+	\item Firstly, we developed a formal definition of a serverless application workflow, abstracting sequences of serverless functions, including parallel, branch and loop structures.
 	
 	\item We formalized a performance model in order to predict a serverless application's performance, in term of economic cost and response time, when the latter is executed with a given ``\textit{configuration}". 
 	
@@ -444,8 +133,7 @@ Our work's contributions can be summarized as follows:
 	
 	\item In order to significantly promote the use of serverless paradigm by applications that must meet strict guarantees, we present a methodology and a software framework capable to find the ``\textit{best configuration}" for a serverless application.
 	
-	This can be done, providing the suitable configuration of each serverless function within a serverless application by solving an optimization
-	problem, that is a LP problem, derived from our performance model.
+	This can be done, providing the suitable configuration of each serverless function within a serverless application by solving an optimization problem, that is a LP problem, derived from our performance model.
 	
 	\item Generally, owing to he complexity of the problem, its very difficult to find an optimal configuration for a serverless applications that guarantees the respect of users performance constraints. 
 	
@@ -527,6 +215,52 @@ functional requirements concerning the quality of service
 
 \chapter{Conceptual Model}
 
+From an architectural point of view, our system software framework acts as a simple client-server model, according to which processes are divided into two groups:
+
+\begin{itemize}
+	
+	\item fdsfdsfsd
+	
+	\item dfsfffsdfdsfdsfsdfdfdsfsdfdfsdfdfsdfsd
+	
+\end{itemize}
+
+
+In the basic client-server model, processes in a distributed system are divided
+into two (possibly overlapping) groups. A server is a process implementing
+a specific service, for example, a file system service or a database service. A
+client is a process that requests a service from a server by sending it a request
+and subsequently waiting for the server’s reply. This client-server interaction,
+also known as request-reply behavior 
+A framework 
+
+
+
+
+and has the ability to adapt
+to changes in the execution time of serverless functions. 
+
+
+
+The basic goal of adaptation is to make the system
+able to fulfill its functional and/or non functional require-
+ments, despite variations in its operating environment,
+which are very likely to occur in the SOA domain. As
+pointed out in the introduction, our focus in this paper is
+on non functional requirements concerning the delivered
+QoS and cost. In the SOA domain, these requirements
+are usually the result of a negotiation process engaged
+between the service provider and user, which culmi-
+nates in the definition of a Service Level Agreement (SLA)
+concerning their respective obligations and expectations
+[39]. In a stochastic setting, a SLA specifies guarantees
+about the average value of quality attributes, or more
+tough guarantees about the higher moments or percentiles
+of these attributes.
+
+
+
+
 
 From an architectural point of view, our software system uses a top-down approach based on MAPE-K feedback control loop. Re-
 searchers wrote that:
@@ -575,6 +309,34 @@ about the average value of quality attributes, or more
 tough guarantees about the higher moments or percentiles
 of these attributes.
 
+\subsection{Communication Semantics}
+
+Since message delivery reliability issues were out of the scope our this work, we have adopt the so-called maybe comunication semantics
+
+Maybe semantics: With maybe semantics, the remote procedure call may be executed
+once or not at all. Maybe semantics arises when no fault-tolerance measures are applied
+and can suffer from the following types of failure:
+• omission failures if the request or result message is lost;
+• crash failures when the server containing the remote operation fails.
+If the result message has not been received after a timeout and there are no retries, it is
+uncertain whether the procedure has been executed. If the request message was lost, then
+the procedure will not have been executed. On the other hand, the procedure may have
+been executed and the result message lost. A crash failure may occur either before or
+after the procedure is executed. Moreover, in an asynchronous system, the result of
+executing the procedure may arrive after the timeout. Maybe semantics is useful only for
+applications in which occasional failed calls are acceptable.
+
+
+\subsection{title}
+
+When building a distributed system out of existing components, we immedi-
+ately bump into a fundamental problem: the interfaces offered by the legacy
+component are most likely not suitable for all applications. In Section 1.3 we
+discussed how enterprise application integration could be established through
+middleware as a communication facilitator, but there we still implicitly as-
+sumed that, in the end, components could be accessed through their native
+interfaces.
+
 
 \section{Software system architecture}
 
@@ -612,17 +374,13 @@ A \textit{resource owner}, henceforward denoted with $R$, represents an entity c
 
 \newpage
 
-\chapter{Performance Model Formalization}
+\chapter{Model's formalization}
 
-\section{SLAs model formalization}
+\section{SLA's definition}
 
-Our framework considers SLAs whose conditions should be hold at \textit{local level}, focusing only on the fulfillment of the requirements regard a single serverless application invocation request forwarded by one user.
+As said previously, our system's goal is the fulfillment of both \textit{functional requirements}, concerning the orchestration of a serverless workflow, and \textit{non-functional} requirements, concerning the \textit{quality of service} (QoS) levels that should be guaranteed.
 
-Consequently, since the adaptation actions regards a single request, the framework acts irrespectively of whether aforementioned request belongs to some flow generated by one or more users.
-
-As known, a SLA may include a large set of parameters, referring to different kinds of \textit{functional} and \textit{non-functional} attributes, including several ways of measuring them.
-
-Then, our framework's goal is to exploit its self-adaptation capability to fulfill \textit{non-functional} SLA requirements, considering the \textit{average values} of the following attributes:
+In our context, aforementioned non-functional requirements are the result of a commitment, signed by both our software system and a customer, which lead  up to the definition of a \textit{Service Level Agreement} (SLA) specifying guarantees about the \textit{average values} of the following attributes:
 
 \begin{description}
 	\item[Response time] the interval of time elapsed from the
@@ -630,7 +388,9 @@ Then, our framework's goal is to exploit its self-adaptation capability to fulfi
 	\item[Cost] the price charged for the execution of all serverless function belonging to an application;
 \end{description}
 
-According to our model, for each serverless application invocation, SLAs requirements can be expressed by end users as follows:
+Is very important to emphasize that our framework considers SLAs whose conditions should be hold at \textit{local level}, that is focusing only on the fulfillment of all requirements regarding a \textit{single} serverless application invocation's request, which is forwarded by only one customer. Consequently, since the adaptation actions regards a single request, the framework acts irrespectively of whether aforementioned request belongs to some flow generated by one or more customers.
+
+Formally, according to our model, for each serverless application invocation, a SLA is defined as follows:
 
 \begin{equation}
 	SLA \mathDef \left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle 
@@ -644,35 +404,28 @@ where:
 	
 	\item $C \in \mathbb{R}^+$ is the upper bound on average service cost per serverless application invocation.
 	
-	\item $w_{RT}$ ($w_{C}$) is a scalar representing the weight of response time's (cost's) requirement; simply, greater a SLA attribute weight value, the greater is the importance of that attribute. 
+	\item $w_{RT}, w_{C} \in \Rplus \cap \left[ 0,1 \right]$ represent, respectively, the SLA attributes weights regarding the response time and the cost; simply, greater a SLA attribute weight value, the greater is the importance of that attribute. Weights for the different SLAs attributes are used to improve our flexibility regarding meeting customer's expectations. 
 	
-	Weights for the different SLAs attributes are used to improve our flexibility regarding meeting end user expectations. 
+	Formally, following constraint must be hold:
 	
-	Formally, regarding these weights, following constraints must be hold:
-	
-	\begin{eqnarray}
-		w_{RT},w_{C} \in \mathbb{R}^+ \cap \left[ 0,1 \right] \\
+	\begin{equation}
 		w_{RT} + w_{C} = 1
-	\end{eqnarray}
+	\end{equation}
+
+	We will describe later how weights for the different SLA's attributes can be used.
 \end{itemize}
-
-To be precise, the goal of our framework is to guarantee that thresholds $RT$ and $C$ will hold on average.
-
-We will describe later how weights for the different SLAs attributes have been used to identify the best suitable configuration for a given serverless application invocation.
 
 \section{Serverless choreography}
 
-According to our model, a \textit{serverless choreography} represent the \textit{resource} used to abstract both the concepts of serverless functions and serverless applications.
+According to our model, a \textit{serverless choreography}, or simply \textit{choreography}, represents the \textit{resource} used to model both the concepts of serverless function and serverless application (or compound serverless function).
 
-Informally, that abstraction has been derived from that of a \textit{control-flow graph} which, as known, describes, using graph notation, all paths that might be traversed through a serverless application during its execution [TODO]. 
-
-Similarly, a serverless choreography describes calling relationships between serverless functions belonging to an application, combining them using several types of control-flow structures, like sequence, branch, loop or connectors for parallel execution. 
+Informally, that abstraction has been derived from that of a \textit{control-flow graph} which, as known, describes, using graphs notation, all paths that might be traversed through a serverless application during its execution \ref{}. Similarly, a choreography describes calling relationships between functions belonging to an application in a serverless environment, combining them using several types of control-flow structures, like sequence, branch, loop or connectors for a parallel execution. 
 
 \subsection{Preliminary definitions}
 
-In order to provide a formal definition of serverless choreography, we have to define some very useful notations. 
+In order to provide a formal definition of a choreography, we have to define some very useful notations. 
 
-Let $n \in \N$ and $G = (\Phi,E)$ a \textit{directed graph}, where:
+Let $n \in \N$ and $G = (\Phi,E)$ a directed graph where:
 
 \begin{itemize}
 	\item $\Phi$ is a finite set of vertices, such that $|\Phi| = n$;
@@ -709,13 +462,9 @@ Then, we will adopt following notations:
 
 \subsection{Serverless choreography definition}
 
-According to serverless paradigm, the execution of a serverless application always starts with a particular serverless function, usually triggered through events or HTTP requests, acting as ``\textit{entry point}" of the serverless workflow. Any other functions belonging to the application will be invoked subsequently according to specified business logic. Finally, the execution of a serverless application ends when the execution of its last function ends, which acts as the ``\textit{end point}" of the serverless workflow. We believe that aforementioned serverless application's behavior can be naturally modeled by a weighted directed graph. 
+According to serverless paradigm, the execution of an application always starts with a particular function, usually triggered through events or HTTP requests, acting as ``\textit{entry point}" of the serverless workflow; any other functions, belonging to the application, will be invoked subsequently according to the business logic specified by customer. Conversely, the execution of an application ends when the execution of its last function ends, which acts as the ``\textit{end point}" of the serverless workflow. 
 
-Assuming that any serverless application has only one function acting as entry point, we can provide a formal definition of serverless choreography as follows.
-
-Let $n \in \N \setminus \left\lbrace 0 \right\rbrace $ and $R$ a resource owner.
-
-A \textit{serverless choreography} owned by $R$, or simply \textit{choreography} of $R$, is a resource represented by a weighted directed graph which is denoted as follows:
+Assuming that any serverless application has only one function acting as entry point, let $n \in \N \SetMinusZero$ and $R$ a resource owner, then a choreography, owned by $R$, is a weakly connected\footnote{A directed graph is called \textit{weakly connected} if replacing all of its directed edges with undirected edges produces a connected undirected graph.} weighted directed graph denoted as follows:
 
 \begin{equation}
 	\mathcal{C}_R \mathDef (\Phi,E)
@@ -725,24 +474,40 @@ where:
 
 \begin{itemize}
 				
-	\item Each vertex $\phi \in \Phi$, where $|\Phi| = n$, is called \textit{abstract serverless function} and represents a computational unit; we will describe more in detail what we mean by abstract serverless function shortly;
+	\item Each vertex $\phi \in \Phi$, where $|\Phi| = n$, is called \textit{abstract serverless function}, or simply \textit{abstract  function}, and it represents a generic computational unit where:
 	
-	\item Let $i,j \in \N \cap \left[ 1, n \right]$ and $\phi_i, \phi_j \in \Phi$, any directed edge $e_{ij} = \left( \phi_i, \phi_j \right) \in E$ represents the calling relationship between two abstract serverless function which depends on the business logic defined by $R$. 
+	\begin{itemize}
+		\item $P_{exit} : \Phi \times \Rplus \cap \SetFromZeroToOne$ represents the so-called \textit{exit probability function}, according to which $P_{exit}(\phi)$ denotes the probability of execution's termination of $\mathcal{C}_R$ when the execution of $\phi$ is terminated.
+	\end{itemize}
 	
-	In our context, any directed edge $\left( \phi_i, \phi_j \right) \in E$ states that the abstract serverless function $\phi_j$ \textit{can} be called by $\phi_i$;
+	\item Let $i,j \in \N \cap \left[ 1, n \right]$ and $\phi_i, \phi_j \in \Phi$, any directed edge $e_{ij} = \left( \phi_i, \phi_j \right) \in E$ represents the calling relationship between two abstract functions, which depends on the business logic defined by $R$. 
 	
-	\item Let $i,j \in \N \cap \left[ 1, n \right]$, the number $p_{ij} \in \R \cap \left[ 0, 1 \right]$ is the weight assigned to the edge $\left(\phi_i, \phi_j \right) \in E$, where: 
+	In our context, any directed edge $\left( \phi_i, \phi_j \right) \in E$ states that the abstract function $\phi_j$ \textit{can} be called by $\phi_i$;
+	
+	\item Let $i,j \in \N \cap \left[ 1, n \right]$, the number $p_{ij} \in \Rplus \cap \SetFromZeroToOne$ is the weight assigned to the edge $\left(\phi_i, \phi_j \right) \in E$, where: 
 	
 	\begin{itemize}
 		
-		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ after finishing the execution of $\phi_i$;
+		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ when the execution of $\phi_i$ is terminated;
 		
-		\item We will use a function $P : \Phi \times \Phi \to \left[ 0, 1 \right]$, called \textit{transition probability function}, such that $P\left(\phi_i, \phi_j \right) = p_{ij}$. When $P\left(\phi_i, \phi_j \right) = 0$, it implies that the directed edge $\left( \phi_i, \phi_j \right) \notin E$, therefore $\phi_i$ cannot invoke $\phi_j$;
+		\item $P : \Phi \times \Phi \to \left[ 0, 1 \right]$ is called \textit{transition probability function}, where $P\left(\phi_i, \phi_j \right) = p_{ij}$. Obviously, $P\left(\phi_i, \phi_j \right) = 0$ implies that $\phi_i$ cannot invoke $\phi_j$ but it does not imply that the directed edge $\left( \phi_i, \phi_j \right) \notin E$; directed edges having null weight can belong to $E$.
 		
 		\item For any path $\pi = \phi_1 e_1 \ldots e_{n-1} \phi_n$ of $\mathcal{C}_R$, we define \textit{transition probability of the path $\pi$} the following quantity:
 		
 		\begin{equation}
 			TPP(\pi) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1} \right)
+		\end{equation}
+	
+		Particularly, an abstract function $\phi \in \Phi$ is said \textit{unreachable} if following condition is hold:
+	
+		\begin{equation}\label{cond3}
+			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi) = 0
+		\end{equation}
+	
+		Conversely, a $\phi \in \Phi$ is said \textit{reachable} when:
+
+		\begin{equation}\label{cond3}
+			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi) > 0
 		\end{equation}
 		
 	\end{itemize}
@@ -751,12 +516,10 @@ where:
 	
 	\begin{eqnarray}
 		\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \label{cond1} \\
-		\exists   \phi \in \Phi & \mid & out(\phi) = \emptyset \label{cond2}
+		\exists !  \phi \in \Phi & \mid & out(\phi) = \emptyset \label{cond2}
 	\end{eqnarray}
 	
-	that is, $\Phi$ has to contain only one serverless abstract function acting as entry point of the serverless application represented by $\mathcal{C}_R$ and, moreover, it must contain at least one acting as end point. 
-	
-	Formally, we state that:
+	that is, $\Phi$ has to contain only one abstract function acting as entry point and only one other acting as end point.	In other terms, we can state that:
 	
 	\begin{equation}
 		\begin{array}{lcll}
@@ -765,24 +528,32 @@ where:
 		\end{array}
 	\end{equation}
 	
-	Finally, we will use the notation $\alpha(\mathcal{C}_R)$ to denote the vertex $\phi \in \Phi$ acting as entry point of the choreography $\mathcal{C}_R$. Conversely, we will adopt the notation $\omega(\mathcal{C}_R)$ to denote the set of all end points of $\mathcal{C}_R$.
+	Finally, we will use the notation $\alpha(\mathcal{C}_R)$ to denote the vertex $\phi \in \Phi$ acting as entry point of the choreography $\mathcal{C}_R$; conversely, we will adopt the notation $\omega(\mathcal{C}_R)$ to denote the end point.
 	
 	
-	\item Must be hold the condition according to which the transition probabilities of all paths between the entry point and	the end point of $\mathcal{C}_R$ sum up to $1$. Formally:
+	\item Following condition must be hold:
 	
 	\begin{equation}\label{cond3}
-		\sum_{\phi_{end} \in \omega(\mathcal{C}_R)} \Big( \sum_{\pi \in \Pi(\phi_{entry}, \phi_{end})} TPP(\pi) \Big) = 1
+		|\Pi(\alpha(\mathcal{C}_R), \phi)| \geq 1 \qquad \forall \phi \in \Phi
+	\end{equation}
+
+	in other words, at least one path starting from the entry point of $\mathcal{C}_R$ to each abstract function $\phi \in \Phi$ must to exist. 
+	
+	\item 
+	
+	
+	In order to guarantee that any execution, starting from the entry point $\phi_{x} \in \Phi$, will terminate, the condition, according to which transition probabilities of all paths between the entry point and the end point $\phi_{y} \in \Phi$ of $\mathcal{C}_R$ sum up to $1$, must be hold; formally:
+	
+	\begin{equation}\label{cond3}
+		\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi) = 0
 	\end{equation}
 	
-	where $\phi_{entry}$ is the entry point of $\mathcal{C}_R$.
-	
-	In other words, above conditions guarantees that any execution starting from $\phi_{entry}$ will terminate.
 	
 \end{itemize} 
 
-A choreography $\mathcal{C}_R$ can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the name of the resource owner $R$, while $b$ is the function choreography name.
+A choreography $\mathcal{C}_R$ can be uniquely identified by an ordered pair $(a, b)$, where $a$ is the name of the resource owner $R$, while $b$ is the function choreography name. 
 
-Clearly, we say that choreography models a serverless function when $|\Phi| = 1$ and $|E| = 0$; conversely, it models a serverless function application when $|\Phi| > 1$ and $|E| > 0$.
+We will say that a choreography models a serverless function when $|\Phi| = 1$ and $|E| = 0$; conversely, it models a serverless application when $|\Phi| > 1$ and $|E| > 0$.
 
 From now, a choreography $\mathcal{C}_R$ will be briefly denoted by $\mathcal{C}$ when no confusion can arise about the resource owner $R$.
 
@@ -790,13 +561,13 @@ From now, a choreography $\mathcal{C}_R$ will be briefly denoted by $\mathcal{C}
 
 Supposing that a choreography $\mathcal{C} = (\Phi,E)$ is given.
 
-As said previously, any $\phi \in \Phi$ is called \textit{abstract serverless function}, or simply \textit{abstract function}, that is a \textit{resource} representing a computational unit required by business logic provided by developers.
+As said previously, any $\phi \in \Phi$ represents an abstract function, which is a \textit{resource} modeling a computational unit required by business logic provided by developers.
 
 According to our model, there are two types of abstract functions implementations:
 
 \begin{itemize}
 	
-	\item $\phi$ is called \textit{serverless executable functions}, or simply \textit{executable function}, when $\phi$ contains \textit{executable code}; therefore, any executable function directly models a serverless function.
+	\item $\phi$ is called \textit{serverless executable functions}, or simply \textit{executable function}, when $\phi$ contains \textit{executable code}; therefore, any executable function naturally models a serverless function.
 	
 	$\mathscr{F_E}(\mathcal{C})$ is defined as the set containing all executable function of $\mathcal{C}$ which is formally defined as follows:
 	
@@ -808,17 +579,16 @@ According to our model, there are two types of abstract functions implementation
 	
 	For any $\phi \in \mathscr{F_E}(\mathcal{C})$, we will use $\textbf{F}_{\phi}$ notation to represent the so-called \textit{implementation-set} of $\phi$, that is the set containing all concrete function implementing $\phi$, which are denoting using $f_{\phi}$ notation. 
 
-	Later, we will explain how our framework is able to pick, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS objective.
+	Later, we will explain how our framework is able to pick, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS requirements.
 	
-	Finally, according to our model point of view, any executable function $\phi \in \mathscr{F_E}(\mathcal{C})$ have following properties: 
+	Finally, according to our model point of view, following conditions must be hold: 
 	
-	\begin{equation}\label{eq:executableFP1}
-		|succ(\phi)| = n \qquad n \in \left\{0,1\right\}
-	\end{equation}
-
-	\begin{eqnarray}\label{eq:executableFP2}
-		 |succ(\phi)| = 1 & \Rightarrow & \exists! \phi_x \in succ(\phi) : P(\phi, \phi_x) = 1
+	\begin{eqnarray}
+		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C}) \label{eq:executableFP1} \wedge n \in \left\{0,1\right\} \\
+		P(\phi, \phi_x) & = & 1 \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C}) : \phi_x \in succ(\phi) \wedge |succ(\phi)| = 1 \label{eq:executableFP2} \\
+		P_{exit}(\phi) & = & 0 \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C})
 	\end{eqnarray}
+
 
 	\item $\phi$ is called \textit{serverless orchestration functions}, or simply \textit{orchestration functions}, when $\phi$ contains \textit{orchestration code}. 
 	
@@ -830,15 +600,15 @@ According to our model, there are two types of abstract functions implementation
 		\mathscr{F_O}(\mathcal{C}) \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless orchestration function }\right\rbrace 
 	\end{equation}
 
-	Moreover, each orchestration function $\phi \in \mathscr{F_O}(\mathcal{C})$ has a \textit{type}, which, as we will explain later, determines how choreography's performances are computed. 
-	
-	Based on certain characteristics of the graph representing the choreography $\mathcal{C}$, several types of orchestration functions exist, like branch, loop and parallel types; however, we will give a better explanation about this very soon.
+	Moreover, each orchestration function $\phi \in \mathscr{F_O}(\mathcal{C})$ has a \textit{type} which, as we will explain later, determines how choreography's performances are computed. The orchestration function's type can be determined based on certain characteristics of the graph of $\mathcal{C}$. According to our model, we distinguish four orchestration functions types exist: \textit{Branch}, \textit{Conditional Loop}, \textit{Parallel} and \textit{Exit}. We will give a better explanation about them very soon.
 
-	Finally, according to our model, orchestration functions \textit{usually} travel in pairs. Each $\phi \in \mathscr{F_O}(\mathcal{C})$ can be either an \textit{opening} or a \textit{closing} orchestration function, where the first indicates the beginning of particular section of $\mathcal{C}$, called \textit{structure}, and the second ends it.	We will talk about this later.
+	Moreover, according to our model, orchestration functions travel always in pairs. Each $\phi \in \mathscr{F_O}(\mathcal{C})$ can be either an \textit{opening} or a \textit{closing} orchestration function of a given type: the first indicates the beginning of particular section of $\mathcal{C}$, called \textit{structure}, while the second denotes its  end. Anyway, if $\tau$ denotes the orchestration function's type, we will use $\tau_{\alpha}$ and $\tau_{\omega}$ notations to denote, respectively, an opening and a closing orchestration function of type $\tau$. Moreover, we will use the notation $\mathscr{T}(\phi)$ to represent the function returning the orchestration function type of $\phi$. We will give more details about this very soon.
 	
-	Anyway, if $\tau$ denoted the type of any orchestration function, $\tau_{\alpha}$ ($\tau_{\omega}$) will be used to denote an opening (closing) orchestration function of type $\tau$. Moreover we will use the notation $\mathscr{T}(\phi)$ to represent the function returning the orchestration function type of $\phi$.
+	Finally, following condition must be hold:
 	
-	Finally, let $\phi \in \mathscr{F_O}(\mathcal{C})$ such that $\mathscr{T}(\phi) = \tau_{\omega}$, that is a closing orchestration function; the latter has the same properties \ref{eq:executableFP1} and \ref{eq:executableFP2} of any executable function.
+	\begin{eqnarray}
+		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_O}(\mathcal{C}) \label{eq:executableFP1} \wedge n \in \left\{0,1\right\}
+	\end{eqnarray}
 	
 \end{itemize}
 
@@ -856,15 +626,13 @@ Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$,
 	\item $b$ is the name of the abstract serverless function $\phi$;
 \end{itemize}
 
+
+
 \subsubsection{Executability condition}
 
-Let $\mathcal{C} = (\Phi,E)$ a choreography.
+Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers.
 
-Is very important to note that our system software has been not designed to manage serverless concrete function hosted on a FaaS provider. In other words, at the current state of our framework, is not possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform using our tool.
-
-Therefore, we always assume that all $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, are already deployed on one or more FaaS platform by developers. 
-
-Then, in order to effectively start the execution of the choreography $\mathcal{C}$, is required that, for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, \textit{at least one} concrete implementation $f_{\phi}$ exists.
+Therefore, let $\mathcal{C} = (\Phi,E)$ a choreography, we assume always that all concrete functions $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, are already deployed on one or more FaaS platform by customers. Then, in order to effectively start the execution of $\mathcal{C}$, is required that, for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, \textit{at least one} implementation exists.
 
 Formally, we said that a choreography is \textit{executable} when: 
 
@@ -877,9 +645,7 @@ We will only deal with executable choreographies.
 
 \subsubsection{Serverless Sub-choreography}
 
-Let $\mathcal{C} = (\Phi,E)$ a choreography. 
-
-The weighted directed sub-graph of $\mathcal{C}$ defined as follows:
+Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted directed sub-graph $\mathcal{C}^*$ of $\mathcal{C}$, defined as follows:
 
 \begin{equation}
 	\mathcal{C}^* \mathDef (\Phi^*,E^*) \qquad \text{ where } \Phi^* \subseteq \Phi \wedge E^* \subseteq E
@@ -887,45 +653,24 @@ The weighted directed sub-graph of $\mathcal{C}$ defined as follows:
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
-\subsubsection{Basic Serverless Choreography}\label{BasicDefinition}
+\section{Serverless choreography configuration}
 
-Any choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
+In order to reach his goal, our framework has to determine a so-called \textit{serverless choreography configuration}, or simply \textit{choreography configuration} or \textit{configuration}, specifying which concrete function will be invoked when the corresponding executable function is executed; moreover, its configuration's parameters, like RAM memory size or CPU power, has to be determined.
 
-\begin{eqnarray}
-	|\mathscr{F_O}| = 0 \label{eq:basicP1} \\
-	|\omega(\mathcal{C})| = 1 \label{eq:basicP2}
-\end{eqnarray}
-
-is called \textit{basic serverless choreography}, or simply a \textit{basic choreography}. 
-
-Due to the properties \ref{eq:basicP1}, \ref{eq:basicP2}, \ref{eq:executableFP1} and \ref{eq:executableFP2}, the set $\Pi(\alpha(\mathcal{C}), \omega(\mathcal{C}))$, identifying all possible paths starting from vertex $\alpha(\mathcal{C})$ and ending at vertex $\omega(\mathcal{C})$, contains only one path $\pi$ whose transition probability is equal to $1$. Formally:
-
-\begin{eqnarray}\label{eq:basicP3}
-	|\Pi(\alpha(\mathcal{C}), \omega(\mathcal{C}))| = 1 \nonumber \\
-	\exists! \pi \in \Pi(\alpha(\mathcal{C}), \omega(\mathcal{C})) : TPP(\pi) = 1
-\end{eqnarray}
-
-
-\section{Serverless Choreography Configuration}
-
-Given a choreography $\mathcal{C} = (\Phi,E)$, the basic goal of our framework is to determine a so-called \textit{serverless choreography configuration}, called also \textit{choreography configuration} or, simply, \textit{configuration}, allowing us to meet user-specified QoS objectives.
-
-Technically, a choreography configuration is the result produced by our framework after the execution of the ``\textit{Plan}" phase of MAPE-K loop; it contains all information such that, during the ``\textit{Execution}" phase of MAPE-K loop:
+Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation's request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
 
 \begin{itemize}
-	\item For each $\phi \in \mathscr{F_E}(\mathcal{C})$, only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$ will be effectively invoked and executed on FaaS platform 
-	\item For each selected concrete function $f_{\phi}$, a memory configuration must be selected.
+	\item For each $\phi \in \mathscr{F_E}(\mathcal{C})$, it selects only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$, which will be effectively invoked and executed on its corresponding FaaS platform. 
+	\item For each selected concrete function $f_{\phi}$, it selects a value for RAM memory size.
 \end{itemize}
 
-In simple terms, a choreography configuration specifies which concrete function will be used for all executable function inside a choreography, including theirs memory size configuration parameter.
+Clearly, as we will explain in detail later, to perform aforementioned selection, our framework has to acquire a series of function response time and charged costs when the $\mathcal{C}$ is executed using different concrete functions and memory sizes.  
 
-\subsection{Executable Function Configuration}
+\subsection{Executable function configuration}
 
-In this section, we will explain the concept of \textit{executable function configuration}. 
+To build a configuration for a given choreography, is clearly needed to select a configuration for its executable functions. 
 
-Let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set.
-
-Formally, an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
+Then, let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set, formally an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
 
 \begin{equation}
 	x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
@@ -938,17 +683,17 @@ where:
 	\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
 \end{itemize}
 
-\subsection{Serverless Choreography Configuration}
+\subsection{Serverless choreography configuration}
 
 Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
 
 Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
 
 \begin{eqnarray}
-	\textbf{X}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+	\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
 	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
 	& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
-	& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \Omega
+	& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
 \end{eqnarray}
 
 where:
@@ -960,17 +705,19 @@ where:
 	
 	\item $\textbf{M}_{f_{\phi_{i_j}}} \subseteq \N$ denotes the set containing all available memory size options, allowed by provider, during the execution of the concrete function $f_{\phi_{i_j}}$, for some $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$
 	
-	\item $\Omega$ represents the solutions space which includes all possible choreography configurations.
+	\item $\textbf{X}_{\mathcal{C}}$ represents the so-called \textit{solutions space}, which includes all possible choreography configurations.
+	
+	
 \end{itemize}
 
-\section{Concrete Function Performance}
+\section{Concrete function performance}
 
-Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete serverless, in terms of average values regarding response time and invocation cost.
+Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete serverless, in terms of average values regarding response time and charged costs.
 
 However, to develop both an analytical way and a software framework capable to evaluate concrete serverless function performance, we first need to understand
 how they are managed by FaaS platforms.
 
-\subsection{Function Instances}
+\subsection{Function instances}
 
 According to serverless computing paradigm, computation is done inside isolated environments, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes, called \textit{function instances}.
 
@@ -1025,7 +772,7 @@ At the same time, for each instance, at any moment in time, if a request has not
 
 This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions. 
 
-\subsection{FaaS Request Routing}
+\subsection{FaaS request routing}
 
 In this dissertation, we assume that, in order to minimize the number of
 function instances that are kept warm and thus to free up system resources, the FaaS routes requests giving priority to instances which they have been idle for less time.
@@ -1047,27 +794,23 @@ Informally speaking, there are two type of concurrency limit models:
 	
 	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
 	
-	This approach is adopted by Google Cloud Functions although there are reports stating that, despite there is no explicitly mentioned global concurrency limit, a kind of global concurrency limit, varying between $1000$ and $2000$, is observed.
+	This approach is adopted by Google Cloud Functions \footnote{Despite there is no explicitly mentioned global concurrency limit, previous studies have observed a kind of global concurrency limit varying between $1000$ and $2000$.}
 	
 \end{description}
 
 \subsection{FaaS platform modeling}
 
-At this point, we can provide an analytical model to better understand how FaaS platforms work.
-
-According to our model point of view, any FaaS platform provider act as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, that is a  \textit{$K(t)$-server loss systems}, where:
+According to our model point of view, at any time $t$, any FaaS platform provider acts as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, also called \textit{$K(t)$-server loss systems}, where:
 
 \begin{itemize}
 	
 	\item $\textbf{C}_{max} \in \N \setminus \left\{0\right\}$ is a scalar representing the queuing system's concurrency limit.
 	
-	In other words, $\textbf{C}_{max}$ is the maximum size of the warm pool, representing therefore the maximum number of function instances being in running state simultaneously at time $t$. 
+	In other words, $\textbf{C}_{max}$ is the maximum size of the warm pool, therefore it represents the maximum number of function instances being in running state simultaneously at time $t$. 
 	
-	Please note that $\textbf{C}_{max}$ not necessary coincide with global concurrency limit because it can represents a local concurrency limit too. We will give more details about this very soon.
+	Please note that $\textbf{C}_{max}$ not necessary coincide with a global concurrency limit because it can represents a local concurrency limit too. We will give more details about this very soon.
 	
-	\item At any time $t \geq 0$, there are $K(t)$ function instances. Since each instance can process only one request, we can say that the system has capacity for $K(t)$ invocation requests in total.   
-	
-	In other words, the number of function instance, and consequently the capacity of system, can change over time. 
+	\item At any time $t \geq 0$, there are $K(t)$ function instances. Since each instance can process only one request, we can say that the system has capacity for $K(t)$ invocation requests in total. The number of function instance, and consequently system's capacity, can change over time. 
 	
 	At any time $t$, following condition must be hold:
 	
@@ -1075,7 +818,7 @@ According to our model point of view, any FaaS platform provider act as a ``\tex
 		0 \leq K(t) \leq {C}_{\textbf{max}}
 	\end{equation}
 	
-	\item Since no queue is involved, if the maximum concurrency level is reached, that is $K(t) = {C}_{\textbf{max}}$, any incoming request at time $t$ which sees all $K(t)$ function instances in running state, will be permanently dropped.
+	\item Since no queue is involved, if the maximum concurrency level is reached, that is $K(t) = {C}_{\textbf{max}}$, any incoming request at time $t$, that sees all $K(t)$ function instances in running state, will be permanently dropped \footnote{Indeed, a queue exists; there are previous studies stating that all FaaS platform providers adopt a scheduling policies based on \textit{first-come-first-served} (FIFO) algorithms. Anyways, since the built of a QoS-aware scheduler is out of the scope of this dissertation, in order to meet QoS objectives, we have decided to drop any request exceeding maximum concurrency level instead of relying on scheduling policies provided by FaaS platforms.}.
 	
 	\item No priority is considered among incoming request.
 	
@@ -1087,40 +830,43 @@ According to our model point of view, any FaaS platform provider act as a ``\tex
 	\begin{tikzpicture}
 		
 		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start) at (-2,0) {};
-		
 		\node[circle, minimum width = 1cm]        					   
-		(startNode) at (-2,0) {$\lambda$};
+		(startNode) at (-8,0) {$\lambda$};
 		
 		\node[circle, inner sep=0pt]        					   
-		(startNode2) at (1,0) {};
+		(startNode2) at (-4,0) {};
 		
 		% Node
 		
 		\node[circle, draw, minimum width = 1.5cm]        					   
-		(f1) at (4,3) {$f_1$};
+		(f1) at (3,3) {$f_1$};
 		\node[circle, draw, minimum width = 1.5cm]       					   
-		(f2) at (4,1) {$f_2$};
+		(f2) at (3,1) {$f_2$};
 		\node[circle, minimum width = 1.5cm]       					   
-		(fxxx) at (4,-1) {$\cdots$};
+		(fxxx) at (3,-1) {$\cdots$};
 		\node[circle, draw, minimum width = 1.5cm]       					   
-		(fn) at (4,-3) {$f_n$};
+		(fn) at (3,-3) {$f_n$};
 		\node[circle, draw, minimum width = 1.5cm]       					   
-		(fn2) at (4,-5) {$f_{n+1}$};
+		(fn2) at (3,-5) {$f_{n+1}$};
+		
+		\node[circle, dashed, blue, draw, minimum width = 1.5cm]       					   
+		(fn2fake) at (-4,-5) {$f_{n+1}$};
+		
+		\node[circle, dashed, minimum width = 1.5cm]       					   
+		(fn2fakeExit) at (-4,-8) {};
 		
 		% Exit node
 		
 		\node[circle, minimum width = 1.5cm]        					   
-		(Ef1) at (6.5,3) {};
+		(Ef1) at (5.5,3) {};
 		\node[circle, minimum width = 1.5cm]       					   
-		(Ef2) at (6.5,1) {};
+		(Ef2) at (5.5,1) {};
 	
 
 		\node[circle, minimum width = 1.5cm]       					   
-		(Efn) at (6.5,-3) {};
+		(Efn) at (5.5,-3) {};
 		\node[circle, minimum width = 1.5cm]       					   
-		(Efn2) at (6.5,-5) {};
+		(Efn2) at (5.5,-5) {};
 		
 	
 		% EDGE
@@ -1129,6 +875,8 @@ According to our model point of view, any FaaS platform provider act as a ``\tex
 		\draw[dashed, ultra thick,->] (startNode2) -- (f1);
 		\draw[dashed, ultra thick,->] (startNode2) -- (f2);
 		\draw[dashed, ultra thick,->] (startNode2) -- (fn);
+		\draw[dashed, ultra thick,->,blue] (fn2fake) -- (fn2);
+		\draw[dashed, ultra thick,->, blue] (startNode2) -- (fn2fake);
 		
 		% Exit EDGE
 		
@@ -1136,12 +884,12 @@ According to our model point of view, any FaaS platform provider act as a ``\tex
 		\draw[dashed, ultra thick,->] (f2) -- (Ef2);
 		\draw[dashed, ultra thick,->] (fn) -- (Efn);
 		\draw[dashed, ultra thick,->] (fn2) -- (Efn2);
-		
+		\draw[dashed, ultra thick,->,red] (fn2fake) -- (fn2fakeExit);
 		
 		%\node[circle,below of=sub1, yshift=10] (label1) {$\theta_1$};
-		\node[rectangle, draw, dashed, minimum width =2cm, minimum height=2cm] (sub1) at (4,-5) {};
+		\node[rectangle, draw, dashed, minimum width =2cm, minimum height=2cm] (sub1) at (3,-5) {};
 		
-		\node[rectangle, draw, dashed, minimum width =2cm, minimum height=8cm] (sub1) at (4,0) {};
+		\node[rectangle, draw, dashed, minimum width =2cm, minimum height=8cm] (sub1) at (3,0) {};
 		
 		%\draw[ultra thick,->] (ParNode1) edge node[xshift=15 ,yshift=15]{$P(\phi_2,\phi_4) = 1$} (ParEndNode);
 		%\draw[ultra thick,->] (ParNode2) edge node[xshift=15 ,yshift=-15]{$P(\phi_3,\phi_4) = 1$} (ParEndNode);
@@ -1149,7 +897,14 @@ According to our model point of view, any FaaS platform provider act as a ``\tex
 		%\draw[dashed,ultra thick, ->] (start) -- (ParStartNode);
 		%\draw[dashed,ultra thick, ->] (ParEndNode) -- (end);
 		
-	
+		
+		\node[text width=6.5cm] at (2.5,4.5) {\textbf{Warm Pool having capacity} $n$};
+		
+		\node[text width=5cm, blue] at (-0.5,-6.5) {\textbf{ Instance added to warm pool increasing its capacity by one and causing a cold start.}};
+		
+		\node[text width=5.5cm, blue] at (-7,-3) {\textbf{Blocking due to lack of idle function instances}};
+		
+		\node[text width=6.3cm, red] at (-7.5,-6.5) {\textbf{Request dropped if maximum concurrency limit is reached}};
 		
 		
 		%legend
@@ -1165,15 +920,15 @@ According to our model point of view, any FaaS platform provider act as a ``\tex
 	\caption{Parallel structure in the serverless workflow.}
 \end{figure}
 
-\subsection{Serverless Concrete Function Swarms}
+\subsection{Concrete function's swarm}
 
-To complete the formalization of our model and understand how concrete function performances are evaluated, is necessary to introduce another very important concept, which is needful to make our model compatible with all concurrency limit models adoptable by FaaS providers.
+To complete the formalization of our model and understand how concrete function performances are evaluated, is necessary to introduce another very important concept needed to make our model compatible with all concurrency limit models adoptable by FaaS providers.
 
 Let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider and $\Omega_{P_R}$ the set of all concrete serverless functions hosted on $P$ belonging to $R$.
 
-A \textit{serverless concrete function swarm}, or simply \textit{swarm}, is the set $\omega_{P_R}^{(l)} \subseteq \Omega_{P_R}$ containing all concrete functions sharing the same limit $l$ in term of the max number of serverless function instance runnable at the same time by $P$; in that case, we call $l$ as \textit{swarm's concurrency limit}.
+A \textit{concrete function's swarm}, or simply \textit{swarm}, is the set $\omega_{P_R}^{(l)} \subseteq \Omega_{P_R}$ containing all concrete functions sharing the same limit $l$ in term of the max number of serverless function instance runnable at the same time by $P$; in that case, we call $l$ as \textit{swarm's concurrency limit}.
 
-In simple terms, only at most $l$ executions of all concrete functions belonging to $\omega_{P_R}^{(l)}$ can be performed simultaneously by $P$. The value of $l$ depends on the concurrency model adopted by $P$. 
+In simple terms, only at most $l$ executions of any concrete functions belonging to $\omega_{P_R}^{(l)}$ can be performed simultaneously by $P$. The value of $l$ depends on the concurrency model adopted by $P$. 
 
 \begin{itemize}
 	
@@ -1183,39 +938,49 @@ In simple terms, only at most $l$ executions of all concrete functions belonging
 	
 	\item If $P$ imposed a \textit{per-account} limit, then $\omega_{P_R}^{(l)} = \Omega_{P_R}$, that is the swarm includes all concrete serverless concrete function deployed on $P$ by $R$, while $l$ represents the provider's global concurrency limit. 
 	
-	In that case, there is only one $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation request regarding any concrete function belonging to $\Omega_{P_R}$.
+	In that case, there is only one $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation requests regarding any concrete function belonging to $\Omega_{P_R}$. 
 
 \end{itemize}
 
-\subsection{Cold Start Probability}
+From now, the sets $\omega_{P_R}^{(l)}$ and $\Omega_{P_R}$ will be briefly and respectively denoted by $\omega_{P}^{(l)}$ and $\Omega_{P}$ when no confusion can arise about the resource owner $R$. Moreover, we will adopt $\textbf{Q}_{\omega_{P}^{(l)}}$ notation to refer to the $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation requests of any concrete function belonging to $\omega_{P}$. 
 
-As known, the rejection of a request by the warm pool triggers a cold start, which, subsequently, adds a new function instance to the warm pool in order to handle received request. 
+\subsubsection{Cold start probability}
 
-In order to fully describe how our framework works, we have to know the probability according to which a request is rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
+According to our model, if maximum concurrency level is not exceed, the rejection of a request by the warm pool will trigger a cold start, adding a new function instance to the warm pool in order to handle aforementioned request. 
 
-Precisely, let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider, $\omega_{P_R}^{(l)}$ a swarm and $M/G/K(t)_{l}/K(t)_{l}$ the queuing system associated to that swarm. Moreover, let $r(t)$ the number of function instances being in running state at time $t$.
+Now we have to know the probability according to which a request is rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
 
-When a new request of invocation of a function belonging $\omega_{P_R}^{(l)}$, arrives on the FaaS platform $P$, one of the following events can occur:
+Formally, let $l \in \N$, $P$ a serverless computing platform provider, $\omega_{P}^{(l)}$ a swarm and $\textbf{Q}_{\omega_{P}^{(l)}}$ its corresponding queuing system on the FaaS platform provider. Following functions will be used:
 
 \begin{itemize}
-	\item If at time $t_n$ is verified that $K(t_n) < l$ and $r(t_n) < K(t_n)$, that is the number of function instances into the warm pool is less than the swarm's maximum concurrency level and there are some function instance in idle state, a warm start will occur, resulting that $r(t_{n+1}) = r(t_n) + 1$.
+	\item $R(\textbf{Q}_{\omega_{P}^{(l)}}, t)$ representing the function returning the number of running state function instances at time $t$ on $\textbf{Q}_{\omega_{P}^{(l)}}$.
 	
-	
-	\item If at time $t_n$ is verified that $K(t_n) < l$ and $r(t_n) = K(t_n)$, that is the number of function instances into the warm pool is once again less than the swarm's maximum concurrency level but there is no function instance in idle state, a cold start will occur and the size of the warm pool will be increased by one, that is $K(t_{n+1}) = K(t_n) + 1$.
-	
-	The newly accepted request will be managed by the newly spinned up function instance, causing that $r(t_{n+1}) = r(t_n) + 1$.
-	
-	\item If at time $t_n$ is true that $K(t) = l$ and $r(t_n) = K(t_n)$, that is the warm pool reaches is maximum possible size according to FaaS policies, aforementioned request will be rejected.
+	\item $K(\textbf{Q}_{\omega_{P}^{(l)}}, t)$ returning instead the number of function instances at time $t$ deployed on $\textbf{Q}_{\omega_{P}^{(l)}}$.
 \end{itemize}
 
-Clearly, when at time $tn$ a execution's request has been completed by a function instance, that event cause that $r(t_{n+1}) = r(t_n) - 1$. 
+In this section, to simplify our notations, since no confusion can arise about the queuing system, $R(\textbf{Q}_{\omega_{P}^{(l)}}, t)$ will be briefly denoted as $R(t)$ and $K(\textbf{Q}_{\omega_{P}^{(l)}}, t)$ as $K(t)$.
 
-In the same way, if a function instance has not been received in the last expiration threshold units of time, it will be expired causing the decreasing of warm pool size, that is $K(t_{n+1}) = K(t_n) -1$.
+When a new invocation's request of any function belonging to $\omega_{P}^{(l)}$ arrives on $\textbf{Q}_{\omega_{P}^{(l)}}$, one of the following events can occur:
 
-Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}_{\omega_{P_R}^{(l)}}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all $K(t)$ function instances of the warm pool busy. Using Erlang-B formula, aforementioned probability can be calculated as follows:
+\begin{itemize}
+	\item If $K(t_n) < l$ and $R(t_n) < K(t_n)$, that is the number of function instances into the warm pool is less than the swarm's maximum concurrency level and there are some function instance in idle state, a warm start will occur, resulting that $R(t_{n+1}) = R(t_n) + 1$.
+	
+	
+	\item If $K(t_n) < l$ and $R(t_n) = K(t_n)$, that is the number of function instances into the warm pool is once again less than the swarm's maximum concurrency level but there is no function instance in idle state, a cold start will occur and the size of the warm pool will be increased by one, that is $K(t_{n+1}) = K(t_n) + 1$.
+	
+	The newly accepted request will be managed by the newly spinned up function instance, causing that $R(t_{n+1}) = R(t_n) + 1$.
+	
+	\item If $K(t) = R(t) = l$, that is the warm pool reaches is maximum possible size according to FaaS policies, aforementioned request will be rejected.
+\end{itemize}
+
+If at time $t_n$ a concrete function execution's has been completed, that event will cause $R(t_{n+1}) = R(t_n) - 1$. 
+
+Conversely, if a function instance has not been received any request during the last expiration threshold units of time, it will be expired causing the decreasing of warm pool size, that is $K(t_{n+1}) = K(t_n) - 1$.
+
+Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}_{\omega_{P_R}^{(l)}}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all function instances of the warm pool busy; using Erlang-B formula, that probability can be calculated as follows:
 
 \begin{equation}
-	\displaystyle \textbf{P}_{\omega_{P_R}^{(l)}}(t) = \dfrac{\dfrac{\rho(t)^{K(t)}}{K(t)!}}{\displaystyle\sum_{j=0}^{K(t)} \dfrac{\rho(t)^j}{j!}}
+	\displaystyle \textbf{P}_{\omega_{P_R}^{(l)}}(t) = \dfrac{\rho(t)^{K(t)}}{K(t)!} \cdot \Bigg( \displaystyle\sum_{j=0}^{K(t)} \dfrac{\rho(t)^j}{j!}\Bigg)^{-1}
 \end{equation}
 
 where:
@@ -1230,7 +995,7 @@ where:
 				
 		Since arrival rate varies during the day, $\lambda(t)$ must be estimate at runtime, over multiple time intervals spent observing our system.
 		
-		We have adopt the exponential moving average approach to compute an estimation of $\lambda(t)$. Periodically, at any time $t$, our framework compute the number $Y_t$ of all received invocation requests for any function belonging to $\omega_{P_R}^{(l)}$ within last second. Then $\lambda(t)$ is estimated as follows:
+		We have adopt the exponential moving average based approach to compute an estimation of $\lambda(t)$. Periodically, at any time $t$, our framework compute the number $Y_t$ of all received invocation requests for any function belonging to $\omega_{P_R}^{(l)}$ within last second. Then $\lambda(t)$ is estimated as follows:
 		
 		\begin{equation}
 			\lambda(t) \mathDef
@@ -1247,8 +1012,27 @@ where:
 	
 \end{itemize}
 
+\subsubsection{Choreography's swarm}
 
-\subsection{Concrete Function Performance Computation}
+Let $\mathcal{C} = (\Phi,E)$ a choreography, to build its configuration $\textbf{x}_{\mathcal{C}}$, we firstly need to identify all swarms corresponding to each concrete function $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}$, because we have to check if we can execute all concrete functions specified in $\textbf{x}_{\mathcal{C}}$, without exceeding maximum concurrency level on each FaaS platforms where aforementioned functions will be executed.
+
+Informally, a \textit{choreography's swarm} $\widetilde{\textbf{S}}_{\mathcal{C}}$ represents the set of all swarms corresponding to all concrete functions used by $\mathcal{C}$. 
+
+Formally, let $m \in \N$ the total number of FaaS platform providers where at least one concrete function is deployed by a given resource owner, a choreography's swarm can be defined as follows:
+
+\begin{equation}
+	\widetilde{\textbf{S}}_{\mathcal{C}} \mathDef \left\{ \omega_{P}^{(l)} \in \bigcup_{i=1}^n \Omega_{P_i} : \exists f_{\phi} \in \omega_{P}^{(l)} \text{ such that } f_{\phi} \in \textbf{F}_{\phi}, \forall \phi \in \mathscr{F_E}(\mathcal{C}) \right\}
+\end{equation}
+
+Please note that, let $\mathcal{C}_1 = (\Phi_1,E_1)$ and $\mathcal{C}_2 = (\Phi_2,E_2)$ two different choreographies belonging to a same resource owner, is generally verified that:
+
+\begin{equation}
+	\widetilde{\textbf{S}}_{\mathcal{C}_1} \cap \widetilde{\textbf{S}}_{\mathcal{C}_2} \neq \emptyset
+\end{equation}
+
+that is a swarm can be shared by multiple choreographies.
+
+\subsection{Concrete function performance computation}
 
 Finally, we can introduce how concrete function performance can be computed according to our model.
 
@@ -1266,14 +1050,14 @@ Let's define following functions:
 	It can be defined as follows:
 	
 	\begin{equation}
-		C(f_{\phi},m,t) \mathDef C_{avg}^{(c)}(f_{\phi}, m) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + C_{avg}^{(w)}(f_{\phi}, m) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
+		C(f_{\phi},m,t) \mathDef C_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + C_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
 	\end{equation}
 	
 	where:
 	
 	\begin{itemize}
-		\item When $f_{\phi}$ is executed with an allocated memory size equal to $m$, 
-		$C_{avg}^{(c)}(f_{\phi}, m)$ represents the average cost paid when a cold start is occurred. Conversely, $C_{avg}^{(w)}(f_{\phi}, m)$ represents the average cost paid in case of warm start.
+		\item At any time $t$. when $f_{\phi}$ is executed with an allocated memory size equal to $m$, 
+		$C_{avg}^{(c)}(f_{\phi}, m,t)$ represents the average cost paid when a cold start is occurred while, conversely, $C_{avg}^{(w)}(f_{\phi}, m,t)$ represents the average cost paid in case of warm start.
 	\end{itemize}
 	
 	
@@ -1284,27 +1068,30 @@ Let's define following functions:
 	It can be defined as follows:
 	
 	\begin{equation}
-		RT(f_{\phi},m,t) \mathDef RT_{avg}^{(c)}(f_{\phi}, m) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + RT_{avg}^{(w)}(f_{\phi}, m) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
+		RT(f_{\phi},m,t) \mathDef RT_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + RT_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
 	\end{equation}
 
 	where:
 	
 	\begin{itemize}
-		\item When $f_{\phi}$ is executed with an allocated memory size equal to $m$, 
-		$RT_{avg}^{(c)}(f_{\phi}, m)$ represents the average response time paid when a cold start is occurred. Conversely, $RT_{avg}^{(w)}(f_{\phi}, m)$ represents the average response time paid in case of warm start.
+		\item $RT_{avg}^{(c)}(f_{\phi}, m,t)$ represents the average response time occurred when a cold start is occurred and $RT_{avg}^{(w)}(f_{\phi}, m,t)$ is the one occurred in case of in case of warm start.
 	\end{itemize}
-
-
-	
 \end{itemize}
 
+Obliviously, our framework's duty is to determine $RT_{avg}^{(c)}(f_{\phi}, m,t)$, $RT_{avg}^{(w)}(f_{\phi}, m,t)$, $C_{avg}^{(c)}(f_{\phi}, m,t)$ and $C_{avg}^{(w)}(f_{\phi}, m,t)$ using time series data, containing historical performance data of $f_{\phi}$ under different memory configurations, collected by our logging framework. To compute aforementioned estimations, we have adopt the exponential moving average based approach.
 
+For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, let $Y_t$ the response time of $f_{\phi}$ when it is executed with memory size $m$ at a given time $t$, following formula was been used:
 
+\begin{equation}
+	RT_{avg}^{(c)}(f_{\phi}, m,t) \mathDef
+	\begin{cases}
+		Y_o & \text{if}\ t = 0\\ 
+		\alpha \cdot Y_t + (1 - \alpha) \cdot \lambda(t-1) & \text{if}\ t > 0\\
+		
+	\end{cases}\,.
+\end{equation}
 
-The logging framework of our software system, whose responsibility is to store
-real-time data containing historical performance data.
-
-\section{Performance Evaluation}
+\section{Performance evaluation}
 
 Due to the complexitiy Selecting the best choreography configuration guaranteeing SLAs requirement, is a very difficult task.
 
@@ -1953,6 +1740,7 @@ Finally, wa are able to formulate our MMKP instance problem, which can be expres
 	& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \mathscr{F_E}(\mathcal{\widetilde{P}})}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} t_{\phi_{i_{j}}} + \nonumber \\
 	& \qquad + \sum_{\phi_h \in \xi}  \sum_{j = 1}^{|\textbf{F}_{\phi_{h}} \times \N|} y_{\phi_{h_{j}}} t_{\phi_{h_{j}}} \leq RT_{user} & 
 	\forall \xi \in \Xi \\	
+	& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \omega_{P_s}^{(l)}} \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \leq l - r_s(t) & \forall s \in \N \cap \left[ 1, S \right] \\
 	& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} = 1 & \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\
 	& y_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace &
 	\begin{array}{r}
@@ -1968,7 +1756,10 @@ A solution of a MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldo
 
 \subsubsection{The heuristic approach based on ACO}
 
-Being MMKP an NP-hard problem, it is not always possible to find a feasible solution in a reasonable computing time especially for big instances, therefore an heuristic approach is needed for solving it. 
+Being MMKP an NP-hard problem, it is not always possible to find a feasible solution in a reasonable computing time especially for big instances. Although the \ref{MMKP}
+
+
+ therefore an heuristic approach is needed for solving it. 
 
 We have decided to built an algorithm based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics that have been applied to solve many combinatorial optimization problems such as traveling salesman problems, quadratic assignment problems, or vehicle routing problems. 
 
@@ -2340,13 +2131,16 @@ The algorithm stops either when an ant has found an optimal solution (when the o
 
 
 
-
 We have adopted for follwoing reasons:
 
 \begin{enumerate}
 	\item We are able to guarantee access transparency. 
 	
- 
+	In fact, hiding any difference regarding serverless compound functions representation and the way according to which the latter can be accessed, reaching an agreement on how a compound function is to be represented among different FaaS providers, we allow our users to access to any serverless function hosted on any supported provider using identical operations.
+	
+	\item We can significantly reduce the impact of vendor lock-in problem. 
+	
+	Providing an unique way to represent a serverless compound functions, if our final users wish, they will be able to use serverless functions hosted on another FaaS provider without rewriting their serverless compound functions entirely, because very little changes to FC representation code are needed to complete the switching process. 
 	
 	In that way, guaranteeing reduced switching costs, using our system is possible to mitigate provider lock-in.
 	
