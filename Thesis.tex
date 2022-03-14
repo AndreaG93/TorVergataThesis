@@ -47,7 +47,7 @@
 	\Facolta{Ingegneria} 
 	\Corso[Laurea Magistrale]{Ingegneria Informatica} 
 	\Annoaccademico{2020--2021} 
-	\Titolo{??}
+	\Titolo{A QoS-aware broker \\ for multi-provider serverless applications}
 	\NCandidato{Studente} 
 	\Candidato[0273395]{Andrea Graziani} 
 	\NRelatore{Docente}{} 
@@ -474,9 +474,10 @@ where:
 
 \begin{itemize}
 				
-	\item Each vertex $\phi \in \Phi$, where $|\Phi| = n$, is called \textit{abstract serverless function}, or simply \textit{abstract  function}, and it represents a generic computational unit where:
+	\item Each vertex $\phi \in \Phi$, where $|\Phi| = n$, is called \textit{abstract serverless function}, or simply \textit{abstract  function}, and it represents a generic computational unit. :
 	
 	\begin{itemize}
+				
 		\item $P_{exit} : \Phi \times \Rplus \cap \SetFromZeroToOne$ represents the so-called \textit{exit probability function}, according to which $P_{exit}(\phi)$ denotes the probability of execution's termination of $\mathcal{C}_R$ when the execution of $\phi$ is terminated.
 	\end{itemize}
 	
@@ -538,16 +539,6 @@ where:
 	\end{equation}
 
 	in other words, at least one path starting from the entry point of $\mathcal{C}_R$ to each abstract function $\phi \in \Phi$ must to exist. 
-	
-	\item 
-	
-	
-	In order to guarantee that any execution, starting from the entry point $\phi_{x} \in \Phi$, will terminate, the condition, according to which transition probabilities of all paths between the entry point and the end point $\phi_{y} \in \Phi$ of $\mathcal{C}_R$ sum up to $1$, must be hold; formally:
-	
-	\begin{equation}\label{cond3}
-		\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi) = 0
-	\end{equation}
-	
 	
 \end{itemize} 
 
@@ -643,7 +634,7 @@ Formally, we said that a choreography is \textit{executable} when:
 
 We will only deal with executable choreographies.
 
-\subsubsection{Serverless Sub-choreography}
+\subsubsection{Serverless sub-choreography}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted directed sub-graph $\mathcal{C}^*$ of $\mathcal{C}$, defined as follows:
 
@@ -652,6 +643,18 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted direc
 \end{equation}
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
+
+\subsubsection{Serverless pipeline choreography}\label{BasicDefinition}
+
+Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
+
+\begin{eqnarray}
+	|in(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \left\{ \alpha(\mathcal{C}) \right\} \label{pipeline1} \\
+	|out(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \left\{ \omega(\mathcal{C}) \right\} \label{pipeline2} \\
+	P(\phi_x, \phi_y) & = & 1 \qquad \forall x,y \in \SetFromOneTo{|\Phi|} \label{pipeline3}
+\end{eqnarray}
+
+Any choreography $\mathcal{C}$ satisfying \ref{pipeline1}, \ref{pipeline2} and \ref{pipeline3} will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
 
 \section{Serverless choreography configuration}
 
@@ -1153,53 +1156,38 @@ replace any
 	\caption{Algorithmic skeleton for ACO algorithms}
 \end{algorithm}
 
-
+\newpage
 \subsection{Serverless Choreography Structures}
 
-Informally, supposing to have a serverless choreography $\mathcal{C} = (\Phi,E)$, a \textit{structure} can be defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*)$ of $\mathcal{C}$ whose entry point is an opening orchestration function. Eventually, if an end point belonging to $\omega(\mathcal{C}^*)$ exits, it will be a closing orchestration function whose type must be the same as of the opening orchestration function.
-
-Formally:
+Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*)$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ and the end point $\omega(\mathcal{C}^*)$ are, respectively, opening and closing orchestration functions having same type $\tau$ possibly coinciding. Formally:
 
 \begin{equation}
-	C^* \text{ is a structure } \Leftrightarrow \exists \phi_{entry}^* \in \alpha(C^*)  \in \mathscr{F_O} :  \mathscr{T}(\phi_{entry}^*) = \tau_{\alpha}
+	\mathcal{C}^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{l}
+		\alpha(\mathcal{C}^*), \omega(\mathcal{C}^*) \in \mathscr{F_O}(\mathcal{C}^*) \\
+		
+		\mathscr{T}(\alpha(\mathcal{C}^*)) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{C}^*)) = \tau_{\omega}
+	\end{array} \right.
 \end{equation}
 
-where:
-
-\begin{itemize}
-	\item $\phi_{entry} = \alpha(\mathcal{C}^*)$, that is $\phi_{entry}$ is the entry point of $\mathcal{C}^*$.
-	
-\end{itemize}
-
-We always assume that a structure has both an opening and a closing orchestration functions
-
-The most important aspect is that every structure can be viewed as a set of sub-choreographies. 
-
-Formally, suppose that $\Lambda = (A,B)$ is a graph such that:
+For the aim of our work, the most important aspect is that every structure can be viewed as a \ItalicQuotMark{set} of sub-choreographies. Formally, let $c \in \N \setminus \left\{0\right\}$ and $\mathcal{C}^{**} = (\Phi^{**},E^{**})$ a sub-choreography of $\mathcal{C}^*$ such that:
 
 \begin{equation}
 	\begin{array}{lll}
-		A & \mathDef & \Phi^* \setminus \left\lbrace \phi_{entry}^*,\phi_{end}^* \right\rbrace   \\
-		B & \mathDef & E^* \setminus \left( out\left(\phi_{entry}^*\right) \cup in\left(\phi_{end}^*\right) \right)
+		\Phi^{**} & \mathDef & \Phi^* \setminus \left\lbrace \alpha(\mathcal{C}^*),\omega(\mathcal{C}^*) \right\rbrace   \\
+		E^{**} & \mathDef & E^* \setminus \Big[ out \Big( \alpha(\mathcal{C}^*) \Big) \cup in \Big( \omega(\mathcal{C}^*) \Big) \Big]
 	\end{array}
 \end{equation}
 
-Let $c \in \N \setminus \left\{0\right\}$ and suppose that $c$ is the number of connected components of the graph $\Lambda$. We will use $\Theta$ to denote the set containing all connected components of $\Lambda$ every of which is considered as a sub-choreography of $\mathcal{C}^*$. 
+that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end point of $\mathcal{C}^{*}$, including any edges starting/ending from/to them. Then, $\Theta_{\mathcal{C}^*}$, such that $|\Theta_{\mathcal{C}^*}| = c$ denotes the set containing all connected components of $\mathcal{C}^{**}$ satisfying \ref{cond1}, \ref{cond2} and \ref{cond3} conditions; in other words, each connected component of $\mathcal{C}^{**}$ represents a sub-choreography of $\mathcal{C}$. Formally:
 
-Formally:
-
-\begin{equation}
-	\begin{array}{c}
-		\Theta_{\mathcal{S}^*} \mathDef \left\lbrace \theta_i, \ldots ,\theta_c \right\rbrace \\\\
-		\text{ where } \\\\
-		
-		\forall i \in \left[ 1, c \right] \\
-		
-		\text{the connected component $\theta_i$ of $\Lambda$ } \\ 	
-		\theta_i \mathDef (\Phi^{**}_i, E^{**}_i) \text{ is a sub-choreography of } \mathcal{S}^* \\
-		\Phi^{**}_i \subset \Phi^{*} \wedge E^{**}_i \subset E^{*}  \\
-	\end{array}
-\end{equation} 
+\begin{eqnarray}
+	\Theta_{\mathcal{C}^*} & \mathDef & \left\lbrace \theta_1, \ldots ,\theta_c \right\rbrace \\ & = & \bigcup_{i = 1}^c \left\{ \begin{array}{l}
+		\theta_i = (\Phi^{**}_i, E^{**}_i) : \Phi^{**}_i \subset \Phi^{**} \wedge E^{**}_i \subset E^{**} \\ 
+		\Phi^{**}_i \cap \Phi^{**}_j = E^{**}_i \cap E^{**}_j = \emptyset \qquad j \in \SetFromOneTo{c}: j \neq i \\
+		\text{$\theta_i$ is a connected component of $\mathcal{C}^{**}$} \\	
+		\text{$\theta_i$ satisfies \ref{cond1}, \ref{cond2} and \ref{cond3} conditions}
+	\end{array} \right\} \nonumber
+\end{eqnarray}
 
 \subsubsection{Parallel}
 
@@ -2000,42 +1988,6 @@ We have adopted two different local:
 	
 	In this case, a specified number ($> 1$) of objects are swapped with other random objects from the same group without checking the resource constraints, then it checks if it is a valid solution and if it improves the solution.
 \end{description}
-
-\begin{algorithm}
-	
-	\For{a specified number of times}{
-		
-		\BlankLine
-		
-		$\textbf{G}_i \leftarrow$ Randomly select a group from $\mathcal{G}$\;
-		
-		\For{each object $o_{i_j} \in \textbf{G}_i$ other than the one in $\textbf{S}_k$}{
-			
-			\BlankLine
-			
-			$o_{i_s} \leftarrow $ The object belonging to $\textbf{S}_k$ such that $g(o_{i_s}) = g(o_{i_j})$
-			
-			\BlankLine
-			
-			$\textbf{S}_k^{(temp)} \leftarrow \left\{ \textbf{S}_k \setminus \left\{ o_{i_s} \right\} \right\} \cup \left\{ o_{i_j} \right\}$ 
-			
-			\BlankLine
-			\BlankLine
-			
-			\If{$\textbf{S}_k^{(temp)}$ not violate MMKP constraints}{
-				
-				\BlankLine
-				\BlankLine
-				
-				\If{$profit(\textbf{S}_k^{(temp)}) > profit(\textbf{S}_k) $}{
-					$\textbf{S}_k \leftarrow \textbf{S}_k^{(temp)}$
-				}
-				
-			}
-		}	
-	}
-	\Return $\textbf{S}_k$
-\end{algorithm}
 
 \begin{algorithm}
 	
