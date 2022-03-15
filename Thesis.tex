@@ -600,7 +600,7 @@ According to our model, there are two types of abstract functions implementation
 	\begin{eqnarray}
 		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_O}(\mathcal{C}) : \mathscr{T}(\phi) = \tau_{\omega} \wedge n \in \left\{0,1\right\} \\		
 		P(\phi, \phi_x,t) & = & 1 \qquad \forall \phi, \phi_x \in \mathscr{F_O}(\mathcal{C}) : \\		
-		& & \qquad \qquad \mathscr{T}(\phi) = \tau_{\omega} \wedge \phi_x \in succ(\phi) \wedge |succ(\phi)| = 1, \forall t \qquad \qquad  \\
+		& & \qquad \qquad \mathscr{T}(\phi) = \tau_{\omega} \wedge \phi_x \in succ(\phi) \wedge |succ(\phi)| = 1, \forall t \qquad \qquad  \nonumber
 	\end{eqnarray}
 	
 \end{itemize}
@@ -618,8 +618,6 @@ Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$,
 	\item $a$ represents the identifier of the choreography $\mathcal{C}$;
 	\item $b$ is the name of the abstract serverless function $\phi$;
 \end{itemize}
-
-
 
 \subsubsection{Executability condition}
 
@@ -657,6 +655,453 @@ Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following con
 \end{eqnarray}
 
 Any choreography $\mathcal{C}$ satisfying \ref{pipeline1}, \ref{pipeline2} and \ref{pipeline3} will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
+
+\subsection{Serverless choreography's structure}
+
+Let $\mathcal{C} = (\Phi,E)$ a choreography. 
+
+Informally, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*,\Theta_{\mathcal{C}^*})$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ and the end point $\omega(\mathcal{C}^*)$ are, respectively, opening and closing orchestration functions having same type $\tau$ possibly coinciding. Formally:
+
+\begin{equation}
+	\mathcal{C}^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{l}
+		\alpha(\mathcal{C}^*), \omega(\mathcal{C}^*) \in \mathscr{F_O}(\mathcal{C}^*) \\
+		
+		\mathscr{T}(\alpha(\mathcal{C}^*)) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{C}^*)) = \tau_{\omega}
+	\end{array} \right.
+\end{equation}
+
+For the aim of our work, the most important aspect is that every structure can be viewed as a \ItalicQuotMark{set} of sub-choreographies. Formally, let $c \in \N \setminus \left\{0\right\}$ and $\mathcal{C}^{**} = (\Phi^{**},E^{**})$ a sub-choreography of $\mathcal{C}^*$ such that:
+
+\begin{equation}
+	\begin{array}{lll}
+		\Phi^{**} & \mathDef & \Phi^* \setminus \left\lbrace \alpha(\mathcal{C}^*),\omega(\mathcal{C}^*) \right\rbrace   \\
+		E^{**} & \mathDef & E^* \setminus \Big[ out \Big( \alpha(\mathcal{C}^*) \Big) \cup in \Big( \omega(\mathcal{C}^*) \Big) \Big]
+	\end{array}
+\end{equation}
+
+that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end point of $\mathcal{C}^{*}$, including any edges starting/ending from/to them. Then, $\Theta_{\mathcal{C}^*}$, such that $|\Theta_{\mathcal{C}^*}| = c$ denotes the set containing all connected components of $\mathcal{C}^{**}$ satisfying \ref{cond1}, \ref{cond2} and \ref{cond3} conditions; in other words, each connected component of $\mathcal{C}^{**}$ represents a sub-choreography of $\mathcal{C}$. Formally:
+
+\begin{eqnarray}
+	\Theta_{\mathcal{C}^*} & \mathDef & \left\lbrace \theta_1, \ldots ,\theta_c \right\rbrace \\ & = & \bigcup_{i = 1}^c \left\{ \begin{array}{l}
+		\theta_i = (\Phi^{**}_i, E^{**}_i) : \Phi^{**}_i \subset \Phi^{**} \wedge E^{**}_i \subset E^{**} \\ 
+		\Phi^{**}_i \cap \Phi^{**}_j = E^{**}_i \cap E^{**}_j = \emptyset \qquad j \in \SetFromOneTo{c}: j \neq i \\
+		\text{$\theta_i$ is a connected component of $\mathcal{C}^{**}$} \\	
+		\text{$\theta_i$ satisfies \ref{cond1}, \ref{cond2} and \ref{cond3} conditions}
+	\end{array} \right\} \nonumber
+\end{eqnarray}
+
+Sometimes, to reach our objective, will be necessary to \ItalicQuotMark{replace} structure inside a choreography in order to convert it into a pipeline type, performing the so-called \textit{workflow simplification process}, according to which any structure can be replaced by a single orchestration function $\phi_{fake}$, obtaining a new choreography $\mathcal{C}' = (\Phi',E')$, such that:
+
+\begin{eqnarray}
+	\Phi' & = & \left\{ \Phi \setminus \Phi^* \right\} \cup \left\{ \phi_{fake} \right\} \\
+	E' & = & \left\{ E \setminus E^* \right\} \cup \left\{\bigg(prev(\alpha(\mathcal{C}^*)), \phi_{fake}\bigg) \right\} \cup \left\{\bigg(\phi_{fake}, succ(\omega(\mathcal{C}^*)) \bigg) \right\}
+\end{eqnarray}
+
+where $\phi_{fake} \in \mathscr{F_O}(\mathcal{C}^*)$ is such that:
+
+\begin{eqnarray}
+	RT_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & RT(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
+	C_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & C(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
+	P_{exit}(\phi_{fake}, t) & = & P_{exit}(\mathcal{C}^*, t)
+\end{eqnarray}
+
+
+\subsubsection{Parallel}
+
+Any structure $\mathcal{P} = (\Phi',E',\Theta)$ such that:
+
+\begin{eqnarray}
+	\mathscr{T}(\alpha(\mathcal{P})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{P})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	TPP(\pi, t) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}), \forall t \\
+	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
+	P_{exit}(\theta, t) = 0 & \qquad \forall \theta \in \Theta \\
+	|succ(\alpha(\mathcal{P}))| = |prev(\omega(\mathcal{P}))|
+\end{eqnarray}
+
+is called \textit{parallel structure} and $\tau$ denotes a \textit{parallel} type.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (12,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchStartNode) at (0,0) {$\phi_x$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchEndNode) at (10,0) {$\phi_y$};
+		
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(Node1) at (3.8,2) {$\phi_a$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node2) at (5,2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node3) at (6.2,2) {$\phi_b$};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node4) at (3.8,-2) {$\phi_c$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node5) at (5,-2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node6) at (6.2,-2) {$\phi_d$};
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = 1$} (Node1);
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1$} (Node4);
+		
+		\draw[ultra thick,->] (Node3) edge node[xshift=15 ,yshift=20]{$P(\phi_b,\phi_y, t) = 1$} (branchEndNode);
+		
+		\draw[ultra thick,->] (Node6) edge node[xshift=15 ,yshift=-20]{$P(\phi_d,\phi_y, t) = 1$} (branchEndNode);
+		
+		% Dashed lines
+		
+		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
+		
+		\draw[ultra thick, ->] (branchEndNode) -- (end);
+		
+		\draw[ultra thick, ->] (Node1) -- (Node2);
+		
+		\draw[ultra thick, ->] (Node2) -- (Node3);
+		
+		\draw[ultra thick, ->] (Node4) -- (Node5);
+		
+		\draw[ultra thick, ->] (Node5) -- (Node6);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
+		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+		
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
+		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
+		
+	\end{tikzpicture}
+	\caption{Parallel structure in a serverless workflow.}
+\end{figure}
+
+Clearly, the response time of a parallel structure is equal to the longest response time of all its sub-choreographies.
+
+Formally, let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{P}$, where $i \in \N \cap \left[1,n\right]$, and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration.
+
+At any time $t$, the average response time and billed cost of $\mathcal{P}$ can be computed as follows:
+
+\begin{equation}
+	RT(\mathcal{P},\textbf{x}_{\mathcal{C}}, t) \mathDef max \left\lbrace RT(\theta_i,\textbf{x}_{\mathcal{C}}, t) \mid \theta \in \Theta \right\rbrace 
+\end{equation}
+
+\begin{equation}
+	C(\mathcal{P},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+Since, by definition, we imposed that all sub-choreography of $\mathcal{P}$ have exit probability equal to zero, the exit probability of the a parallel structure is zero too. Therefore, formally:
+
+\begin{equation}
+	P_{exit}(\mathcal{P}, t) = 0
+\end{equation}
+
+\subsubsection{Branch}
+
+Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
+
+\begin{eqnarray}
+	\mathscr{T}(\alpha(\mathcal{B})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{B})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	P(\phi_x, \alpha(\theta_i),t) \leq 1 & \qquad \forall i \in \SetFromOneTo{n} \\
+	\sum_{i = 1}^n P(\phi_x, \alpha(\theta_i),t) = 1 & \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
+	|succ(\alpha(\mathcal{B}))| = |prev(\omega(\mathcal{B}))|
+\end{eqnarray}
+
+is called \textit{branch structure} and $\tau$ denotes a \textit{branch} type. More precisely, if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{if-else-branch structure}; if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{switch-branch structure}. When $|\Theta| = 1$ and $(\phi_x,\phi_y) \in E$, $\mathcal{B}$ is called \textit{if-branch structure}. Clearly, it is used to model \texttt{if}, \texttt{if-else} and \texttt{switch} programming structures inside a serverless application. 
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (12,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchStartNode) at (0,0) {$\phi_x$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchEndNode) at (10,0) {$\phi_y$};
+		
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(Node1) at (3.8,2) {$\phi_a$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node2) at (5,2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node3) at (6.2,2) {$\phi_b$};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node4) at (3.8,-2) {$\phi_c$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node5) at (5,-2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node6) at (6.2,-2) {$\phi_d$};
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = x$} (Node1);
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1-x$} (Node4);
+		
+		\draw[ultra thick,->] (Node3) edge (branchEndNode);
+		
+		\draw[ultra thick,->] (Node6) edge (branchEndNode);
+		
+		% Dashed lines
+		
+		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
+		
+		\draw[ultra thick, ->] (branchEndNode) -- (end);
+		
+		\draw[ultra thick, ->] (Node1) -- (Node2);
+		
+		\draw[ultra thick, ->] (Node2) -- (Node3);
+		
+		\draw[ultra thick, ->] (Node4) -- (Node5);
+		
+		\draw[ultra thick, ->] (Node5) -- (Node6);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
+		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+		
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
+		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
+		
+		legend
+		
+		\matrix [below left] at (current bounding box.north east) {
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
+		};
+		
+		
+	\end{tikzpicture}
+	\caption{An if-else-branch structure in a serverless workflow}
+\end{figure}
+
+Since any branch have the same possibility of be traversed during different execution of $\mathcal{B}$, we have adopted naive probability to model transition probabilities. Formally:
+
+\begin{equation}\label{naiveProbability}
+	P(\phi_x, \alpha(\theta),t) = \dfrac{|I_{\theta}(t)|}{|I_{\mathcal{B}}(t)|} \qquad \forall \theta \in \Theta
+\end{equation}
+
+where $|I_{\theta}|$ ($|I_{\mathcal{B}}|$) denotes how many times the sub-choreography $\theta$ (structure $\mathcal{B}$) was been executed in the past at time $t$.
+
+Let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{B}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of the branch structure $\mathcal{B}$ can be computed as follows:
+
+\begin{equation}
+	RT(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot  RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+\begin{equation}
+	C(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+The exit probability of a branch structure can be computed as follows:
+
+\begin{equation}
+	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
+\end{equation}
+
+\subsubsection{Conditional loop}
+
+Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
+
+\begin{eqnarray}
+	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	|\Theta| = 1  & \\
+	E[I_{\theta}] \geq 0 & \qquad \theta \in \Theta \\
+	P(\phi_{x}, \alpha(\theta), t) = x & \\
+	P(\phi_{x}, \phi_{y},t) = 1 - x & \\
+	P(\omega(\theta), \phi_{x},t) = 1 & \qquad \theta \in \Theta \\
+	P(\phi_x, \alpha(\theta),t) + P(\phi_{x}, \phi_{y},t) = 1 & \qquad \theta \in \Theta \\
+\end{eqnarray}
+
+is called \textit{conditional loop structure} and $\tau$ denotes a \textit{conditional loop} type; it is used to model a \texttt{while} and \texttt{for} programming structures inside a serverless application. 
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start) at (-2,0) {};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (10,0) {};
+		
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(startLoopNode) at (0,0) {$\phi_x$};
+		
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(endLoopNode) at (8,0) {$\phi_y$};
+		
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(node1) at (4,2) {$\alpha(\theta)$};
+		
+		\node[circle, minimum width = 0.5cm, rotate=90]        					   
+		(node2) at (4,3.5) {...};
+		
+		\node[circle, draw, minimum width = 1.3cm]        					   
+		(node3) at (4,5) {$\phi_c$};
+		
+		% Edges...
+		
+		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[xshift=40]{$P(\phi_x,\alpha(\theta),t) = x$} (node1);
+		
+		\draw[bend right,above, ultra thick,->] (node3) edge node[xshift=-40]{$P(\phi_c,\phi_x,t) = 1$} (startLoopNode);
+		
+		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[]{$P(\phi_x,\phi_y,t) = 1 - x$} (endLoopNode);
+		
+		
+		
+		\draw[dashed,ultra thick, ->] (start) -- (startLoopNode);
+		\draw[dashed,ultra thick, ->] (endLoopNode) -- (end);
+		
+		
+		\draw[ultra thick, ->] (node1) -- (node2);
+		\draw[ultra thick, ->] (node2) -- (node3);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=5cm] (sub1) at (4,3.5) {};
+		\node[circle,above of=sub1, yshift=50] (label1) {$\theta$};
+		
+		%legend
+		
+		\matrix [below left] at (current bounding box.north east) {
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
+		};
+		
+	\end{tikzpicture}
+	\caption{Conditional loop structure in a serverless workflow.}
+\end{figure}
+
+Similarly to the branch structure, we have adopt the equation \ref{naiveProbability} to compute the transition probability $P(\phi_{x}, \alpha(\theta), t)$.
+
+In order to compute performance data of a loop structure, $E[I_{\theta}(t)]$, that is the expected value of the number of iterations of $\mathcal{L}$ at the time $t$, is required.
+
+To compute aforementioned information, we can model our problem using geometric distribution, which gives the probability according to which the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event ``\textit{we will not execute the loop body}", we know that success probability $p$ is given by:
+
+\begin{eqnarray}
+	p = P(\phi_x,\phi_y,t) = 1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \\
+\end{eqnarray}
+
+Then:
+
+\begin{eqnarray}
+	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \\
+	& = & pq^{k-1} \\
+	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta),t\Big) \bigg] ^{k-1} \\
+\end{eqnarray}
+
+At any time $t$, the expected value regarding the number of iterations of $\mathcal{L}$, involving the execution of the sub-choreography $\theta$, can be computed as follows:
+
+\begin{eqnarray}
+	E[I_{\theta}(t)] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
+	& = & p \sum_{k = 0}^\infty kq^{k} \nonumber \\
+	& = & p \cdot \frac{q}{(1-q)^2} \nonumber \\
+	& = & \dfrac{q}{p} \nonumber \\
+	& = & \dfrac{P\Big(\phi_{x}, \alpha(\theta),t\Big)}{1 - P\Big(\phi_{x}, \alpha(\theta),t\Big)} 
+\end{eqnarray}
+
+At any time $t$, the response time and the cost of the conditional loop structure $\mathcal{L}$ can be computed as follows:
+
+\begin{equation}
+	RT(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+\begin{equation}
+	C(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+The exit probability of a conditional loop structure was been modeled, once again, exploiting geometric distribution with success probability equal to $P_{exit}(\theta, t)$. To be precise, exit probability is modeled as the probability that the termination of the execution of the choreography to which $\mathcal{L}$ belongs requires $\lfloor E[I_{\theta}(t)] \rfloor$  executions of $\mathcal{L}$. Formally:
+
+\begin{eqnarray}
+	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)\\
+\end{eqnarray}
+
+\subsubsection{Exit}
+
+Any structure $\mathcal{E} = (\Phi',E',\Theta)$ such that:
+
+\begin{eqnarray}
+	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	|\Theta| = 0  & \\
+	P(\phi_{x}, \phi_{y},t) = 0 & \qquad \forall t \\
+\end{eqnarray}
+
+is called \textit{exit structure} and $\tau$ denotes a \textit{exit} type. That structure is used to model a \texttt{return} or \texttt{exit} statement inside a serverless application. 
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start2) at (-4,0) {};
+		
+		\node[circle,draw,minimum width = 1cm] 
+		(start) at (-2,0) {$\phi_x$};
+		
+		\node[circle,draw,minimum width = 1cm] 
+		(end) at (2,0) {$\phi_y$};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end2) at (4,0) {};
+		
+		
+		\draw[ultra thick,->] (start) edge node[yshift=20]{$P(\phi_x,\phi_y, t) = 0$} (end);
+		
+		
+		% Dashed lines
+		
+		\draw[dashed,ultra thick, ->] (start2) -- (start);
+		
+		\draw[dashed,ultra thick, ->] (end) -- (end2);
+		
+	\end{tikzpicture}
+	\caption{An exit structure in a serverless workflow.}
+\end{figure}
+
+
+At any time $t$, following is true that:
+
+\begin{equation}
+	RT(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
+\end{equation}
+
+\begin{equation}
+	C(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
+\end{equation}
+
+\begin{equation}
+	P_{exit}(\mathcal{E}, t) = 1
+\end{equation}
+
 
 \section{Serverless choreography configuration}
 
@@ -1105,7 +1550,7 @@ In this section, we will describe how to evaluate the performance of any executa
 Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}} = (f_j, m_j)$ an executable function configuration for $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. In order to evaluate the performance of $\phi$, we have to introduce some useful notations and functions as follows:
 
 \begin{itemize}
-	\item For some $n \in \N$, $\widehat{\theta_k}^{(\phi_i)} \mathDef {\theta^{(\phi_i)}_1, \ldots, \theta^{(\phi_i)}_n}$ represents the sequence of all sub-choreographies of $\mathcal{C}$ such that:
+	\item For some $n \in \N$, $\widehat{\theta_k}^{(\phi_i)} \mathDef \left\{ \theta^{(\phi_i)}_1, \ldots, \theta^{(\phi_i)}_n \right\}$ represents the set of all sub-choreographies of $\mathcal{C}$ such that:
 	
 	\begin{equation}
 		\phi_i \in \mathscr{F_E}(\theta^{(\phi_i)}_1)
@@ -1116,7 +1561,7 @@ Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}}
 	\end{equation}
 	
 	\begin{equation}
-		\theta^{(\phi_i)}_k \text{ is a sub-choreography of } \theta^{(\phi_i)}_{k+1} \qquad \forall k \in \left[1;n-1\right]
+		\theta^{(\phi_i)}_k = (\Phi_k, E_k) \text{ is a sub-choreography of } \theta^{(\phi_i)}_{k+1} \qquad \forall k \in \left[1;n-1\right]
 	\end{equation}
 
 	\item $E[I_{\phi_i}(t)]$ represents the expected value regarding the number's invocation of the executable function $\phi_i$ at time $t$, which can be defined as follows.
@@ -1140,10 +1585,20 @@ Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}}
 	\end{equation}
 	
 	
-	\item $P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t)$ is the probability to execute $\phi \in \mathscr{F_E}(\theta_k)$ when $\alpha(\theta_k)$ is executed at time $t$. To compute it, firstly is necessary to convert $\theta^{(\phi_i)}_k$ into a pipeline choreography; then, let $\pi_{\phi} \in \Pi(\alpha(\theta_k),\phi)$ the unique path from the entry point of $\theta^{(\phi_i)}_k$ to $\phi$,  it can be computed using following formula:
+	\item $P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t)$ is the probability to execute $\phi \in \mathscr{F_E}(\theta_k)$ when $\alpha(\theta_k)$ is executed at time $t$. 
+	
+	In order to compute this probability, is necessary to process any orchestration function $\phi_x \in \Pi(\alpha(\theta_k),\phi)$, in order to obtain a sort of pipeline choreography from $\alpha(\theta_k)$ to $\phi$.
+	
+	Then, after performing the workflow simplification process, we will obtain a set $\Phi_k' = \left\{\phi_1, \ldots, \phi_n \right\} \subseteq \Phi_k$ such that:
+	
+	\begin{eqnarray}
+		succ(\phi_x) & = &  \phi_{x+1}  \qquad x \in \SetFromOneTo{n -1} \\ \phi_n & = & \phi
+	\end{eqnarray}
+	
+	Finally:
 		
 	\begin{equation}
-		P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t) \mathDef \prod_{ \phi_i \in \pi_{\phi}} (1 - P_{exit}(\phi_i,t))
+		P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t) \mathDef \prod_{i = 1}^{n-1} (1 - P_{exit}(\phi_i,t))
 	\end{equation}
 	
 
@@ -1195,27 +1650,25 @@ where:
 
 \section{Choreography's performance evaluation}
 
-In this section, we will explore some analytical methodologies to accurately compute the average end-to-end response time and charged cost of generic serverless applications, having branches, loops or even workflow's portions executed in parallel.
+In this section, we will briefly explore the analytical methodology to compute the average end-to-end response time and charged cost of generic serverless applications, having branches, loops or even workflow's portions executed in parallel, when a choreography configuration is given.
 
 \subsection{Pipeline choreography performance}
 
-Let $\mathcal{C} = (\Phi,E)$ a pipeline choreography as defined in section \ref{PipelineDefinitionSection} and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration.
+Let $\mathcal{C} = (\Phi,E)$ a pipeline choreography as defined in section \ref{PipelineDefinitionSection} and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration. Fortunately, exploiting pipeline choreography's properties, is very simple to obtain a performance evaluation when $\textbf{x}_{\mathcal{C}}$ is given. 
 
-Exploiting pipeline choreography's properties, is very simple to obtain a performance evaluation when a choreography configuration is given. At any time $t$, following equations can be used:
+Let $\Phi = \left\{\phi_1, \ldots, \phi_n \right\}$ such that:
 
-\begin{equation}\label{eq:perfF1}
-	RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) = \sum_{\phi \in \mathscr{F_E}(\mathcal{C})} RT(x_{\phi},t) + \sum_{\phi \in \mathscr{F_O}(\mathcal{C})} RT_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)
+\begin{equation}
+	succ(\phi_x) = \phi_{x+1}  \qquad x \in \SetFromOneTo{n -1}
 \end{equation}
 
-\begin{equation}\label{eq:perfF2}
-	C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) = \sum_{\phi \in \mathscr{F_E}(\mathcal{C})} C(x_{\phi},t) + \sum_{\phi \in \mathscr{F_O}(\mathcal{C})} C_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
 
-where:
+Then, at any time $t$, following equations can be used:
 
-\begin{itemize}
-	\item $RT_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)$ and $C_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)$ denote, respectively, the average response time and charged cost of the orchestration function $\phi \in \mathscr{F_O}(\mathcal{C})$, having type $\mathscr{T}(\phi)$, when it is executed using the choreography configuration $\textbf{x}_{\mathcal{C}}$ at time $t$. We will explain how to compute them very soon.
-\end{itemize}
+\begin{eqnarray}
+	RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) & \mathDef &  RT(x_{\phi_1},t) + \sum_{x = 2}^n P_{exe}^F(\mathcal{C},\phi_{x-1},t) \cdot RT(x_{\phi_x},t) \label{eq:perfF1} \\
+	C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) & \mathDef &  C(x_{\phi_1},t) + \sum_{x = 2}^n P_{exe}^F(\mathcal{C},\phi_{x-1},t) \cdot C(x_{\phi_x},t) \label{eq:perfF2}
+\end{eqnarray}
 
 \subsection{Serverless choreography's structures}
 
@@ -1223,447 +1676,7 @@ Unfortunately, equations \ref{eq:perfF1} and \ref{eq:perfF2} can be used only de
 
 A very simple approach to obtain a performance evaluation of any choreography's kind, is to simplify the serverless workflow in a such way to obtain a pipeline type choreography, allow us to apply aforementioned equations. To do that, exploiting different methods for different \ItalicQuotMark{structures}, the performance model trims the graph associated with a choreography by removing or modifying vertices and edges in order to convert it into a pipeline choreography. Firstly, we must explain what we mean for structure.
 
-Let $\mathcal{C} = (\Phi,E)$ a choreography. Informally, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*,\Theta_{\mathcal{C}^*})$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ and the end point $\omega(\mathcal{C}^*)$ are, respectively, opening and closing orchestration functions having same type $\tau$ possibly coinciding. Formally:
 
-\begin{equation}
-	\mathcal{C}^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{l}
-		\alpha(\mathcal{C}^*), \omega(\mathcal{C}^*) \in \mathscr{F_O}(\mathcal{C}^*) \\
-		
-		\mathscr{T}(\alpha(\mathcal{C}^*)) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{C}^*)) = \tau_{\omega}
-	\end{array} \right.
-\end{equation}
-
-For the aim of our work, the most important aspect is that every structure can be viewed as a \ItalicQuotMark{set} of sub-choreographies. Formally, let $c \in \N \setminus \left\{0\right\}$ and $\mathcal{C}^{**} = (\Phi^{**},E^{**})$ a sub-choreography of $\mathcal{C}^*$ such that:
-
-\begin{equation}
-	\begin{array}{lll}
-		\Phi^{**} & \mathDef & \Phi^* \setminus \left\lbrace \alpha(\mathcal{C}^*),\omega(\mathcal{C}^*) \right\rbrace   \\
-		E^{**} & \mathDef & E^* \setminus \Big[ out \Big( \alpha(\mathcal{C}^*) \Big) \cup in \Big( \omega(\mathcal{C}^*) \Big) \Big]
-	\end{array}
-\end{equation}
-
-that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end point of $\mathcal{C}^{*}$, including any edges starting/ending from/to them. Then, $\Theta_{\mathcal{C}^*}$, such that $|\Theta_{\mathcal{C}^*}| = c$ denotes the set containing all connected components of $\mathcal{C}^{**}$ satisfying \ref{cond1}, \ref{cond2} and \ref{cond3} conditions; in other words, each connected component of $\mathcal{C}^{**}$ represents a sub-choreography of $\mathcal{C}$. Formally:
-
-\begin{eqnarray}
-	\Theta_{\mathcal{C}^*} & \mathDef & \left\lbrace \theta_1, \ldots ,\theta_c \right\rbrace \\ & = & \bigcup_{i = 1}^c \left\{ \begin{array}{l}
-		\theta_i = (\Phi^{**}_i, E^{**}_i) : \Phi^{**}_i \subset \Phi^{**} \wedge E^{**}_i \subset E^{**} \\ 
-		\Phi^{**}_i \cap \Phi^{**}_j = E^{**}_i \cap E^{**}_j = \emptyset \qquad j \in \SetFromOneTo{c}: j \neq i \\
-		\text{$\theta_i$ is a connected component of $\mathcal{C}^{**}$} \\	
-		\text{$\theta_i$ satisfies \ref{cond1}, \ref{cond2} and \ref{cond3} conditions}
-	\end{array} \right\} \nonumber
-\end{eqnarray}
-
-When we need to convert a generic choreography into a pipeline type during the workflow simplification process, the entire structure can be replaced by a single orchestration function $\phi_{fake}$, obtaining a new choreography $\mathcal{C}' = (\Phi',E')$ such that:
-
-\begin{eqnarray}
-	\Phi' & = & \left\{ \Phi \setminus \Phi^* \right\} \cup \left\{ \phi_{fake} \right\} \\
-	E' & = & \left\{ E \setminus E^* \right\} \cup \left\{\bigg(prev(\alpha(\mathcal{C}^*)), \phi_{fake}\bigg) \right\} \cup \left\{\bigg(\phi_{fake}, succ(\omega(\mathcal{C}^*)) \bigg) \right\}
-\end{eqnarray}
-
-where $\phi_{fake} \in \mathscr{F_O}(\mathcal{C}^*)$ is such that:
-
-\begin{eqnarray}
-	RT_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & RT(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
-	C_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & C(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
-	P_{exit}(\phi_{fake}, t) & = & P_{exit}(\mathcal{C}^*, t)
-\end{eqnarray}
-
-
-\subsubsection{Parallel}
-
-Any structure $\mathcal{P} = (\Phi',E',\Theta)$ such that:
-
-\begin{eqnarray}
-	\mathscr{T}(\alpha(\mathcal{P})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{P})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
-	TPP(\pi, t) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}), \forall t \\
-	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
-	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
-	P_{exit}(\theta, t) = 0 & \qquad \forall \theta \in \Theta \\
-	|succ(\alpha(\mathcal{P}))| = |prev(\omega(\mathcal{P}))|
-\end{eqnarray}
-
-is called \textit{parallel structure} and $\tau$ denotes a \textit{parallel} type.
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start) at (-2,0) {};
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(end) at (12,0) {};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(branchStartNode) at (0,0) {$\phi_x$};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(branchEndNode) at (10,0) {$\phi_y$};
-		
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(Node1) at (3.8,2) {$\phi_a$};
-		
-		\node[circle, minimum width = 0.3cm]       					   
-		(Node2) at (5,2) {...};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node3) at (6.2,2) {$\phi_b$};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node4) at (3.8,-2) {$\phi_c$};
-		
-		\node[circle, minimum width = 0.3cm]       					   
-		(Node5) at (5,-2) {...};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node6) at (6.2,-2) {$\phi_d$};
-		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = 1$} (Node1);
-		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1$} (Node4);
-		
-		\draw[ultra thick,->] (Node3) edge node[xshift=15 ,yshift=20]{$P(\phi_b,\phi_y, t) = 1$} (branchEndNode);
-		
-		\draw[ultra thick,->] (Node6) edge node[xshift=15 ,yshift=-20]{$P(\phi_d,\phi_y, t) = 1$} (branchEndNode);
-		
-		% Dashed lines
-		
-		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
-		
-		\draw[ultra thick, ->] (branchEndNode) -- (end);
-		
-		\draw[ultra thick, ->] (Node1) -- (Node2);
-		
-		\draw[ultra thick, ->] (Node2) -- (Node3);
-		
-		\draw[ultra thick, ->] (Node4) -- (Node5);
-		
-		\draw[ultra thick, ->] (Node5) -- (Node6);
-		
-		% Frames
-		
-		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
-		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
-		
-		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
-		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
-		
-	\end{tikzpicture}
-	\caption{Parallel structure in a serverless workflow.}
-\end{figure}
-
-Clearly, the response time of a parallel structure is equal to the longest response time of all its sub-choreographies.
-
-Formally, let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{P}$, where $i \in \N \cap \left[1,n\right]$, and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration.
-
-At any time $t$, the average response time and billed cost of $\mathcal{P}$ can be computed as follows:
-
-\begin{equation}
-	RT(\mathcal{P},\textbf{x}_{\mathcal{C}}, t) \mathDef max \left\lbrace RT(\theta_i,\textbf{x}_{\mathcal{C}}, t) \mid \theta \in \Theta \right\rbrace 
-\end{equation}
-
-\begin{equation}
-	C(\mathcal{P},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-Since, by definition, we imposed that all sub-choreography of $\mathcal{P}$ have exit probability equal to zero, the exit probability of the a parallel structure is zero too. Therefore, formally:
-
-\begin{equation}
-	P_{exit}(\mathcal{P}, t) = 0
-\end{equation}
-
-\subsubsection{Branch}
-
-Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
-
-\begin{eqnarray}
-	\mathscr{T}(\alpha(\mathcal{B})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{B})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
-	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
-	P(\phi_x, \alpha(\theta_i),t) \leq 1 & \qquad \forall i \in \SetFromOneTo{n} \\
-	\sum_{i = 1}^n P(\phi_x, \alpha(\theta_i),t) = 1 & \\
-	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
-	|succ(\alpha(\mathcal{B}))| = |prev(\omega(\mathcal{B}))|
-\end{eqnarray}
-
-is called \textit{branch structure} and $\tau$ denotes a \textit{branch} type. More precisely, if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{if-else-branch structure}; if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{switch-branch structure}. When $|\Theta| = 1$ and $(\phi_x,\phi_y) \in E$, $\mathcal{B}$ is called \textit{if-branch structure}. Clearly, it is used to model \texttt{if}, \texttt{if-else} and \texttt{switch} programming structures inside a serverless application. 
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start) at (-2,0) {};
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(end) at (12,0) {};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(branchStartNode) at (0,0) {$\phi_x$};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(branchEndNode) at (10,0) {$\phi_y$};
-		
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(Node1) at (3.8,2) {$\phi_a$};
-		
-		\node[circle, minimum width = 0.3cm]       					   
-		(Node2) at (5,2) {...};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node3) at (6.2,2) {$\phi_b$};
-	
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node4) at (3.8,-2) {$\phi_c$};
-		
-		\node[circle, minimum width = 0.3cm]       					   
-		(Node5) at (5,-2) {...};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node6) at (6.2,-2) {$\phi_d$};
-		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = x$} (Node1);
-		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1-x$} (Node4);
-		
-		\draw[ultra thick,->] (Node3) edge (branchEndNode);
-		
-		\draw[ultra thick,->] (Node6) edge (branchEndNode);
-		
-		% Dashed lines
-		
-		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
-		
-		\draw[ultra thick, ->] (branchEndNode) -- (end);
-		
-		\draw[ultra thick, ->] (Node1) -- (Node2);
-		
-		\draw[ultra thick, ->] (Node2) -- (Node3);
-		
-		\draw[ultra thick, ->] (Node4) -- (Node5);
-		
-		\draw[ultra thick, ->] (Node5) -- (Node6);
-		
-		% Frames
-		
-		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
-		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
-		
-		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
-		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
-		
-		legend
-		
-		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
-		};
-		
-		
-	\end{tikzpicture}
-	\caption{An if-else-branch structure in a serverless workflow}
-\end{figure}
-
-Since any branch have the same possibility of be traversed during different execution of $\mathcal{B}$, we have adopted naive probability to model transition probabilities. Formally:
-
-\begin{equation}\label{naiveProbability}
-	P(\phi_x, \alpha(\theta),t) = \dfrac{|I_{\theta}(t)|}{|I_{\mathcal{B}}(t)|} \qquad \forall \theta \in \Theta
-\end{equation}
-
-where $|I_{\theta}|$ ($|I_{\mathcal{B}}|$) denotes how many times the sub-choreography $\theta$ (structure $\mathcal{B}$) was been executed in the past at time $t$.
- 
-Let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{B}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of the branch structure $\mathcal{B}$ can be computed as follows:
-
-\begin{equation}
-	RT(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot  RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-\begin{equation}
-	C(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-The exit probability of a branch structure can be computed as follows:
-
-\begin{equation}
-	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
-\end{equation}
-
-\subsubsection{Conditional loop}
-
-Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
-
-\begin{eqnarray}
-	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
-	|\Theta| = 1  & \\
-	E[I_{\theta}] \geq 0 & \qquad \theta \in \Theta \\
-	P(\phi_{x}, \alpha(\theta), t) = x & \\
-	P(\phi_{x}, \phi_{y},t) = 1 - x & \\
-	P(\omega(\theta), \phi_{x},t) = 1 & \qquad \theta \in \Theta \\
-	P(\phi_x, \alpha(\theta),t) + P(\phi_{x}, \phi_{y},t) = 1 & \qquad \theta \in \Theta \\
-\end{eqnarray}
-
-is called \textit{conditional loop structure} and $\tau$ denotes a \textit{conditional loop} type; it is used to model a \texttt{while} and \texttt{for} programming structures inside a serverless application. 
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start) at (-2,0) {};
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(end) at (10,0) {};
-		
-		\node[circle, draw, minimum width = 1.3cm]        					   
-		(startLoopNode) at (0,0) {$\phi_x$};
-		
-		\node[circle, draw, minimum width = 1.3cm]        					   
-		(endLoopNode) at (8,0) {$\phi_y$};
-	
-		\node[circle, draw, minimum width = 1.3cm]        					   
-		(node1) at (4,2) {$\alpha(\theta)$};
-		
-		\node[circle, minimum width = 0.5cm, rotate=90]        					   
-		(node2) at (4,3.5) {...};
-		
-		\node[circle, draw, minimum width = 1.3cm]        					   
-		(node3) at (4,5) {$\phi_c$};
-	
-		% Edges...
-	
-		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[xshift=40]{$P(\phi_x,\alpha(\theta),t) = x$} (node1);
-		
-		\draw[bend right,above, ultra thick,->] (node3) edge node[xshift=-40]{$P(\phi_c,\phi_x,t) = 1$} (startLoopNode);
-		
-		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[]{$P(\phi_x,\phi_y,t) = 1 - x$} (endLoopNode);
-		
-		
-		
-		\draw[dashed,ultra thick, ->] (start) -- (startLoopNode);
-		\draw[dashed,ultra thick, ->] (endLoopNode) -- (end);
-		
-		
-		\draw[ultra thick, ->] (node1) -- (node2);
-		\draw[ultra thick, ->] (node2) -- (node3);
-		
-		% Frames
-		
-		\node[rectangle, draw, dashed, minimum width =1.8cm, minimum height=5cm] (sub1) at (4,3.5) {};
-		\node[circle,above of=sub1, yshift=50] (label1) {$\theta$};
-	
-		%legend
-	
-			\matrix [below left] at (current bounding box.north east) {
-			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
-		};
-		
-	\end{tikzpicture}
-	\caption{Conditional loop structure in a serverless workflow.}
-\end{figure}
-
-Similarly to the branch structure, we have adopt the equation \ref{naiveProbability} to compute the transition probability $P(\phi_{x}, \alpha(\theta), t)$.
-
-In order to compute performance data of a loop structure, $E[I_{\theta}(t)]$, that is the expected value of the number of iterations of $\mathcal{L}$ at the time $t$, is required.
-
-To compute aforementioned information, we can model our problem using geometric distribution, which gives the probability according to which the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event ``\textit{we will not execute the loop body}", we know that success probability $p$ is given by:
-
-\begin{eqnarray}
-	p = P(\phi_x,\phi_y,t) = 1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \\
-\end{eqnarray}
-
-Then:
-
-\begin{eqnarray}
-	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \\
-	& = & pq^{k-1} \\
-	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta),t\Big) \bigg] ^{k-1} \\
-\end{eqnarray}
-
-At any time $t$, the expected value regarding the number of iterations of $\mathcal{L}$, involving the execution of the sub-choreography $\theta$, can be computed as follows:
-
-\begin{eqnarray}
-	E[I_{\theta}(t)] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
-	& = & p \sum_{k = 0}^\infty kq^{k} \nonumber \\
-	& = & p \cdot \frac{q}{(1-q)^2} \nonumber \\
-	& = & \dfrac{q}{p} \nonumber \\
-	& = & \dfrac{P\Big(\phi_{x}, \alpha(\theta),t\Big)}{1 - P\Big(\phi_{x}, \alpha(\theta),t\Big)} 
-\end{eqnarray}
-
-At any time $t$, the response time and the cost of the conditional loop structure $\mathcal{L}$ can be computed as follows:
-
-\begin{equation}
-	RT(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-\begin{equation}
-	C(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-The exit probability of a conditional loop structure was been modeled, once again, exploiting geometric distribution with success probability equal to $P_{exit}(\theta, t)$. To be precise, exit probability is modeled as the probability that the termination of the execution of the choreography to which $\mathcal{L}$ belongs requires $\lfloor E[I_{\theta}(t)] \rfloor$  executions of $\mathcal{L}$. Formally:
-
-\begin{eqnarray}
-	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)\\
-\end{eqnarray}
-
-\subsubsection{Exit}
-
-Any structure $\mathcal{E} = (\Phi',E',\Theta)$ such that:
-
-\begin{eqnarray}
-	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
-	|\Theta| = 0  & \\
-	P(\phi_{x}, \phi_{y},t) = 0 & \qquad \forall t \\
-\end{eqnarray}
-
-is called \textit{exit structure} and $\tau$ denotes a \textit{exit} type. That structure is used to model a \texttt{return} or \texttt{exit} statement inside a serverless application. 
-
-\begin{figure}[h!]
-	\centering
-	\begin{tikzpicture}
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start2) at (-4,0) {};
-		
-		\node[circle,draw,minimum width = 1cm] 
-		(start) at (-2,0) {$\phi_x$};
-		
-		\node[circle,draw,minimum width = 1cm] 
-		(end) at (2,0) {$\phi_y$};
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(end2) at (4,0) {};
-		
-	
-		\draw[ultra thick,->] (start) edge node[yshift=20]{$P(\phi_x,\phi_y, t) = 0$} (end);
-		
-		
-		% Dashed lines
-		
-		\draw[dashed,ultra thick, ->] (start2) -- (start);
-		
-		\draw[dashed,ultra thick, ->] (end) -- (end2);
-		
-	\end{tikzpicture}
-	\caption{An exit structure in a serverless workflow.}
-\end{figure}
-
-
-At any time $t$, following is true that:
-
-\begin{equation}
-	RT(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
-\end{equation}
-
-\begin{equation}
-	C(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
-\end{equation}
-
-\begin{equation}
-	P_{exit}(\mathcal{E}, t) = 1
-\end{equation}
 
 \subsection{Generic choreography performance}
 
