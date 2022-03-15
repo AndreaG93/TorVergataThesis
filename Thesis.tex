@@ -478,7 +478,7 @@ where:
 	
 	\begin{itemize}
 				
-		\item $P_{exit} : \Phi \times \Rplus \to \Rplus \cap \SetFromZeroToOne$ represents the so-called \textit{exit probability function}, according to which $P_{exit}(\phi,t)$ denotes the probability of execution's termination of $\mathcal{C}_R$, when the execution of $\phi$ is terminated, at time $t$.
+		\item $P_{exit} : \Phi \times \Rplus \to \Rplus \cap \SetFromZeroToOne$ represents the so-called \textit{exit probability function}, according to which $P_{exit}(\phi,t)$ denotes the probability of execution's termination of $\mathcal{C}_R$, when the execution of $\phi$ is terminated, at time $t$. We will describe very soon how to compute it.
 	\end{itemize}
 	
 	\item Let $i,j \in \N \cap \left[ 1, n \right]$ and $\phi_i, \phi_j \in \Phi$, any directed edge $e_{ij} = \left( \phi_i, \phi_j \right) \in E$ represents the calling relationship between two abstract functions, which depends on the business logic defined by $R$. 
@@ -656,7 +656,64 @@ Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following con
 
 Any choreography $\mathcal{C}$ satisfying \ref{pipeline1}, \ref{pipeline2} and \ref{pipeline3} will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
 
-\subsection{Serverless choreography's structure}
+\section{Serverless choreography configuration}
+
+In order to reach his goal, our framework has to determine a so-called \textit{serverless choreography configuration}, or simply \textit{choreography configuration} or \textit{configuration}, specifying which concrete function will be invoked when the corresponding executable function is executed; moreover, its configuration's parameters, like RAM memory size or CPU power, has to be determined.
+
+Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation's request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
+
+\begin{itemize}
+	\item For each $\phi \in \mathscr{F_E}(\mathcal{C})$, it selects only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$, which will be effectively invoked and executed on its corresponding FaaS platform. 
+	\item For each selected concrete function $f_{\phi}$, it selects a value for RAM memory size.
+\end{itemize}
+
+Clearly, as we will explain in detail later, to perform aforementioned selection, our framework has to acquire a series of function response time and charged costs when the $\mathcal{C}$ is executed using different concrete functions and memory sizes.  
+
+\subsection{Executable function configuration}
+
+To build a configuration for a given choreography, is clearly needed to select a configuration for its executable functions. 
+
+Then, let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set, formally an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
+
+\begin{equation}
+	x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $f_{\phi} \in \textbf{F}_{\phi}$  denotes a particular concrete function implementing the executable function $\phi$.
+	\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
+\end{itemize}
+
+\subsection{Serverless choreography configuration}
+
+Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
+
+Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
+
+\begin{eqnarray}
+	\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
+	& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
+	& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
+\end{eqnarray}
+
+where:
+
+\begin{itemize}
+	\item $x_{\phi_{i}}$ represents the executable function configuration for the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$.
+	
+	\item $f_{\phi_{i_j}}$ represent the $j$-th concrete function implementing the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$.
+	
+	\item $\textbf{M}_{f_{\phi_{i_j}}} \subseteq \N$ denotes the set containing all available memory size options, allowed by provider, during the execution of the concrete function $f_{\phi_{i_j}}$, for some $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$
+	
+	\item $\textbf{X}_{\mathcal{C}}$ represents the so-called \textit{solutions space}, which includes all possible choreography configurations.
+\end{itemize}
+
+From now, we will use $RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ and $C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ notations to represent the average response time and billed cost when the choreography $\mathcal{C}$ is executed with the configuration $\textbf{x}_{\mathcal{C}}$ at time $t$. 
+
+\section{Serverless choreography's structure}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
 
@@ -690,7 +747,9 @@ that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end po
 	\end{array} \right\} \nonumber
 \end{eqnarray}
 
-Sometimes, to reach our objective, will be necessary to \ItalicQuotMark{replace} structure inside a choreography in order to convert it into a pipeline type, performing the so-called \textit{workflow simplification process}, according to which any structure can be replaced by a single orchestration function $\phi_{fake}$, obtaining a new choreography $\mathcal{C}' = (\Phi',E')$, such that:
+Sometimes, to reach our objective, will be necessary to \ItalicQuotMark{replace} the structures, inside a given choreography, in order to convert it into a pipeline type, performing the so-called \textit{workflow simplification process},
+
+Exploiting different methods for different structures which we will describe shortly, our model trims the graph associated with a choreography by removing or modifying vertices and edges in order to convert it into a pipeline choreography. Formally, this is done by replacing any structure with a single orchestration function $\phi_{fake}$, obtaining a new choreography $\mathcal{C}' = (\Phi',E')$, such that:
 
 \begin{eqnarray}
 	\Phi' & = & \left\{ \Phi \setminus \Phi^* \right\} \cup \left\{ \phi_{fake} \right\} \\
@@ -706,7 +765,7 @@ where $\phi_{fake} \in \mathscr{F_O}(\mathcal{C}^*)$ is such that:
 \end{eqnarray}
 
 
-\subsubsection{Parallel}
+\subsection{Parallel}
 
 Any structure $\mathcal{P} = (\Phi',E',\Theta)$ such that:
 
@@ -811,7 +870,7 @@ Since, by definition, we imposed that all sub-choreography of $\mathcal{P}$ have
 	P_{exit}(\mathcal{P}, t) = 0
 \end{equation}
 
-\subsubsection{Branch}
+\subsection{Branch}
 
 Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
 
@@ -927,7 +986,7 @@ The exit probability of a branch structure can be computed as follows:
 	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
 \end{equation}
 
-\subsubsection{Conditional loop}
+\subsection{Conditional loop}
 
 Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
 
@@ -1045,7 +1104,7 @@ The exit probability of a conditional loop structure was been modeled, once agai
 	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)\\
 \end{eqnarray}
 
-\subsubsection{Exit}
+\subsection{Exit}
 
 Any structure $\mathcal{E} = (\Phi',E',\Theta)$ such that:
 
@@ -1103,62 +1162,6 @@ At any time $t$, following is true that:
 \end{equation}
 
 
-\section{Serverless choreography configuration}
-
-In order to reach his goal, our framework has to determine a so-called \textit{serverless choreography configuration}, or simply \textit{choreography configuration} or \textit{configuration}, specifying which concrete function will be invoked when the corresponding executable function is executed; moreover, its configuration's parameters, like RAM memory size or CPU power, has to be determined.
-
-Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation's request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
-
-\begin{itemize}
-	\item For each $\phi \in \mathscr{F_E}(\mathcal{C})$, it selects only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$, which will be effectively invoked and executed on its corresponding FaaS platform. 
-	\item For each selected concrete function $f_{\phi}$, it selects a value for RAM memory size.
-\end{itemize}
-
-Clearly, as we will explain in detail later, to perform aforementioned selection, our framework has to acquire a series of function response time and charged costs when the $\mathcal{C}$ is executed using different concrete functions and memory sizes.  
-
-\subsection{Executable function configuration}
-
-To build a configuration for a given choreography, is clearly needed to select a configuration for its executable functions. 
-
-Then, let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set, formally an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
-
-\begin{equation}
-	x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
-\end{equation}
-
-where:
-
-\begin{itemize}
-	\item $f_{\phi} \in \textbf{F}_{\phi}$  denotes a particular concrete function implementing the executable function $\phi$.
-	\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
-\end{itemize}
-
-\subsection{Serverless choreography configuration}
-
-Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
-
-Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
-
-\begin{eqnarray}
-	\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
-	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
-	& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
-	& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
-\end{eqnarray}
-
-where:
-
-\begin{itemize}
-	\item $x_{\phi_{i}}$ represents the executable function configuration for the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$.
-	
-	\item $f_{\phi_{i_j}}$ represent the $j$-th concrete function implementing the executable function $\phi_{i}$, for some  $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$.
-	
-	\item $\textbf{M}_{f_{\phi_{i_j}}} \subseteq \N$ denotes the set containing all available memory size options, allowed by provider, during the execution of the concrete function $f_{\phi_{i_j}}$, for some $i \in \N \cap \left[ 1, k \right]$ and $j \in \N \cap \left[ 1, |\textbf{F}_{\phi_{i}}| \right]$
-	
-	\item $\textbf{X}_{\mathcal{C}}$ represents the so-called \textit{solutions space}, which includes all possible choreography configurations.
-	
-	
-\end{itemize}
 
 \section{Concrete function's performance evaluation}
 
@@ -1670,17 +1673,13 @@ Then, at any time $t$, following equations can be used:
 	C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) & \mathDef &  C(x_{\phi_1},t) + \sum_{x = 2}^n P_{exe}^F(\mathcal{C},\phi_{x-1},t) \cdot C(x_{\phi_x},t) \label{eq:perfF2}
 \end{eqnarray}
 
-\subsection{Serverless choreography's structures}
+\subsection{Generic choreography's performance}
 
 Unfortunately, equations \ref{eq:perfF1} and \ref{eq:perfF2} can be used only dealing with pipeline type choreographies, therefore they are not suitable for general choreographies having branch or loops. 
 
-A very simple approach to obtain a performance evaluation of any choreography's kind, is to simplify the serverless workflow in a such way to obtain a pipeline type choreography, allow us to apply aforementioned equations. To do that, exploiting different methods for different \ItalicQuotMark{structures}, the performance model trims the graph associated with a choreography by removing or modifying vertices and edges in order to convert it into a pipeline choreography. Firstly, we must explain what we mean for structure.
+However, exploiting what was said before regarding choreography's structures, is very simple to convert a generic choreography into a pipeline type one. A very naive iterative approach is reported in algorithm \ref{naiveIter}.
 
-
-
-\subsection{Generic choreography performance}
-
-\begin{algorithm}
+\begin{algorithm}\caption{Pseudo-code regarding a possible iterative approach to convert a generic choreography into a pipeline type one}\label{naiveIter}
 	
 	$\mathcal{C}^* \leftarrow \mathcal{C}$\;
 	\While{$\mathcal{C}^*$ is not a pipeline choreography}{
