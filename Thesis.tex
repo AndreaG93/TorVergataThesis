@@ -478,7 +478,7 @@ where:
 	
 	\begin{itemize}
 				
-		\item $P_{exit} : \Phi \times \Rplus \cap \SetFromZeroToOne$ represents the so-called \textit{exit probability function}, according to which $P_{exit}(\phi)$ denotes the probability of execution's termination of $\mathcal{C}_R$ when the execution of $\phi$ is terminated.
+		\item $P_{exit} : \Phi \times \Rplus \to \Rplus \cap \SetFromZeroToOne$ represents the so-called \textit{exit probability function}, according to which $P_{exit}(\phi,t)$ denotes the probability of execution's termination of $\mathcal{C}_R$, when the execution of $\phi$ is terminated, at time $t$.
 	\end{itemize}
 	
 	\item Let $i,j \in \N \cap \left[ 1, n \right]$ and $\phi_i, \phi_j \in \Phi$, any directed edge $e_{ij} = \left( \phi_i, \phi_j \right) \in E$ represents the calling relationship between two abstract functions, which depends on the business logic defined by $R$. 
@@ -491,24 +491,24 @@ where:
 		
 		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ when the execution of $\phi_i$ is terminated;
 		
-		\item $P : \Phi \times \Phi \to \left[ 0, 1 \right]$ is called \textit{transition probability function}, where $P\left(\phi_i, \phi_j \right) = p_{ij}$. Obviously, $P\left(\phi_i, \phi_j \right) = 0$ implies that $\phi_i$ cannot invoke $\phi_j$ but it does not imply that the directed edge $\left( \phi_i, \phi_j \right) \notin E$; directed edges having null weight can belong to $E$.
+		\item $P : \Phi \times \Phi \times \Rplus \to \Rplus \cap \left[ 0, 1 \right]$, called \textit{transition probability function}, is such that $P\left(\phi_i, \phi_j, t \right) = p_{ij}$, where $t$ is the time. Obviously, $P\left(\phi_i, \phi_j, t \right) = 0$ implies that $\phi_i$ cannot invoke $\phi_j$ but it does not imply that the directed edge $\left( \phi_i, \phi_j \right) \notin E$; directed edges having null weight can belong to $E$.
 		
 		\item For any path $\pi = \phi_1 e_1 \ldots e_{n-1} \phi_n$ of $\mathcal{C}_R$, we define \textit{transition probability of the path $\pi$} the following quantity:
 		
 		\begin{equation}
-			TPP(\pi) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1} \right)
+			TPP(\pi, t) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1}, t \right)
 		\end{equation}
 	
-		Particularly, an abstract function $\phi \in \Phi$ is said \textit{unreachable} if following condition is hold:
+		Particularly, an abstract function $\phi \in \Phi$ is said \textit{unreachable} if, for any time $t$, following condition is hold:
 	
 		\begin{equation}\label{cond3}
-			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi) = 0
+			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi, t) = 0
 		\end{equation}
 	
 		Conversely, a $\phi \in \Phi$ is said \textit{reachable} when:
 
 		\begin{equation}\label{cond3}
-			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi) > 0
+			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi, t) > 0
 		\end{equation}
 		
 	\end{itemize}
@@ -576,8 +576,8 @@ According to our model, there are two types of abstract functions implementation
 	
 	\begin{eqnarray}
 		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C}) \label{eq:executableFP1} \wedge n \in \left\{0,1\right\} \\
-		P(\phi, \phi_x) & = & 1 \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C}) : \phi_x \in succ(\phi) \wedge |succ(\phi)| = 1 \label{eq:executableFP2} \\
-		P_{exit}(\phi) & = & 0 \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C})
+		P(\phi, \phi_x,t) & = & 1 \qquad \forall \phi, \phi_x \in \mathscr{F_E}(\mathcal{C}) : \phi_x \in succ(\phi) \wedge |succ(\phi)| = 1, \forall t \qquad \qquad \label{eq:executableFP2} \\
+		P_{exit}(\phi, t) & = & 0 \qquad \forall \phi \in \mathscr{F_E}(\mathcal{C}), \forall t
 	\end{eqnarray}
 
 
@@ -598,7 +598,9 @@ According to our model, there are two types of abstract functions implementation
 	Finally, following condition must be hold:
 	
 	\begin{eqnarray}
-		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_O}(\mathcal{C}) \label{eq:executableFP1} \wedge n \in \left\{0,1\right\}
+		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_O}(\mathcal{C}) : \mathscr{T}(\phi) = \tau_{\omega} \wedge n \in \left\{0,1\right\} \\		
+		P(\phi, \phi_x,t) & = & 1 \qquad \forall \phi, \phi_x \in \mathscr{F_O}(\mathcal{C}) : \\		
+		& & \qquad \qquad \mathscr{T}(\phi) = \tau_{\omega} \wedge \phi_x \in succ(\phi) \wedge |succ(\phi)| = 1, \forall t \qquad \qquad  \\
 	\end{eqnarray}
 	
 \end{itemize}
@@ -644,14 +646,14 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted direc
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
-\subsubsection{Serverless pipeline choreography}\label{BasicDefinition}
+\subsubsection{Serverless pipeline choreography}\label{PipelineDefinitionSection}
 
 Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
 
 \begin{eqnarray}
 	|in(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \left\{ \alpha(\mathcal{C}) \right\} \label{pipeline1} \\
 	|out(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \left\{ \omega(\mathcal{C}) \right\} \label{pipeline2} \\
-	P(\phi_x, \phi_y) & = & 1 \qquad \forall x,y \in \SetFromOneTo{|\Phi|} \label{pipeline3}
+	P(\phi_x, \phi_y, t) & = & 1 \qquad \forall x,y \in \SetFromOneTo{|\Phi|}, \forall t \label{pipeline3}
 \end{eqnarray}
 
 Any choreography $\mathcal{C}$ satisfying \ref{pipeline1}, \ref{pipeline2} and \ref{pipeline3} will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
@@ -713,7 +715,7 @@ where:
 	
 \end{itemize}
 
-\section{Concrete function performance}
+\section{Concrete function's performance evaluation}
 
 Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete serverless, in terms of average values regarding response time and charged costs.
 
@@ -1039,9 +1041,7 @@ that is a swarm can be shared by multiple choreographies.
 
 Finally, we can introduce how concrete function performance can be computed according to our model.
 
-Let $f_{\phi} \in \omega_{P_R}^{(l)} \subset \textbf{F}_{\phi}$ a concrete function implementing the executable function $\phi$ and belonging to the swarm $\omega_{P_R}^{(l)}$ where $l \in \N$ is its concurrency limit.
-
-Moreover, suppose that $m \in \textbf{M}_{f_{\phi}} \subseteq \N$ representing the value of the memory size selected by our framework for the execution of $f_{\phi}$ while $t \in \mathbb{R}^+$ is the time.
+Let $x_{\phi} = (f_{\phi},m)$ an executable function configuration such that $f_{\phi} \in \omega_{P_R}^{(l)} \subset \textbf{F}_{\phi}$ represents a concrete function implementing the executable function $\phi \in \mathscr{F_E}(\mathcal{C})$ and belonging to the swarm $\omega_{P_R}^{(l)}$, where $l \in \N$ is its concurrency limit. Moreover, $m \in \textbf{M}_{f_{\phi}} \subseteq \N$ denotes the value of the memory size selected by our framework for the execution of $f_{\phi}$.
 
 Let's define following functions:
 
@@ -1049,12 +1049,14 @@ Let's define following functions:
 	\item $C : \textbf{F}_{\phi} \times \textbf{M}_{f_{\phi}} \times \mathbb{R}^+ \to \mathbb{R}^+$ is the \textit{cost function} for any serverless concrete functions belonging to the implementation-set $\textbf{F}_{\phi}$. 
 	
 	It returns the \textit{average cost} paid by users when $f_{\phi}$ is executed using an allocated memory size equal to $m$ at time $t$. 
-	
+		
 	It can be defined as follows:
 	
-	\begin{equation}
-		C(f_{\phi},m,t) \mathDef C_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + C_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
-	\end{equation}
+	\begin{eqnarray}
+		C(x_{\phi},t) & \mathDef & C(f_{\phi},m,t) \nonumber \\
+		& = & C_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + \\
+		& & \qquad C_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big) \nonumber
+	\end{eqnarray}
 	
 	where:
 	
@@ -1070,9 +1072,11 @@ Let's define following functions:
 	
 	It can be defined as follows:
 	
-	\begin{equation}
-		RT(f_{\phi},m,t) \mathDef RT_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + RT_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big)
-	\end{equation}
+	\begin{eqnarray}
+		RT(x_{\phi},t) & \mathDef & RT(f_{\phi},m,t) \nonumber \\
+		& = & RT_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + \\ 
+		& & \qquad RT_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big) \nonumber
+	\end{eqnarray}
 
 	where:
 	
@@ -1094,72 +1098,132 @@ For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, l
 	\end{cases}\,.
 \end{equation}
 
-\section{Performance evaluation}
+\section{Executable function's performance evaluation}
 
-Due to the complexitiy Selecting the best choreography configuration guaranteeing SLAs requirement, is a very difficult task.
+In this section, we will describe how to evaluate the performance of any executable serverless, in terms of average values regarding response time and charged costs, when it is executed. 
 
-We have developed two way 
+Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}} = (f_j, m_j)$ an executable function configuration for $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. In order to evaluate the performance of $\phi$, we have to introduce some useful notations and functions as follows:
+
+\begin{itemize}
+	\item For some $n \in \N$, $\widehat{\theta_k}^{(\phi_i)} \mathDef {\theta^{(\phi_i)}_1, \ldots, \theta^{(\phi_i)}_n}$ represents the sequence of all sub-choreographies of $\mathcal{C}$ such that:
+	
+	\begin{equation}
+		\phi_i \in \mathscr{F_E}(\theta^{(\phi_i)}_1)
+	\end{equation}
+	
+	\begin{equation}
+		\theta^{(\phi_i)}_n = \mathcal{C}
+	\end{equation}
+	
+	\begin{equation}
+		\theta^{(\phi_i)}_k \text{ is a sub-choreography of } \theta^{(\phi_i)}_{k+1} \qquad \forall k \in \left[1;n-1\right]
+	\end{equation}
+
+	\item $E[I_{\phi_i}(t)]$ represents the expected value regarding the number's invocation of the executable function $\phi_i$ at time $t$, which can be defined as follows.
+	
+	\begin{equation}	
+		E[I_{\phi_i}(t)] \mathDef \left\{
+		\begin{array}{lcr}
+			1 & \text{\textit{if}} & n = 1 \\ 
+			\displaystyle \prod_{k = 2}^n E[I_{\theta_{k-1}^{(\phi_i)}}(t)] & \text{\textit{if}} & n \geq 2 \\
+		\end{array} \right.
+	\end{equation}
+	
+	\item $P_{exe}^C(\theta^{(\phi_i)}_k, t)$ is the probability to execute the entry point $\alpha(\theta^{(\phi_i)}_k)$ of the choreography $\theta^{(\phi_i)}_k$ when the function $pred(\alpha(\theta^{(\phi_i)}_k))$ is executed at time $t$. Obliviously, it is equal to the transition probability associated to the edge starting from $pred( \alpha(\theta^{(\phi_i)}_{k}) )$ and ending to $\alpha(\theta^{(\phi_i)}_{k}))$. Formally:
+	
+	\begin{equation}	
+		P_{exe}^C(\theta^{(\phi_i)}_k, t) \mathDef \left\{
+		\begin{array}{lcr}
+			1 & \text{\textit{if}} & n = 1 \\ 
+			P \bigg(  pred\Big( \alpha(\theta^{(\phi_i)}_{k}) \Big), \alpha(\theta^{(\phi_i)}_{k}) \bigg) & \text{\textit{if}} & n \geq 2 \\
+		\end{array} \right.
+	\end{equation}
+	
+	
+	\item $P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t)$ is the probability to execute $\phi \in \mathscr{F_E}(\theta_k)$ when $\alpha(\theta_k)$ is executed at time $t$. To compute it, firstly is necessary to convert $\theta^{(\phi_i)}_k$ into a pipeline choreography; then, let $\pi_{\phi} \in \Pi(\alpha(\theta_k),\phi)$ the unique path from the entry point of $\theta^{(\phi_i)}_k$ to $\phi$,  it can be computed using following formula:
+		
+	\begin{equation}
+		P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t) \mathDef \prod_{ \phi_i \in \pi_{\phi}} (1 - P_{exit}(\phi_i,t))
+	\end{equation}
+	
 
 
-\subsection{Basic Serverless Choreography Performance}
+\item We will use $\Gamma_{\theta_k^{(\phi_{i})}}(t)$ to denote the probability to execute the entry point of the sub-choreography $\theta_k^{(\phi_{i})}$ at time $t$.
 
-Let $\mathcal{C} = (\Phi,E)$ a basic choreography as defined in section \ref{BasicDefinition} and $\textbf{X} \in \Omega$ a serverless choreography configuration.
-
-Exploiting basic choreography's properties expressed before, is very simple to compute performances data when a choreography configuration is given. To do that at any time $t$, following equations can be used:
-
-\begin{equation}\label{eq:perfF1}
-	RT_C(\textbf{X}, t) = \sum_{\phi \in \mathscr{F_E}} RT(\textbf{X}(\phi)^{(F)},\textbf{X}(\phi)^{(M)},t)
+\begin{equation}
+	\Gamma_{\theta_k^{(\phi_{i})}}(t) \mathDef P_{exe}^C(\theta^{(\phi_i)}_{k},t) \cdot \Bigg( \prod_{y = k + 1}^{n}  P_{exe}^C(\theta^{(\phi_i)}_{y},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_{y}, pred(\alpha(\theta^{(\phi_i)}_{y-1})),t) \Bigg)
 \end{equation}
 
-\begin{equation}\label{eq:perfF2}
-	C_C(\textbf{X}, t) = \sum_{\phi \in \mathscr{F_E}} C(\textbf{X}(\phi)^{(F)},\textbf{X}(\phi)^{(M)},t)
+\end{itemize}
+
+Finally, we can compute response time $rt_{\phi_{i_{j}}}(t)$ and charged cost $c_{\phi_{i_{j}}}(t)$, regarding the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$ with configuration $x_{\phi_{i_{j}}}$, using following formulas:
+
+\begin{eqnarray}
+	c_{\phi_{i_{j}}}(t) & \mathDef & \left\{ 
+	\begin{array}{lcl}
+		C(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) & \text{\textbf{if}} & m = 1 \\ 
+		C(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) \cdot E[I_{\phi_i}(t)] \cdot \Gamma_{\theta_1^{(\phi_{i})}}(t) & \text{\textbf{if}} & m \geq 2 \\ 
+	\end{array} \right.
+\end{eqnarray}
+
+\begin{eqnarray}
+	rt_{\phi_{i_{j}}}(t) & \mathDef & \left\{ 
+	\begin{array}{lcl}
+	RT(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) & \text{\textbf{if}} & m = 1 \\ 
+	RT(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) \cdot E[I_{\phi_i}(t)] \cdot \Gamma_{\theta_1^{(\phi_{i})}}(t) & \text{\textbf{if}} & m \geq 2 \\ 
+\end{array} \right.
+\end{eqnarray}
+
+Let $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ SLAs constraints specified by a customer, for any executable function configuration $x_{\phi_{i_j}}$, its \textit{score} $p_{\phi_{i_{j}}}(t)$ is determined as follows;
+
+\begin{equation}
+	p_{\phi_{i_{j}}}(t) \mathDef w_{RT} \cdot \dfrac{t_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{j}}}(t)}{t_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{\textbf{MIN}}}}(t)} + w_{C} \cdot \dfrac{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{j}}}(t)}{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{\textbf{MIN}}}}(t)}
 \end{equation}
 
 where:
 
 \begin{itemize}
-	\item $\textbf{X}(\phi)^{(F)}$ notation represents the concrete function $f_{\phi}$, implementing $\phi$, specified by the executable function configuration $x_{\phi} \in \textbf{X}$, while $\textbf{X}(\phi)^{(M)}$ notation represents the selected memory size.
+	\item $rt_{\phi_{i_{\textbf{MIN}}}}(t)$ and $rt_{\phi_{i_{\textbf{MAX}}}}(t)$ represent, respectively, the minimum and maximum response time values regarding the execution of all concrete function implementing $\phi_i$. 
+	
+	In other words, they represent the minimum and maximum resource requirement, referring to the response time, of all items belonging to the $i$-th group of our problem.
+	
+	\item $c_{\phi_{i_{\textbf{MIN}}}}(t)$ and $c_{\phi_{i_{\textbf{MAX}}}}(t)$ represent, respectively, the minimum and maximum cost values spent by all concrete function implementing $\phi_i$.
 \end{itemize}
 
-\subsection{Serverless Choreography Performance}
-
-A very simple approach to obtain a performance evaluation of any choreography's kind, is to simplify the serverless workflow in a such way to obtain a basic choreography, allow us to apply equations \ref{eq:perfF1} and \ref{eq:perfF2}.
-
-To do that, we perform a process according to which any 
 
 
-replace any 
-, replacing orchestration function and paths with so called fake executable functions.
 
-\begin{algorithm}
-	\SetKwInOut{Input}{Input}
-	\SetKwInOut{Output}{Output}
-	
-	\Input{
-		\begin{itemize}
-			\item A generic serverless choreography $\mathcal{C}$
-			\item $\textbf{X} \in \Omega$ a serverless choreography configuration for $\mathcal{C}$.
-		\end{itemize}
-	}
-		
-	\Output{A basic }
-	
-	
-	\KwData{$\mathcal{C}$}
-	\KwResult{Some solution}
-	Initialization pheromone trails\;
-	\While{Termination conditions not met}{
-		ConstructSolutions\;
-		ApplyLocalSearch\;
-		UpdatePheromoneTrails\;
-	}
-	\caption{Algorithmic skeleton for ACO algorithms}
-\end{algorithm}
+\section{Choreography's performance evaluation}
 
-\newpage
-\subsection{Serverless Choreography Structures}
+In this section, we will explore some analytical methodologies to accurately compute the average end-to-end response time and charged cost of generic serverless applications, having branches, loops or even workflow's portions executed in parallel.
 
-Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*)$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ and the end point $\omega(\mathcal{C}^*)$ are, respectively, opening and closing orchestration functions having same type $\tau$ possibly coinciding. Formally:
+\subsection{Pipeline choreography performance}
+
+Let $\mathcal{C} = (\Phi,E)$ a pipeline choreography as defined in section \ref{PipelineDefinitionSection} and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration.
+
+Exploiting pipeline choreography's properties, is very simple to obtain a performance evaluation when a choreography configuration is given. At any time $t$, following equations can be used:
+
+\begin{equation}\label{eq:perfF1}
+	RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) = \sum_{\phi \in \mathscr{F_E}(\mathcal{C})} RT(x_{\phi},t) + \sum_{\phi \in \mathscr{F_O}(\mathcal{C})} RT_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+\begin{equation}\label{eq:perfF2}
+	C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) = \sum_{\phi \in \mathscr{F_E}(\mathcal{C})} C(x_{\phi},t) + \sum_{\phi \in \mathscr{F_O}(\mathcal{C})} C_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $RT_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)$ and $C_{\mathscr{T}(\phi)}(\textbf{x}_{\mathcal{C}}, t)$ denote, respectively, the average response time and charged cost of the orchestration function $\phi \in \mathscr{F_O}(\mathcal{C})$, having type $\mathscr{T}(\phi)$, when it is executed using the choreography configuration $\textbf{x}_{\mathcal{C}}$ at time $t$. We will explain how to compute them very soon.
+\end{itemize}
+
+\subsection{Serverless choreography's structures}
+
+Unfortunately, equations \ref{eq:perfF1} and \ref{eq:perfF2} can be used only dealing with pipeline type choreographies, therefore they are not suitable for general choreographies having branch or loops. 
+
+A very simple approach to obtain a performance evaluation of any choreography's kind, is to simplify the serverless workflow in a such way to obtain a pipeline type choreography, allow us to apply aforementioned equations. To do that, exploiting different methods for different \ItalicQuotMark{structures}, the performance model trims the graph associated with a choreography by removing or modifying vertices and edges in order to convert it into a pipeline choreography. Firstly, we must explain what we mean for structure.
+
+Let $\mathcal{C} = (\Phi,E)$ a choreography. Informally, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*,\Theta_{\mathcal{C}^*})$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ and the end point $\omega(\mathcal{C}^*)$ are, respectively, opening and closing orchestration functions having same type $\tau$ possibly coinciding. Formally:
 
 \begin{equation}
 	\mathcal{C}^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{l}
@@ -1189,20 +1253,38 @@ that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end po
 	\end{array} \right\} \nonumber
 \end{eqnarray}
 
-\subsubsection{Parallel}
-
-Let $\mathcal{P} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{P}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{P}) = \phi_{y}$. 
-
-The structure $\mathcal{P}$ is called \textit{parallel structure} when:
+When we need to convert a generic choreography into a pipeline type during the workflow simplification process, the entire structure can be replaced by a single orchestration function $\phi_{fake}$, obtaining a new choreography $\mathcal{C}' = (\Phi',E')$ such that:
 
 \begin{eqnarray}
-	TPP(\pi) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
-	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
-	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
-	P_{exit}^{(C)}(t) = 0 & \qquad \forall \theta \in \Theta
+	\Phi' & = & \left\{ \Phi \setminus \Phi^* \right\} \cup \left\{ \phi_{fake} \right\} \\
+	E' & = & \left\{ E \setminus E^* \right\} \cup \left\{\bigg(prev(\alpha(\mathcal{C}^*)), \phi_{fake}\bigg) \right\} \cup \left\{\bigg(\phi_{fake}, succ(\omega(\mathcal{C}^*)) \bigg) \right\}
 \end{eqnarray}
 
-\begin{figure}[h!]
+where $\phi_{fake} \in \mathscr{F_O}(\mathcal{C}^*)$ is such that:
+
+\begin{eqnarray}
+	RT_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & RT(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
+	C_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & C(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
+	P_{exit}(\phi_{fake}, t) & = & P_{exit}(\mathcal{C}^*, t)
+\end{eqnarray}
+
+
+\subsubsection{Parallel}
+
+Any structure $\mathcal{P} = (\Phi',E',\Theta)$ such that:
+
+\begin{eqnarray}
+	\mathscr{T}(\alpha(\mathcal{P})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{P})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	TPP(\pi, t) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}), \forall t \\
+	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
+	P_{exit}(\theta, t) = 0 & \qquad \forall \theta \in \Theta \\
+	|succ(\alpha(\mathcal{P}))| = |prev(\omega(\mathcal{P}))|
+\end{eqnarray}
+
+is called \textit{parallel structure} and $\tau$ denotes a \textit{parallel} type.
+
+\begin{figure}
 	\centering
 	\begin{tikzpicture}
 		
@@ -1238,13 +1320,13 @@ The structure $\mathcal{P}$ is called \textit{parallel structure} when:
 		\node[circle, draw, minimum width = 1cm]       					   
 		(Node6) at (6.2,-2) {$\phi_d$};
 		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a) = 1$} (Node1);
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = 1$} (Node1);
 		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c) = 1$} (Node4);
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1$} (Node4);
 		
-		\draw[ultra thick,->] (Node3) edge node[xshift=10 ,yshift=20]{$P(\phi_b,\phi_y) = 1$} (branchEndNode);
+		\draw[ultra thick,->] (Node3) edge node[xshift=15 ,yshift=20]{$P(\phi_b,\phi_y, t) = 1$} (branchEndNode);
 		
-		\draw[ultra thick,->] (Node6) edge node[xshift=10 ,yshift=-20]{$P(\phi_d,\phi_y) = 1$} (branchEndNode);
+		\draw[ultra thick,->] (Node6) edge node[xshift=15 ,yshift=-20]{$P(\phi_d,\phi_y, t) = 1$} (branchEndNode);
 		
 		% Dashed lines
 		
@@ -1268,55 +1350,46 @@ The structure $\mathcal{P}$ is called \textit{parallel structure} when:
 		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
 		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
 		
-		legend
-		
-		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$\phi_x = \tau_{\alpha}(\mathcal{P}) \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_y = \tau_{\omega}(\mathcal{P}) \in \mathscr{F_O}$}; \\
-		};
-		
-		
 	\end{tikzpicture}
-	\caption{Parallel structure in the serverless workflow.}
+	\caption{Parallel structure in a serverless workflow.}
 \end{figure}
 
 Clearly, the response time of a parallel structure is equal to the longest response time of all its sub-choreographies.
 
-Formally, let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{P}$, where $i \in \N \cap \left[1,n\right]$, and $\textbf{X} \in \Omega$ a choreography configuration.
+Formally, let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{P}$, where $i \in \N \cap \left[1,n\right]$, and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration.
 
-At any time $t$, the response time and the cost of $\mathcal{P}$ can be computed as follows:
+At any time $t$, the average response time and billed cost of $\mathcal{P}$ can be computed as follows:
 
 \begin{equation}
-	RT_{parallel}(\textbf{X}, t) \mathDef max \left\lbrace RT_C(\textbf{X}, \theta_i, t) \mid \theta \in \Theta \right\rbrace 
+	RT(\mathcal{P},\textbf{x}_{\mathcal{C}}, t) \mathDef max \left\lbrace RT(\theta_i,\textbf{x}_{\mathcal{C}}, t) \mid \theta \in \Theta \right\rbrace 
 \end{equation}
 
 \begin{equation}
-	C_{parallel}(\textbf{X}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot C_C(\textbf{X}, \theta_i, t)
+	C(\mathcal{P},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
-We always assume that the exit probability of the a parallel structure is zero. Formally
+Since, by definition, we imposed that all sub-choreography of $\mathcal{P}$ have exit probability equal to zero, the exit probability of the a parallel structure is zero too. Therefore, formally:
 
 \begin{equation}
-	P_{exit}^{(parallel)}(t) \mathDef 0
+	P_{exit}(\mathcal{P}, t) = 0
 \end{equation}
-
-
-During choreography simplification process, a parallel structure can be replaced by a fake executable function $\phi \in \mathscr{F_E}$ whose response time and cost are equal to $RT_{parallel}(\textbf{X}, t)$ and $RT_{parallel}(\textbf{X}, t)$ respectively.
 
 \subsubsection{Branch}
 
-Let $\mathcal{B} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{B}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{B}) = \phi_{y}$. 
-
-$\mathcal{B}$ is called ``\textit{branch structure}'' when following conditions are hold:
+Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
 
 \begin{eqnarray}
-	TPP(\pi) \neq 1  & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
+	\mathscr{T}(\alpha(\mathcal{B})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{B})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
 	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	P(\phi_x, \alpha(\theta_i),t) \leq 1 & \qquad \forall i \in \SetFromOneTo{n} \\
+	\sum_{i = 1}^n P(\phi_x, \alpha(\theta_i),t) = 1 & \\
 	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
-	P_{exit}^{(C)}(t) \neq 0 & \qquad \forall \theta \in \Theta
+	|succ(\alpha(\mathcal{B}))| = |prev(\omega(\mathcal{B}))|
 \end{eqnarray}
 
-\begin{figure}[h!]
+is called \textit{branch structure} and $\tau$ denotes a \textit{branch} type. More precisely, if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{if-else-branch structure}; if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{switch-branch structure}. When $|\Theta| = 1$ and $(\phi_x,\phi_y) \in E$, $\mathcal{B}$ is called \textit{if-branch structure}. Clearly, it is used to model \texttt{if}, \texttt{if-else} and \texttt{switch} programming structures inside a serverless application. 
+
+\begin{figure}
 	\centering
 	\begin{tikzpicture}
 		
@@ -1352,13 +1425,13 @@ $\mathcal{B}$ is called ``\textit{branch structure}'' when following conditions 
 		\node[circle, draw, minimum width = 1cm]       					   
 		(Node6) at (6.2,-2) {$\phi_d$};
 		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a) = x(t)$} (Node1);
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = x$} (Node1);
 		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c) = 1-x(t)$} (Node4);
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1-x$} (Node4);
 		
-		\draw[ultra thick,->] (Node3) edge node[xshift=10 ,yshift=20]{$P(\phi_b,\phi_y) = 1$} (branchEndNode);
+		\draw[ultra thick,->] (Node3) edge (branchEndNode);
 		
-		\draw[ultra thick,->] (Node6) edge node[xshift=10 ,yshift=-20]{$P(\phi_d,\phi_y) = 1$} (branchEndNode);
+		\draw[ultra thick,->] (Node6) edge (branchEndNode);
 		
 		% Dashed lines
 		
@@ -1385,47 +1458,55 @@ $\mathcal{B}$ is called ``\textit{branch structure}'' when following conditions 
 		legend
 		
 		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$x(t) \in \mathbb{R} : 0 \leq x(t) \leq 1$}; \\
-			\node [] {$\phi_x = \tau_{\alpha}(\mathcal{B}) \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_y = \tau_{\omega}(\mathcal{B}) \in \mathscr{F_O}$}; \\
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
 		};
 		
 		
 	\end{tikzpicture}
-	\caption{Branch/Switch structure in the serverless workflow.}
+	\caption{An if-else-branch structure in a serverless workflow}
 \end{figure}
 
+Since any branch have the same possibility of be traversed during different execution of $\mathcal{B}$, we have adopted naive probability to model transition probabilities. Formally:
+
+\begin{equation}\label{naiveProbability}
+	P(\phi_x, \alpha(\theta),t) = \dfrac{|I_{\theta}(t)|}{|I_{\mathcal{B}}(t)|} \qquad \forall \theta \in \Theta
+\end{equation}
+
+where $|I_{\theta}|$ ($|I_{\mathcal{B}}|$) denotes how many times the sub-choreography $\theta$ (structure $\mathcal{B}$) was been executed in the past at time $t$.
+ 
 Let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{B}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of the branch structure $\mathcal{B}$ can be computed as follows:
 
 \begin{equation}
-	RT_{branch}(\textbf{X}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot  RT_C(\textbf{X}, \theta_i, t)
+	RT(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot  RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
 \begin{equation}
-	C_{branch}(\textbf{X}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot C_C(\textbf{X}, \theta_i, t)
+	C(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
-The exit probability of the a branch/switch structure can be computed as follows:
+The exit probability of a branch structure can be computed as follows:
 
 \begin{equation}
-	P_{exit}^{(branch)} \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i)) \cdot P_{exit}(\theta_i, t)
+	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
 \end{equation}
 
-\subsubsection{Loop}
+\subsubsection{Conditional loop}
 
-Let $\mathcal{L} = (\Phi,E,\Theta)$ a structure and suppose that $\tau_{\alpha}(\mathcal{L}) = \phi_{x}$ and $\tau_{\omega} (\mathcal{L}) = \phi_{y}$. 
-
-Being $\theta \in \Theta$ the unique sub-choreography of $\mathcal{L}$, the structure $\mathcal{L}$ is called ``\textit{loop structure}" when following conditions are hold:
+Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
 
 \begin{eqnarray}
-	TPP(\pi) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}) \\
-	|\Theta| = 1  &  \\
-	P(\phi_{x}, \alpha(\theta)) = x(t) & \\
-	P(\phi_{x}, \phi_{y}) = 1 - x(t) & \\
-	P(\phi_{c}, \phi_{z}) = 1 & \phi_{c} \in \omega(\theta)\\
+	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	|\Theta| = 1  & \\
+	E[I_{\theta}] \geq 0 & \qquad \theta \in \Theta \\
+	P(\phi_{x}, \alpha(\theta), t) = x & \\
+	P(\phi_{x}, \phi_{y},t) = 1 - x & \\
+	P(\omega(\theta), \phi_{x},t) = 1 & \qquad \theta \in \Theta \\
+	P(\phi_x, \alpha(\theta),t) + P(\phi_{x}, \phi_{y},t) = 1 & \qquad \theta \in \Theta \\
 \end{eqnarray}
 
-\begin{figure}[h!]
+is called \textit{conditional loop structure} and $\tau$ denotes a \textit{conditional loop} type; it is used to model a \texttt{while} and \texttt{for} programming structures inside a serverless application. 
+
+\begin{figure}
 	\centering
 	\begin{tikzpicture}
 		
@@ -1453,11 +1534,11 @@ Being $\theta \in \Theta$ the unique sub-choreography of $\mathcal{L}$, the stru
 	
 		% Edges...
 	
-		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[xshift=40]{$P(\phi_x,\alpha(\theta)) = x(t)$} (node1);
+		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[xshift=40]{$P(\phi_x,\alpha(\theta),t) = x$} (node1);
 		
-		\draw[bend right,above, ultra thick,->] (node3) edge node[xshift=-40]{$P(\phi_c,\phi_x) = 1$} (startLoopNode);
+		\draw[bend right,above, ultra thick,->] (node3) edge node[xshift=-40]{$P(\phi_c,\phi_x,t) = 1$} (startLoopNode);
 		
-		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[]{$P(\phi_x,\phi_y) = 1 - x(t)$} (endLoopNode);
+		\draw[bend right,below, ultra thick,->] (startLoopNode) edge node[]{$P(\phi_x,\phi_y,t) = 1 - x$} (endLoopNode);
 		
 		
 		
@@ -1476,22 +1557,21 @@ Being $\theta \in \Theta$ the unique sub-choreography of $\mathcal{L}$, the stru
 		%legend
 	
 			\matrix [below left] at (current bounding box.north east) {
-			\node [] {$x(t) \in \mathbb{R} : 0 \leq x(t) \leq 1$}; \\
-			\node [] {$\phi_x = \tau_{\alpha}(\mathcal{L}) \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_y = \tau_{\omega}(\mathcal{L}) \in \mathscr{F_O}$}; \\
-			\node [] {$\phi_c \in \omega(\theta)$}; \\
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
 		};
 		
 	\end{tikzpicture}
-	\caption{Parallel structure in the serverless workflow.}
+	\caption{Conditional loop structure in a serverless workflow.}
 \end{figure}
 
-In order to compute performance data of a loop structure, $E[I_{\theta}]$, that is the expected value of the number of iterations of $\mathcal{L}$, is required.
+Similarly to the branch structure, we have adopt the equation \ref{naiveProbability} to compute the transition probability $P(\phi_{x}, \alpha(\theta), t)$.
+
+In order to compute performance data of a loop structure, $E[I_{\theta}(t)]$, that is the expected value of the number of iterations of $\mathcal{L}$ at the time $t$, is required.
 
 To compute aforementioned information, we can model our problem using geometric distribution, which gives the probability according to which the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event ``\textit{we will not execute the loop body}", we know that success probability $p$ is given by:
 
 \begin{eqnarray}
-	p = P(\phi_x,\phi_y) = 1 - P\Big(\phi_{x}, \alpha(\theta)\Big) \\
+	p = P(\phi_x,\phi_y,t) = 1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \\
 \end{eqnarray}
 
 Then:
@@ -1499,39 +1579,143 @@ Then:
 \begin{eqnarray}
 	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \\
 	& = & pq^{k-1} \\
-	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta)\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta)\Big) \bigg] ^{k-1} \\
+	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta),t\Big) \bigg] ^{k-1} \\
 \end{eqnarray}
 
+At any time $t$, the expected value regarding the number of iterations of $\mathcal{L}$, involving the execution of the sub-choreography $\theta$, can be computed as follows:
+
 \begin{eqnarray}
-	E[I_{\theta}] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
+	E[I_{\theta}(t)] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
 	& = & p \sum_{k = 0}^\infty kq^{k} \nonumber \\
 	& = & p \cdot \frac{q}{(1-q)^2} \nonumber \\
 	& = & \dfrac{q}{p} \nonumber \\
-	& = & \dfrac{P\Big(\phi_{x}, \alpha(\theta)\Big)}{1 - P\Big(\phi_{x}, \alpha(\theta)\Big)} 
+	& = & \dfrac{P\Big(\phi_{x}, \alpha(\theta),t\Big)}{1 - P\Big(\phi_{x}, \alpha(\theta),t\Big)} 
 \end{eqnarray}
 
-More precisely, at any time $t$, the expected value regarding the number of iterations of $\mathcal{L}$, involving the execution of the sub-choreography $\theta$, can be computed as follows:
+At any time $t$, the response time and the cost of the conditional loop structure $\mathcal{L}$ can be computed as follows:
 
 \begin{equation}
-	E[I_{\theta}](t) = \dfrac{x(t)}{1 - x(t)}
-\end{equation}
-
-
-At any time $t$, the response time and the cost of the loop structure $\mathcal{L}$ can be computed as follows:
-
-\begin{equation}
-	RT_{loop}(\textbf{X}, t) \mathDef E[I_{\theta}](t) \cdot  RT_C(\textbf{X}, \theta, t)
+	RT(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
 \begin{equation}
-	C_{loop}(\textbf{X}, t) \mathDef E[I_{\theta}](t) \cdot C_C(\textbf{X}, \theta, t)
+	C(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
-The exit probability of the a loop structure can be computed as follows:
+The exit probability of a conditional loop structure was been modeled, once again, exploiting geometric distribution with success probability equal to $P_{exit}(\theta, t)$. To be precise, exit probability is modeled as the probability that the termination of the execution of the choreography to which $\mathcal{L}$ belongs requires $\lfloor E[I_{\theta}(t)] \rfloor$  executions of $\mathcal{L}$. Formally:
+
+\begin{eqnarray}
+	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)\\
+\end{eqnarray}
+
+\subsubsection{Exit}
+
+Any structure $\mathcal{E} = (\Phi',E',\Theta)$ such that:
+
+\begin{eqnarray}
+	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	|\Theta| = 0  & \\
+	P(\phi_{x}, \phi_{y},t) = 0 & \qquad \forall t \\
+\end{eqnarray}
+
+is called \textit{exit structure} and $\tau$ denotes a \textit{exit} type. That structure is used to model a \texttt{return} or \texttt{exit} statement inside a serverless application. 
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(start2) at (-4,0) {};
+		
+		\node[circle,draw,minimum width = 1cm] 
+		(start) at (-2,0) {$\phi_x$};
+		
+		\node[circle,draw,minimum width = 1cm] 
+		(end) at (2,0) {$\phi_y$};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end2) at (4,0) {};
+		
+	
+		\draw[ultra thick,->] (start) edge node[yshift=20]{$P(\phi_x,\phi_y, t) = 0$} (end);
+		
+		
+		% Dashed lines
+		
+		\draw[dashed,ultra thick, ->] (start2) -- (start);
+		
+		\draw[dashed,ultra thick, ->] (end) -- (end2);
+		
+	\end{tikzpicture}
+	\caption{An exit structure in a serverless workflow.}
+\end{figure}
+
+
+At any time $t$, following is true that:
 
 \begin{equation}
-	P_{exit}^{(loop)} \mathDef E[I_{\theta}](t) \cdot P_{exit}(\theta, t)
+	RT(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
 \end{equation}
+
+\begin{equation}
+	C(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
+\end{equation}
+
+\begin{equation}
+	P_{exit}(\mathcal{E}, t) = 1
+\end{equation}
+
+\subsection{Generic choreography performance}
+
+\begin{algorithm}
+	
+	$\mathcal{C}^* \leftarrow \mathcal{C}$\;
+	\While{$\mathcal{C}^*$ is not a pipeline choreography}{
+		
+		\BlankLine
+		
+		\texttt{branchList} $\leftarrow$ \texttt{find\_branches}($\mathcal{C}^*$)\; 
+		
+		\For{$\mathcal{B}$ in \texttt{branchList}}{
+			$\mathcal{C}^* \leftarrow$ \texttt{process}($\mathcal{B}$)\; 
+		}
+	
+		\BlankLine
+		
+		\texttt{parallelList} $\leftarrow$ \texttt{find\_parallels}($\mathcal{C}^*$)\; 
+	
+		\For{$\mathcal{P}$ in \texttt{parallelList}}{
+			$\mathcal{C}^* \leftarrow$ \texttt{process}($\mathcal{P}$)\; 
+		}
+	
+		\BlankLine
+		
+		\texttt{loopList} $\leftarrow$ \texttt{find\_loops}($\mathcal{C}^*$)\; 
+		
+		\For{$\mathcal{L}$ in \texttt{loopList}}{
+			$\mathcal{C}^* \leftarrow$ \texttt{process}($\mathcal{L}$)\; 
+		}
+
+		\BlankLine
+		
+		\texttt{exitList} $\leftarrow$ \texttt{find\_exits}($\mathcal{C}^*$)\; 
+		
+		\For{$\mathcal{E}$ in \texttt{exitList}}{
+			$\mathcal{C}^* \leftarrow$ \texttt{process}($\mathcal{E}$)\; 
+		}
+	}
+	\Return $\mathcal{C}^*$
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
 
 \section{Optimization Problem Formulations}
 
@@ -1592,108 +1776,9 @@ In this context, we have $n$ \textit{groups} of \textit{items} where, for $i \in
 
 According to MMKP, our objective is to pick exactly one item from each group, that is exactly one configuration for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, in such a way to maximize the profit value of the selected items, respecting several resource constraints of the knapsack, which, in our case, are represented by SLAs attributes values imposed by users. 
 
-\subsubsection{Profit and resource requirement computation}
-
-Before to formulate our MMKP instance, we have to explain how we can compute profit and resource requirements, expressed in term of response time and cost, for each executable function configuration belonging to each group, which is somewhat complicated.
-
-Firstly, we recall that the notation $x_{\phi_{i_{j}}} = (f_j, m_j) $ represents an executable function configuration for the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. 
-
-Let's now define some notations:
-
-\begin{itemize}
-	\item For some $m \in \N$, $\widehat{\theta_k}^{(\phi_i)} \mathDef {\theta^{(\phi_i)}_1, \ldots, \theta^{(\phi_i)}_m}$ represents the sequence of all sub-choreographies of $\mathcal{C}$ such that:
-	
-	\begin{equation}
-		\phi_i \in \mathscr{F_E}(\theta^{(\phi_i)}_1)
-	\end{equation}
-	
-	\begin{equation}
-		\theta^{(\phi_i)}_n = \mathcal{C}
-	\end{equation}
-	
-	\begin{equation}
-		\theta^{(\phi_i)}_k \text{ is a sub-choreography of } \theta^{(\phi_i)}_{k+1} \qquad \forall k \in \left[1;m-1\right]
-	\end{equation}
-
-\item $E[I_{\phi_i}]$ represents the expected value of the number of invocations of the executable function $\phi_i$, which can be defined as follows.
-
-\begin{equation}	
-	E[I_{\phi_i}] \mathDef \left\{
-	\begin{array}{lcr}
-		1 & \text{\textit{if}} & m = 1 \\ 
-		\displaystyle \prod_{k = 2}^m E[I_{\theta_{k-1}^{(\phi_i)}}] & \text{\textit{if}} & m \geq 2 \\
-	\end{array} \right.
-\end{equation}
 
 
-
-\item For some $k \in \N \cap \left[1;m-1\right]$, $P_{exe}^C(\theta^{(\phi_i)}_k)$ is the probability to execute the entry point $\alpha(\theta^{(\phi_i)}_k)$ of the choreography $\theta^{(\phi_i)}_k$, when the function $pred(\alpha(\theta^{(\phi_i)}_k))$ is executed. 
-
-That probability can be computed as follows:
-
-\begin{equation}	
-	P_{exe}^C(\theta^{(\phi_i)}_k) \mathDef \left\{
-	\begin{array}{lcr}
-		1 & \text{\textit{if}} & m = 1 \\ 
-		P \bigg(  pred\Big( \alpha(\theta^{(\phi_i)}_{k}) \Big), \alpha(\theta^{(\phi_i)}_{k}) \bigg) & \text{\textit{if}} & m \geq 2 \\
-	\end{array} \right.
-\end{equation}
-
-
-\item For some $k \in \N \cap \left[1;m-1\right]$, $P_{exe}^{F}(\theta_k, \phi)$ is the probability to execute the function $\phi \in \mathscr{F_E}(\theta_k)$ when the abstract function $\alpha(\theta_k)$ is executed. 
-
-Let $\Pi(\alpha(\theta_k),\phi)$ the set containing all possible paths starting from the entry point of $\theta_k$ to $\phi$. Aforementioned probability can be computed using following formula:
-
-\begin{equation}
-	P_{exe}^{F}(\theta_k, \phi) \mathDef \prod_{ \phi_k \in \Pi(\alpha(\theta_k),\phi) \cap \mathscr{F_O}(\theta_k)} (1 - P_{exit}(\phi_k))
-\end{equation}
-
-\end{itemize}
-
-Defining the quantity $\Gamma_{\theta_y^{(\phi_{i})}}$, as the probability to execute the entry point of the sub-choreography $\theta_y^{(\phi_{i})}$ as follows:
-
-\begin{equation}
-	\Gamma_{\theta_y^{(\phi_{i})}} \mathDef \prod_{k = y + 1}^{m}  P_{exe}^C(\theta^{(\phi_i)}_{k-1}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_{k}, pred(\alpha(\theta^{(\phi_i)}_{k-1})))
-\end{equation}
-
-we can compute resource requirements $c_{\phi_{i_{j}}}$ and $t_{\phi_{i_{j}}}$ in the following ways:
-
-
-\begin{eqnarray}
-	c_{\phi_{i_{j}}} & \mathDef & \left\{ 
-	\begin{array}{lcl}
-		C_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) & \text{\textbf{if}} & m = 1 \\ 
-		\displaystyle C_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) \cdot E[I_{\phi_i}] \cdot \Gamma_{\theta_1^{(\phi_{i})}} & \text{\textbf{if}} & m \geq 2 \\ 
-	\end{array} \right.
-\end{eqnarray}
-
-\begin{eqnarray}
-	t_{\phi_{i_{j}}} & \mathDef & \left\{ 
-	\begin{array}{lcl}
-		T_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) & \text{\textbf{if}}  & m = 1 \\ 
-		\displaystyle T_{avg}(x_{\phi_{i_{j}}}) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i) \cdot E[I_{\phi_i}] \cdot \Gamma_{\theta_1^{(\phi_{i})}} & \text{\textbf{if}} & m \geq 2 \\ 
-	\end{array} \right.
-\end{eqnarray}
-
-
-
-
-
-Finally, for any executable function configuration $x_{\phi_{i_j}}$, its profit $p_{\phi_{i_{j}}}$ is determined as follows;
-
-\begin{equation}
-	p_{\phi_{i_{j}}} \mathDef w_{RT} \cdot \dfrac{t_{\phi_{i_{\textbf{MAX}}}} - t_{\phi_{i_{j}}}}{t_{\phi_{i_{\textbf{MAX}}}} - t_{\phi_{i_{\textbf{MIN}}}}} + w_{C} \cdot \dfrac{c_{\phi_{i_{\textbf{MAX}}}} - c_{\phi_{i_{j}}}}{c_{\phi_{i_{\textbf{MAX}}}} - c_{\phi_{i_{\textbf{MIN}}}}}
-\end{equation}
-
-where:
-
-\begin{itemize}
-	\item $t_{\phi_{i_{\textbf{MIN}}}}$ and $t_{\phi_{i_{\textbf{MAX}}}}$ represent, respectively, the minimum and maximum response time values regarding the execution of all concrete function implementing $\phi_i$. 
-	
-	In other words, they represent the minimum and maximum resource requirement, referring to the response time, of all items belonging to the $i$-th group of our problem.
-	
-	\item $c_{\phi_{i_{\textbf{MIN}}}}$ and $c_{\phi_{i_{\textbf{MAX}}}}$ represent, respectively, the minimum and maximum cost values spent by all concrete function implementing $\phi_i$.
-\end{itemize}
+In this context, any $\xi \in \Xi$ represents a set of executable functions belonging to an unique combinations of parallel paths.
 
 From now, we will use $\mathcal{\widetilde{P}}$ to denote the set containing all parallel structures of $\mathcal{C}$, while $\mathcal{\widetilde{P}}_i$ represents the $i$-th parallel structure belonging to $\mathcal{\widetilde{P}}$ for $i \in \N \cap \left[1;p \right]$, where $p = |\mathcal{\widetilde{P}}|$. Clearly, the notation $\mathscr{F_E}(\mathcal{\widetilde{P}})$ represents the set of all executable functions contained inside any parallel structure of a given choreography.
 
@@ -1715,9 +1800,10 @@ We will use $\Xi$ to denote the set of all possible parallel paths combination i
 	& = & \Cross_{i = 1}^p  \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_i|} \Delta_{\mathcal{\widetilde{P}}_{i_j}} \right\}  \nonumber \\
 \end{eqnarray}
 
-In this context, any $\xi \in \Xi$ represents a set of executable functions belonging to an unique combinations of parallel paths.
-
 \subsubsection{Formulation}
+
+
+Before to formulate our MMKP instance, we have to explain how we can compute profit and resource requirements, expressed in term of response time and cost, for each executable function configuration belonging to each group, which is somewhat complicated.
 
 Finally, wa are able to formulate our MMKP instance problem, which can be expressed as follows:
 
