@@ -1483,7 +1483,16 @@ Please note that, let $\mathcal{C}_1 = (\Phi_1,E_1)$ and $\mathcal{C}_2 = (\Phi_
 	\widetilde{\textbf{S}}_{\mathcal{C}_1} \cap \widetilde{\textbf{S}}_{\mathcal{C}_2} \neq \emptyset
 \end{equation}
 
-that is a swarm can be shared by multiple choreographies.
+that is a swarm can be shared by multiple choreographies, therefore any implementation of our model has to pay attention on eventually race conditions. 
+
+Finally, we will use following function:
+
+\begin{equation}
+	N(\mathcal{C},\textbf{x}_{\mathcal{C}},\omega_{P}^{(l)}) = \sum_{x_{\phi} \in \textbf{x}_{\mathcal{C}}} \sum_{\substack{f_{\phi} \in x_{\phi} \\ f_{\phi} \in \omega_{P}^{(l)}}} 1
+\end{equation}
+
+that is, $N(\mathcal{C},\textbf{x}_{\mathcal{C}},\omega_{P}^{(l)},t)$ denotes the number of concrete function used in $\textbf{x}_{\mathcal{C}}$ 
+
 
 \subsection{Concrete function performance computation}
 
@@ -1619,22 +1628,22 @@ Finally, we can compute response time $rt_{\phi_{i_{j}}}(t)$ and charged cost $c
 \begin{eqnarray}
 	c_{\phi_{i_{j}}}(t) & \mathDef & \left\{ 
 	\begin{array}{lcl}
-		C(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) & \text{\textbf{if}} & m = 1 \\ 
+		C(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) & \text{\textbf{if}} & m = 1 \nonumber\\ 
 		C(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) \cdot E[I_{\phi_i}(t)] \cdot \Gamma_{\theta_1^{(\phi_{i})}}(t) & \text{\textbf{if}} & m \geq 2 \\ 
-	\end{array} \right.
+	\end{array} \right.\label{cost}\\
 \end{eqnarray}
 
 \begin{eqnarray}
 	rt_{\phi_{i_{j}}}(t) & \mathDef & \left\{ 
 	\begin{array}{lcl}
-	RT(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) & \text{\textbf{if}} & m = 1 \\ 
+	RT(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) & \text{\textbf{if}} & m = 1 \nonumber \\ 
 	RT(x_{\phi_{i_{j}}},t) \cdot P_{exe}^{F}(\theta^{(\phi_i)}_1, \phi_i,t) \cdot E[I_{\phi_i}(t)] \cdot \Gamma_{\theta_1^{(\phi_{i})}}(t) & \text{\textbf{if}} & m \geq 2 \\ 
-\end{array} \right.
+\end{array} \right.\label{responseTime}\\
 \end{eqnarray}
 
 Let $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ SLAs constraints specified by a customer, for any executable function configuration $x_{\phi_{i_j}}$, its \textit{score} $p_{\phi_{i_{j}}}(t)$ is determined as follows;
 
-\begin{equation}
+\begin{equation}\label{profit}
 	p_{\phi_{i_{j}}}(t) \mathDef w_{RT} \cdot \dfrac{t_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{j}}}(t)}{t_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{\textbf{MIN}}}}(t)} + w_{C} \cdot \dfrac{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{j}}}(t)}{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{\textbf{MIN}}}}(t)}
 \end{equation}
 
@@ -1719,15 +1728,21 @@ However, exploiting what was said before regarding choreography's structures, is
 	\Return $\mathcal{C}^*$
 \end{algorithm}
 
+Finally, in order to select the better one, to each choreography configuration is associated a score, like for executable function configurations.
 
+Formally, let $\mathcal{C} = (\Phi,E)$ a serverless choreography, $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration and $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ the SLA.
 
+At any time $t$, the \textit{score} $S(\textbf{x}_{\mathcal{C}},t)$, or \textit{profit}, of the choreography configuration $\textbf{x}_{\mathcal{C}}$ can be computed as follows:
 
+\begin{equation}
+	S(\textbf{x}_{\mathcal{C}},t) \mathDef w_{RT} \cdot \dfrac{RT_{\textbf{max}}(t) - RT(\textbf{X},t)}{RT_{\textbf{max}}(t) - RT_{\textbf{min}}(t)} + w_{C} \cdot \dfrac{C_{\textbf{max}}(t) - C(\textbf{X},t)}{C_{\textbf{max}}(t) - C_{\textbf{min}}(t)}
+\end{equation}
 
+where:
 
-
-
-
-
+\begin{itemize}
+	\item $RT_{\textbf{max}}(t)$ ($RT_{\textbf{min}}(t)$) and $C_{\textbf{max}}(t)$ ($C_{\textbf{min}}(t)$) denote, respectively, the maximum (minimum) value of the response time and billed cost at time $t$, observed using all possible configuration in $\textbf{X}_{\mathcal{C}}$.
+\end{itemize}
 
 \section{Optimization Problem Formulations}
 
@@ -1742,33 +1757,24 @@ In this section, we will describe and analyze both approach, despite only for th
 
 \subsection{Multidimensional Knapsack Problem Formulation}
 
-Let $\mathcal{C} = (\Phi,E)$ a serverless choreography, $\textbf{X} \in \Omega$ a choreography configuration and $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ the SLA imposed by an user regarding the execution of $\mathcal{C}$
+A very naive formulation to our problem can be expressed in term of the \textit{Multidimensional Knapsack Problem} (MKP), a well-studied, strongly NP-hard combinatorial optimization problem occurring in many different applications, whose goal is to choose an item, in our case a choreography configuration, having maximum total profit; selected item  must, however, not exceed resource capacities, which are called as knapsack constraints.
 
-At any time $t$, the \textit{score} $S(\textbf{X},t)$, or \textit{profit}, of the choreography configuration $\textbf{X}$ can be computed as follows:
+Let $\mathcal{C} = (\Phi,E)$ a choreography and the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$, the MKP formulation for our problem can be defined by the following ILP:
 
-\begin{equation}
-	S(\textbf{X},t) \mathDef w_{RT} \cdot \dfrac{RT_{C_{\textbf{max}}}(t) - RT_C(\textbf{X},t)}{RT_{C_{\textbf{max}}}(t) - RT_{C_{\textbf{min}}}(t)} + w_{C} \cdot \dfrac{C_{C_{\textbf{max}}}(t) - C_C(\textbf{X},t)}{C_{C_{\textbf{max}}}(t) - C_{C_{\textbf{min}}}(t)}
-\end{equation}
+\begin{align}
+\displaystyle max \qquad & \displaystyle \sum_{i = 1}^{|\textbf{X}_{\mathcal{C}}|} x_i \cdot S(\textbf{x}_{\mathcal{C}_i},t) \\
+\text{subject to} \qquad & \displaystyle \sum_{\omega = 1}^{|\textbf{X}_{\mathcal{C}}|} x_i \cdot C(\mathcal{C},\textbf{x}_{\mathcal{C}_i}, t) \leq C \\
+& \displaystyle \sum_{i = 1}^{|\textbf{X}_{\mathcal{C}}|} x_i \cdot RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) \leq RT \\ 
+& \displaystyle \sum_{i = 1}^{|\textbf{X}_{\mathcal{C}}|} x_i \cdot N(\mathcal{C},\textbf{x}_{\mathcal{C}}, \omega_{P}^{(l)}) \leq l - R(\textbf{Q}_{\omega_{P}^{(l)}}, t) &  \forall \omega_{P}^{(l)} \in \widetilde{\textbf{S}}_{\mathcal{C}} \\
+& \displaystyle \sum_{i = 1}^{|\textbf{X}_{\mathcal{C}}|} x_i = 1 & \\
+& x_i \in \lbrace 0, 1 \rbrace & \qquad \forall i \in \N \cap [1,|\Omega|]
+\end{align}
 
 where:
 
 \begin{itemize}
-	\item $RT_{C_{\textbf{max}}}(t)$ ($RT_{C_{\textbf{min}}}(t)$) and $C_{C_{\textbf{max}}}(t)$ ($C_{C_{\textbf{min}}}(t)$) denote, respectively, the maximum (minimum) value for the overall expected response time and cost observed at time $t$.
+	\item $x_i$ is a binary variable set to $1$ when  $\textbf{x}_{\mathcal{C}_i}$ is used as configuration for $\mathcal{C}$; otherwise it is set to $0$.
 \end{itemize}
-
-A very naive formulation to our problem can be expressed in term of the the Multidimensional Knapsack Problem (MKP), a well-studied, strongly NP-hard combinatorial optimization problem occurring in many different applications, whose goal is to choose a subset of items with maximum total profit. Selected items must, however, not exceed resource capacities, which are called as knapsack constraints.
-
-The MKP formulation for our problem can be defined by the following ILP:
-
-\begin{align}
-\displaystyle max \qquad & \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} F(\textbf{X}_{\omega}) \\
-\text{subject to} \qquad & \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} C(\textbf{X}_{\omega}) \leq C_{user} \\
-& \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} RT(\textbf{X}_{\omega}) \leq RT_{user} \\ 
-& \displaystyle \sum_{\omega = 1}^{|\Omega|} x_{\omega} = 1 & \\
-& x_{\omega} \in \lbrace 0, 1 \rbrace & \qquad \forall \omega \in \N \cap [1,|\Omega|]
-\end{align}
-
-where:
 
 Is very important to observe, that each column of above formulation represents the profit and resource requirements referring to a choreography configuration.
 
@@ -1780,74 +1786,89 @@ Even if we had a way of generating all configurations, that is all columns of ou
 
 \subsection{Multi-dimensional Multi-choice Knapsack Problem Formulation}
 
-To avoid the enumeration of all possible choreography configuration, we have decided to use another kind of formulation, which is base on the Multidimensional Multiple-choice Knapsack Problem (MMKP), a variant of the previous one. 
+To avoid the enumeration of all possible choreography configuration, we have decided to use another kind of formulation, which is base on the \textit{Multidimensional Multiple-choice Knapsack Problem} (MMKP), a variant of the previous one. 
 
-Let $\mathcal{C} = (\Phi,E)$ a choreography and $\mathscr{F_E}(\mathcal{C})$ the set containing all executable functions of $\mathcal{C}$. Moreover, suppose that $|\mathscr{F_E}(\mathcal{C})| = n \in \N \setminus \left\{0\right\}$.
+Let $n \in \N \setminus \left\{0\right\}$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\mathscr{F_E}(\mathcal{C})| = n$. For each $\phi_i \in \mathscr{F_E}(\mathcal{C})$ corresponds a \textit{group of item}, where each item corresponds to an executable configurations $\phi_i$; therefore, each $i$-th group contains exactly $|\left\{ \textbf{F}_{\phi_{i}} \times \N \right\}|$ items or executable function configurations.
 
-In this context, we have $n$ \textit{groups} of \textit{items} where, for $i \in \N \cap \left[1,n\right]$, the $i$-th group represents the set of all possible executable configurations for the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$, which belong to the set $\left\{ \textbf{F}_{\phi_{i}} \times \N \right\}$, where $\textbf{F}_{\phi_{i}}$, we recall, is the implementation-set for $\phi_i$. Therefore, each $i$-th group contains $|\left\{ \textbf{F}_{\phi_{i}} \times \N \right\}|$ items, that is executable function configurations.
+To resolve our MMKP, we have to pick exactly one item from each group, that is exactly one configuration $x_{\phi_1}$ for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, in such a way to maximize the profit value of the selected items, respecting several resource constraints of the knapsack, which, in our case, are represented both by SLAs attributes values imposed by users and by the actual available capacity of all queuing system associated to each swarm to which all concrete functions, specified in the solution, belong.
 
-According to MMKP, our objective is to pick exactly one item from each group, that is exactly one configuration for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, in such a way to maximize the profit value of the selected items, respecting several resource constraints of the knapsack, which, in our case, are represented by SLAs attributes values imposed by users. 
+To properly describe our MMKP, since is not trivial to formulate in a LP problem the relationship between executable functions belonging to a same parallel structure, according to which their response times depend on the slower one, we need to introduce the concept which we have called of \textit{parallel path}.
 
-
-
-In this context, any $\xi \in \Xi$ represents a set of executable functions belonging to an unique combinations of parallel paths.
-
-From now, we will use $\mathcal{\widetilde{P}}$ to denote the set containing all parallel structures of $\mathcal{C}$, while $\mathcal{\widetilde{P}}_i$ represents the $i$-th parallel structure belonging to $\mathcal{\widetilde{P}}$ for $i \in \N \cap \left[1;p \right]$, where $p = |\mathcal{\widetilde{P}}|$. Clearly, the notation $\mathscr{F_E}(\mathcal{\widetilde{P}})$ represents the set of all executable functions contained inside any parallel structure of a given choreography.
-
-We will use $\Delta_{\mathcal{\widetilde{P}}_{i_j}}$ notation to represent the set containing all executable functions $\phi \in \mathscr{F_E}(\theta_{i_j})$, where $\theta_{i_j}$ is the $j$-th sub-choreography of the parallel structure $\mathcal{\widetilde{P}}_i$, which can be formally defined as follows:
+From now, $\mathcal{\widetilde{P}} \mathDef \left\{\mathcal{\widetilde{P}}_1,\ldots,\mathcal{\widetilde{P}}_z \right\}$ represents the set containing all parallel structures of $\mathcal{C}$, while $\mathscr{F_E}(\mathcal{\widetilde{P}})$ represents the set containing all executable functions such that:
 
 \begin{equation}
-	\Delta_{\mathcal{\widetilde{P}}_{i_j}} \mathDef \left\{ \phi \in \mathscr{F_E}(\mathcal{C}) \cap \mathscr{F_E}(\theta_{i_j}) : \text{  $\theta_{i_j}$ is the $j$-th sub-choreography of } \mathcal{\widetilde{P}}_i \right\} 
+\mathscr{F_E}(\mathcal{\widetilde{P}}) \mathDef \bigcup_{i=1}^z \mathscr{F_E}(\mathcal{\widetilde{P}}_i)
 \end{equation}
 
-In this context, $\Delta_{\mathcal{\widetilde{P}}_{i_j}}$ can be viewed as one of the parallel paths of $\mathcal{\widetilde{P}}_i$. Since the actual response time of any sub-choreography of $\mathcal{\widetilde{P}}_i$ depend on to the slower sub-choreography of $\mathcal{\widetilde{P}}_i$, can be not trivial to compute the profit and resource requirements for every function inside a parallel structure.  
+Let $z \in \N \SetMinusZero$ and $\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))$ the set containing all possible paths from the start point to the end point of $\mathcal{C}$ such that $|\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))| = z$. 
 
-Therefore, the main idea, regarding profit and resource requirements computation, is to verify if, for every parallel path for every parallel structure of the choreography, resource requirements are respected. 
+Formally, being $\pi_i$ the $i$-th path belong to $\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))$, the $i$-th \textit{parallel path} $\delta_{\mathcal{C}_i}$ is defined as follows:
 
-We will use $\Xi$ to denote the set of all possible parallel paths combination inside a choreography. Formally it can be defined as follows: 
+\begin{equation}
+	\delta_{\mathcal{C}_i} \mathDef \left\{ \phi \in \mathscr{F_E}(\mathcal{\widetilde{P}}) : \phi \in \pi_i \right\}
+\end{equation}
 
-\begin{eqnarray}
-	\Xi & \mathDef & \left\lbrace \Delta_{\mathcal{\widetilde{P}}_{1}}, \ldots, \Delta_{\mathcal{\widetilde{P}}_{p}} \right\rbrace \nonumber \\ 
-	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_i|} \Delta_{\mathcal{\widetilde{P}}_{1_j}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_p|} \Delta_{\mathcal{\widetilde{P}}_{p_j}} \right\} \right\}  \nonumber \\
-	& = & \Cross_{i = 1}^p  \left\{ \bigcup_{j=1}^{|\mathcal{\widetilde{P}}_i|} \Delta_{\mathcal{\widetilde{P}}_{i_j}} \right\}  \nonumber \\
-\end{eqnarray}
+Clearly, the set containing all parallel paths of $\mathcal{C}$ is denoted by $\Delta_{\mathcal{C}}$ where: 
 
-\subsubsection{Formulation}
+\begin{equation}
+	\Delta_{\mathcal{C}} \mathDef \bigcup_{i=1}^z \delta_{\mathcal{C}_i}
+\end{equation}
 
-
-Before to formulate our MMKP instance, we have to explain how we can compute profit and resource requirements, expressed in term of response time and cost, for each executable function configuration belonging to each group, which is somewhat complicated.
-
-Finally, wa are able to formulate our MMKP instance problem, which can be expressed as follows:
+Finally, wa are able to formulate our MMKP instance problem which, supposing to have a choreography $\mathcal{C} = (\Phi,E)$ and the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$, can be expressed as follows:
 
 \begin{align}
-	\label{MMKP}
-	\displaystyle max \quad & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} p_{\phi_{i_{j}}} & \\	
-	\text{subject to} \quad  & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} c_{\phi_{i_{j}}} \leq C_{user} & \\
-	& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \mathscr{F_E}(\mathcal{\widetilde{P}})}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} t_{\phi_{i_{j}}} + \nonumber \\
-	& \qquad + \sum_{\phi_h \in \xi}  \sum_{j = 1}^{|\textbf{F}_{\phi_{h}} \times \N|} y_{\phi_{h_{j}}} t_{\phi_{h_{j}}} \leq RT_{user} & 
-	\forall \xi \in \Xi \\	
-	& \displaystyle \sum_{\phi_i \in \mathscr{F_E} \cap \omega_{P_s}^{(l)}} \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \leq l - r_s(t) & \forall s \in \N \cap \left[ 1, S \right] \\
-	& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} = 1 & \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\
+	\displaystyle max \quad & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}(\mathcal{C})|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \cdot p_{\phi_{i_{j}}}(t) & \label{MMPKObjective}\\	
+	\text{subject to} \quad  & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}(\mathcal{C})|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \cdot c_{\phi_{i_{j}}}(t) \leq C & \label{MMPKCost} \\
+	& \displaystyle \sum_{\phi_i \in \mathscr{F_E}(\mathcal{C}) \setminus \mathscr{F_E}(\mathcal{\widetilde{P}})}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \cdot rt_{\phi_{i_{j}}}(t) + \nonumber \\
+	& \qquad + \sum_{\phi_h \in \delta_{\mathcal{C}}}  \sum_{j = 1}^{|\textbf{F}_{\phi_{h}} \times \N|} y_{\phi_{h_{j}}} \cdot rt_{\phi_{h_{j}}}(t) \leq RT \label{MMPKDelay} & 
+	\forall \delta_{\mathcal{C}} \in \Delta_{\mathcal{C}} \\	
+	& \displaystyle \sum_{i = 1}^{|\mathscr{F_E}(\mathcal{C})|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \cdot a_{(\phi_{i_{j}},\omega_{P}^{(l)})} \leq l - R(\textbf{Q}_{\omega_{P}^{(l)}}, t) &  \forall \omega_{P}^{(l)} \in \widetilde{\textbf{S}}_{\mathcal{C}} \label{MMPKCapacity} \\
+	& \displaystyle \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} = 1 & \forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \label{MMPKOvvio} \\
 	& y_{\phi_{i_{j}}} \in \lbrace 0, 1 \rbrace &
 	\begin{array}{r}
-		\forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\ \forall j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]
+		\forall i \in \N \cap \left[ 1, |\mathscr{F_E}| \right] \\ \forall j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|] \label{MMPKOvvio2}
 	\end{array}
 \end{align}
 
 
-To simplify our notations, from now, we will use $o_{i_j}$ notation to denote the $i$-th item belonging to the $j$-th group, the latter denoted with $g_i$; clearly, in our context, the item $o_{i_j}$ coincides with the $j$-th executable function configuration $x_{\phi_{i_j}}$ for the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. 
+where:
 
-A solution of a MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldots o_{n} \right\}$ where, clearly, an object $o_{i_j}$ is selected if the corresponding decision variable $y_{\phi_{i_j}}$ has been set to 1.
+\begin{itemize}
+	\item All coefficients, or profits, associated to each executable function configuration, that appear inside the objective function \ref{MMPKObjective}, are computed using the formula \ref{profit}.
+	
+	\item Expression \ref{MMPKCost} represents the max billed cost requirement, whose coefficients are computed using the formula \ref{cost}. 
+	
+    \item The \ref{MMPKDelay} represents the max response time requirements. According to our formulation, there are exactly $|\Delta_{\mathcal{C}}|$ constraints regarding the response time, that is one of each parallel path. Since we don't know a priori the slowest executable function inside a parallel structure, the main idea is to assure us that any path executed in parallel respect response time's constraint. Coefficients associated to each variable are computed using the formula \ref{responseTime}.
+    
+    \item The \ref{MMPKCapacity} represents the capacity requirement, used to check if there are enough function instances on each system $\textbf{Q}_{\omega_{P}^{(l)}}$ corresponding to each swarm of the choreography. The coefficient $a_{(\phi_{i_{j}},\omega_{P}^{(l)})}$ is computed as follows:
+    
+    \begin{equation}	
+    	a_{(\phi_{i_{j}},\omega_{P}^{(l)})} \mathDef \left\{
+    	\begin{array}{lcc}
+    		1 & \text{\textit{if}} & f_{\phi_i} \in x_{\phi_{i_j}} \wedge f_{\phi_i} \in \omega_{P}^{(l)} \\ 
+    		0 & & \text{\textit{otherwise}} \\
+    	\end{array} \right.
+    \end{equation}
+    
+	where $x_{\phi_{i_j}}$ is the $j$-th executable function configuration for $\phi_i$. In simple terms, $a_{(\phi_{i_{j}},\omega_{P}^{(l)})}$ is set to $1$ only if the corresponding configuration use a concrete function which belongs to the swarm $\omega_{P}^{(l)}$.
+	
+	\item The \ref{MMPKOvvio} assures us that only one concrete function configuration is selected for any executable function. 
+	
+	\item The \ref{MMPKOvvio2} states that $y_i$ is a binary variable set to $1$ when $x_{\phi_{i_j}}$ is used; otherwise it is set to $0$.
+	
+\end{itemize}
 
+To simplify our notations, from now, we will use the notation $o_{i_j}$ to represent the $i$-th item belonging to the $j$-th group, which is simply denoted by $g_j$; in other words, the item $o_{i_j}$ represents the $j$-th executable function configuration used to implement the executable function $\phi_i \in \mathscr{F_E}(\mathcal{C})$, that is the $x_{\phi_{i_j}}$ executable configuration.
+
+A solution for our MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldots o_{n} \right\}$ representing, obliviously, a choreography configuration.
 
 \subsubsection{The heuristic approach based on ACO}
 
-Being MMKP an NP-hard problem, it is not always possible to find a feasible solution in a reasonable computing time especially for big instances. Although the \ref{MMKP}
+According to our experiments, the MMKP formulation performs notably better than MKP one, producing the exact solution quicker and using less memory; this is due both to the lack of need of choreography's configurations enumeration, which require a lot of memory and time, and to a minor number of columns, despite the MMKP's formulation has more constraints respect to the MKP one.
 
+However, since the MMKP is an NP-hard problem, we expect that is not always possible to find a feasible solution in a reasonable computing time especially for big instances, therefore we have look for an heuristic approach for solving it quicker providing good quality solutions.
 
- therefore an heuristic approach is needed for solving it. 
-
-We have decided to built an algorithm based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics that have been applied to solve many combinatorial optimization problems such as traveling salesman problems, quadratic assignment problems, or vehicle routing problems. 
+We have decided to built a \textit{custom} algorithm based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics that have been applied to solve many combinatorial optimization problems such as traveling salesman problems, quadratic assignment problems, or vehicle routing problems.
 
 Aforementioned class of meta-heuristics imitate the behavior shown by real ants when searching for food, where many simple interactions between single ants result in a very complex behavior of the whole ant colony.
 
@@ -1861,42 +1882,38 @@ Any ACO algorithm is based on a set of computational agent, called \textit{artif
 
 In very simple terms, each ant incrementally constructs the partial solution to the problem and, after evaluating the find solution, it modifies the pheromone trail on the components used in its solution; that pheromone information will be use by future ants to find a better solutions to the problem instance. In fact, by increasing or decreasing the level of pheromone trails, ants distinguish "\textit{good}" from "\textit{bad}" solutions. In other words, pheromone trails represent the way according to which each ants communicate in order to find the best solution.
  
-\subsubsection{Definition}
+\subsubsection{Solution components graph}
 
 To solve MMKPs with ACO, we have to define how pheromone trails are laid by artificial ants, explaining how they follow them when constructing new partial solutions. In other words we need to decide which components of the constructed solutions should be rewarded, and how to exploit these rewards when constructing new solutions.
 
-We define the \textit{solution's components graph} $\mathcal{G}=(\textbf{O},\textbf{E})$, on which ants lay pheromone trails, as a directed weighted graph such that:
+In order to correctly explain how we have decided to lay pheromone, we have to define the concept of \textit{solution's components graph}.
+
+Formally, let the MMKP formulation reported in \ref{MMPKObjective}, any weighted directed graph $G=(O,E)$ such that:
 
 \begin{equation}
-	\textbf{O} \mathDef \bigcup_{j=1}^n \bigcup_{j=1}^{|g_i|} \left\{ o_{i_j} \right\}
+	|O| = \sum_{j=1}^n |g_j|
 \end{equation}
 
 \begin{equation}
 	(o_{i_j}, o_{k_m}) \in E \Leftrightarrow i \neq k \qquad \forall i,k \in \N \cap \left\{1,n\right\}, \forall m,j \in \N
 \end{equation}
 
-where: 
-
+is called solution components graph, where:
+ 
 \begin{itemize}
 	
-	\item The set of vertices $\textbf{O}$ is made up all items belonging to each group. 
+	\item Each vertex $o_{i_j}$ is adjacent only to all other vertices which belong to any group other than $i$; in other words, vertices belonging to the same group are not adjacent each others.
 	
-	Moreover, any object $o_{i_j}$ is adjacent to all other objects belonging to any group except those which belong to its same group.
+	\item The weight associated to each edge $(o_{i_j}, o_{k_m}) \in E$ is a positive real number representing the \textit{pheromone trail} laid by our artificial ants and it can change during algorithm's iterations. 
 	
-	\item The weight $w \in \Rplus$ associated to each edge $(o_{i_j}, o_{k_m}) \in \textbf{E}$ is the value of the \textit{pheromone trail} laid by our artificial ants and it can change during algorithm execution. 
+	The value of pheromone trail associated to each edge $(o_{i_j}, o_{k_m})$ during the $k$-th iteration of the algorithm is denoted by $\tau_k(o_{i_j}, o_{k_m})$.
 	
-	The value of pheromone trail associated to each edge $(o_{i_j}, o_{k_m})$ during the $k$-th iteration of the algorithm is denoted as follows:
-	
-	\begin{equation}
-		\tau_k(o_{i_j}, o_{k_m}) = w_k
-	\end{equation}
-	
-	Intuitively, the pheromone value associated to the edge $(o_{i_j}, o_{k_m}) \in E$ represents the desirability to select the object $o_{k_m}$ when $o_{i_j}$ was been previously selected as part of the solution.
+	Intuitively, the pheromone value associated to the edge $(o_{i_j}, o_{k_m}) \in E$ represents the desirability to select the object $o_{k_m}$ when $o_{i_j}$ was been previously selected as part of the solution. 
 	
 	We have adopted the so-called $\mathcal{MAX} - \mathcal{MIN}$ Ant System, according to which following constrain must be hold:
 	
 	\begin{equation}
-		w_{\textbf{min}} \leq w_k \leq w_{\textbf{max}} 
+		w_{\textbf{min}} \leq \tau_k(o_{i_j}, o_{k_m}) \leq w_{\textbf{max}} 
 	\end{equation}
 
 	\begin{equation}
@@ -1904,32 +1921,16 @@ where:
 	\end{equation}
 	
 	that is, we explicitly impose lower and upper bounds $w_{\textbf{min}}$ and $w_{\textbf{max}}$ on pheromone
-	trails, and pheromone trails are set to $w_{\textbf{max}}$ at the beginning of the search.
-	
-	
-	the beginning of the search.
-	At each cycle of this algorithm, every ant constructs a solution. 
-	
-	It first randomly chooses an initial object, and then iteratively adds objects that are chosen within a set Candidates that contains all the objects that can be selected without violating resource constraints. Once each ant has constructed a solution, pheromone trails are updated. 
-	
-	
+	trails while pheromone trails are set to $w_{\textbf{max}}$ at the beginning of the search.
 \end{itemize}
 
+\subsubsection{Algorithm description}
 
+ACO algorithms are conceptually very simple and they follow a specific scheme outlined in algorithm \ref{ACO}.
 
+In general, after the initialization of the pheromone trails and some parameters, a main loop is repeated until a termination condition is met. The ants construct feasible solutions, which are subsequently improved by applying a local search algorithm. Finally the pheromone trails are updated.
 
-
-
-
-
-
-
-
-
-
-\begin{algorithm}
-	\KwData{this text}
-	\KwResult{Some solution}
+\begin{algorithm}\label{ACO}
 	Initialization pheromone trails\;
 	\While{Termination conditions not met}{
 		ConstructSolutions\;
@@ -1939,8 +1940,44 @@ where:
 	\caption{Algorithmic skeleton for ACO algorithms}
 \end{algorithm}
 
+\subsubsection{Transition Probabilities}
 
-\begin{algorithm}
+Although firstly each ants selects randomly a object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depend on several parameters:
+
+\begin{itemize}
+	\item the attractiveness of the objects.
+	\item the path traveled so far by the ant.
+	\item the pheromone trail laid on the solution components graph $G$.
+\end{itemize}
+
+Let $n$ the number of the groups and $z \in \SetFromOneTo{n-1}$ the number of items selected by an ant. 
+
+Formally, during the $k$-th iteration of our algorithm, the path $\pi_{k_l}^{(z)}$, traversed by the $l$-th ant on the solution components graph $G(O,E)$ after the $z$-th object selection, can be defined as follows:
+
+\begin{equation}
+	\pi_{k_l}^{(z)} = o_1e_1o_2 \ldots o_{z-1}e_{z}o_{z+1}
+\end{equation} 
+
+where:
+
+\begin{eqnarray}
+	o_s \in O & \qquad \forall s \in \SetFromOneTo{z} \\
+	e_s = (o_s,o_{s+1}) \in E  & \qquad \forall s \in \SetFromOneTo{z} \\
+	g(o_s) \neq g(o_r)   &\qquad \forall s,r \in \SetFromOneTo{z} : s \neq r
+\end{eqnarray}
+
+The last property state that each selected object belonging to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
+
+Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represents the partial solution built so far by the $l$-th ant after the $z$-th object selection; therefore, $|\textbf{S}_{k_l}^{(z)}| = z + 1$.  
+
+Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in O$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
+
+\subsubsection{Ant's solution construction algorithm}
+
+A complete description of the algorithm performed by ants to build partial solutions is reported in algorithm \ref{antsolutiongen}
+
+
+\begin{algorithm}\label{antsolutiongen}
 	%\KwData{this text}
 	%\KwResult{Some solution}
 	
@@ -1998,35 +2035,9 @@ where:
 	$S_k \leftarrow$ Select $\textbf{S}_{k_l}^{(z)}$ having maximum profit\;
 	
 	\Return $S_k$
-	\caption{Pseudo-code regarding partial solution generation performed by ants}
+	\caption{Pseudo-code regarding partial solution generation performed by ants.}
 \end{algorithm}
 
-\newpage
-
-\subsubsection{Transition Probabilities}
-
-Although firstly each ants selects randomly a object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depend on several parameters, like the 
-attractiveness of the objects, the path traveled by the ant and the pheromone trail laid on the solution components graph $G_{S\textbf{}}$.
-
-Let $z \in \SetFromOneTo{n-1}$ the number of items selected by an ant where $n$, we recall, represents the number of groups. Formally, during the $k$-th iteration of our algorithm, the path $\pi_{k_l}^{(z)}$, traversed by the $l$-th ant on the solution components graph $G_{\textbf{S}}(\textbf{O},E)$ after the $z$-th object selection, can be defined as follows:
-
-\begin{equation}
-	\pi_{k_l}^{(z)} = o_1e_1o_2 \ldots o_{z-1}e_{z}o_{z+1}
-\end{equation} 
-
-where:
-
-\begin{eqnarray}
-	o_s \in \textbf{O} & \qquad \forall s \in \SetFromOneTo{z} \\
-	e_s = (o_s,o_{s+1}) \in E  & \qquad \forall s \in \SetFromOneTo{z} \\
-	g(o_s) \neq g(o_r)   &\qquad \forall s,r \in \SetFromOneTo{z} : s \neq r
-\end{eqnarray}
-
-The last property state that each selected object belonging to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
-
-Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represents the partial solution built so far by the $l$-th ant after the $z$-th object selection; therefore, $|\textbf{S}_{k_l}^{(z)}| = z + 1$.  
-
-Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in \textbf{O}$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
 
 \begin{equation}
 	P(o_{i_j}, \textbf{S}_{k_l}^{(z)}, \pi_{k_l}^{(z)}) \mathDef \frac{\left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}{\displaystyle \sum_{o_{i_j} \in \mathcal{C}(\textbf{G}_i, \textbf{S}_{k_l}^{(z)})} \left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}
@@ -2055,7 +2066,7 @@ The heuristic factor $\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)})$ also depends on th
 The following ratio:
 
 \begin{equation}
-	h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) \mathDef \displaystyle \sum_{y=0}^{Y} \frac{c_{y_j}}{\displaystyle  b_y - \sum_{o_s \in \textbf{S}_{k_l}^{(z)}} c_y(o_z)}
+	h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) \mathDef \displaystyle \sum_{y=0}^{Y} \frac{c_{y_j} + 1}{\displaystyle  \Big( b_y - \sum_{o_s \in \textbf{S}_{k_l}^{(z)}} c_y(o_z)\Big) + 1}
 \end{equation}
 
 represents the tightness of the object $o_{i_j}$ on the problem's constraints relatively to the constructed solution $\textbf{S}_{k_l}^{(z)}$; thus, the lower this ratio is, the
@@ -2064,30 +2075,19 @@ more the object is profitable.
 We can now define the heuristic factor formula as follows:
 
 \begin{equation}
-	\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \mathDef \frac{p_{i_j}}{h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j})}
+	\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \mathDef \frac{p_{i_j}}{h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) + 1}
 \end{equation}
 
 
 \subsubsection{Local Search}
 
-According to \ref{}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current iteration best solution, performing a local search, 
+According to \ref{}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current best solution.
 
-We have adopted two different local:
+To be precise, we have adopted a \textit{random local search} algorithm, which represents an exhaustive search within a group to improve the solution. It replaces current selected object of a group with every other object that do not violate resource constraints and checks if it is a better solution. The total procedure is repeated a number of times, each time for a random group. The pseudo-code of that procedure is reported in algorithm \ref{localserach}.
+	
 
-\begin{description}
-	\item[Random Local Search]  an exhaustive search within a group to improve the solution. 
-	
-	It replaces current selected object of a group with every other object that do not violate resource constraints and checks if it is a better solution. 
-	
-	The total procedure is repeated a number of times, each time for a random group.
-	
-	\item[Random Item Swap] is an extended version of the
-	random local search. 
-	
-	In this case, a specified number ($> 1$) of objects are swapped with other random objects from the same group without checking the resource constraints, then it checks if it is a valid solution and if it improves the solution.
-\end{description}
-
-\begin{algorithm}
+\begin{algorithm}\label{localserach}
+	\caption{Pseudo-code of the random local search algorithm.}
 	
 	\For{a specified number of times}{
 		
@@ -2154,22 +2154,26 @@ where:
 		
 		\begin{equation}
 			\tau(o_{i_j}, o_{a_b})_{k-1}^{l} \mathDef \left\{ 
-			\begin{array}{ll}
-				0 & \text{\textbf{if }} S_{k_l} = \emptyset \\ 
-				\displaystyle \frac{1}{1 + profit(S_{best}) - profit(S_{k_l})} & \text{\textbf{if }} S_{k_l} \neq \emptyset \wedge (o_{i_j}, o_{a_b}) \in \pi_{k_l} \\ 
+			\begin{array}{lll}
+				0 & \text{\textbf{if }} & S_{k_l} = \emptyset \\ 
+				\displaystyle \frac{1}{1 + profit(S_{best}) - profit(S_{k_l})} & \text{\textbf{if }} & \substack{S_{k_l} \neq \emptyset \\ (o_{i_j}, o_{a_b}) \in \pi_{k_l}} \\ 
 			\end{array} \right.
 		\end{equation}
-		
 		
 	\end{itemize}
 \end{itemize}
 
 \subsubsection{Termination Conditions}
 
-Since for each item $o_{i_j}$ is true that $0 \leq p_{i_j} \leq 1$, 
+According to our model, let $\mathcal{C} = (\Phi,E)$ a choreography, an upper bound on the value of the optimal solution exists; since is true that $0 \leq p_{i_j}(t) \leq 1$, where $p_{i_j}(t)$ is the score associated to the executable function configuration $x_{\phi_{i_j}}$, the upper bound of the optimal solution is simply equal to $|\mathscr{F_E}(\mathcal{C})|$.
 
-The algorithm stops either when an ant has found an optimal solution (when the optimal bound is known), or when a maximum number of cycles has been performed.
+Then, our algorithm stops when:
 
+\begin{itemize}
+	\item an ant has found an optimal solution.
+	\item a maximum number of cycles has been performed.
+	\item the improvement in the objective function in an iteration is less than a threshold; by default, if the improvement of the solution is less than the $10\%$ respect to the previous one, our algorithm will terminate.
+\end{itemize}
 
 
 \newpage
