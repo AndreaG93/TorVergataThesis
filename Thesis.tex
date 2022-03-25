@@ -8,7 +8,21 @@
 \usepackage{tikz}
 \usepackage{setspace}
 \usepackage{hyperref}
-\usepackage{frontespizio} 
+\usepackage{frontespizio}
+\usepackage{booktabs} 
+\usepackage{listings}
+
+\lstset{
+	language=Java,
+	basicstyle=\small\ttfamily,			
+	keywordstyle=\color{blue},
+	commentstyle=\color{black},			
+	stringstyle=\color{black},			
+	numbers=left,						
+	numberstyle=\tiny,					
+	stepnumber=1,						
+	breaklines=true						
+}
 
 \usepackage[mathscr]{euscript}
 \usepackage[a4paper,left=3.5cm,right=2.5cm]{geometry}
@@ -18,8 +32,8 @@
 \usepackage[numbers]{natbib} 
 
 
-\setcounter{secnumdepth}{4}
-\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
 
 \onehalfspacing
 
@@ -33,6 +47,7 @@
 \newcommand{\SetFromOneTo}[1]{\N \cap \left[1,#1\right]}
 \newcommand{\SetFromZeroToOne}{\left[0,1\right]}
 \newcommand{\ItalicQuotMark}[1]{``\textit{#1}"}
+\newcommand{\QuoteIntro}{``}
 
 
 \hypersetup{
@@ -73,7 +88,7 @@ A serverless function represents a stateless, event-driven, self-contained unit 
 
 Although a serverless function generally corresponds to an unit of executable code submitted to FaaS platforms by developers using one or a combination of the programming languages supported by FaaS providers, it can represent any cloud services eventually necessary to business logic, like cloud storage, message queue services, pub/sub messaging service etc.
 
-A serverless function can be triggered through events or HTTP requests following which the FaaS provider takes care of its execution inside a containerized environment called \textit{function instance}, like container, virtual machine or even processes, using a user specified \textit{serverless function configuration}, which include several parameters, like timeout, memory size or CPU power \cite{COSE}. Function instances acts as tiny servers completely managed by the serverless computing platform. 
+A serverless function can be triggered through events or \texttt{HTTP} requests following which the FaaS provider takes care of its execution inside a containerized environment called \textit{function instance}, like container, virtual machine or even processes, using a user specified \textit{serverless function configuration}, which include several parameters, like timeout, memory size or CPU power \cite{COSE}. Function instances acts as tiny servers completely managed by the serverless computing platform. 
 
 As known, a very important advantage of serverless computing is a new simplified programming model, according to which developers can focus on logic and business aspects of their applications only, without worry about the server management, which can lead to a development's cost reduction, decreasing go-to-market time of the software products.
 
@@ -131,7 +146,7 @@ We believe that existing solutions can suffer of the fact that they limit their 
 
 Similarity, no existing solution is able to manage serverless application whose functions are hosted on multiple FaaS platforms. Proposed solutions are generally unaware of the current status of FaaS platforms and they cannot adapt herself in response to the changing of their execution environments. Therefore, they are incapable to prevent cold starts or the unavoidable delays which usually occur when a FaaS platform is too overloaded or to select the provider having the best cost/performance ratio in order to better meet customer's expectations.
 
-However, exploiting multiple FaaS platform in order to meet QoS levels is not trivial. Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions which exacerbates the provider lock-in problem. There is no agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution.
+However, exploiting multiple FaaS platform in order to meet QoS levels is not trivial. Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions, using a variety of conventions for creating, executing, logging and monitoring serverless applications and its functions, exacerbating the so-called vendor lock-in issue, a very common problem in distributed. There is no even agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution.
 
 \section{Contributions}
 
@@ -162,7 +177,7 @@ To be more precise, our work's contributions can be summarized as follows:
 	
 	\item To further reduce vendor lock-in issue, we have built our own software system acting as orchestrator for serverless application management.
 	
-	\item To improve access transparency to FaaS platforms services, hiding any difference regarding how serverless application on different providers can be accessed, we have developed our software system following \textit{Representational State Transfer} (REST) architectural style, allowing our customers to create and access to serverless application, whose function are hosted on any supported provider, using identical operations based on standard HTTP methods.
+	\item To improve access transparency to FaaS platforms services, hiding any difference regarding how serverless application on different providers can be accessed, we have developed our software system following \textit{Representational State Transfer} (REST) architectural style, allowing our customers to create and access to serverless application, whose function are hosted on any supported provider, using identical operations based on standard \texttt{HTTP} methods.
 	
 	\item To partially address the problem of key exchange between our customers and our system broker, necessary to allow our system to access to the FaaS services paid by our users, we have relied on asymmetric encryption during the creation of a serverless application on our system. Moreover, some of the customer's data is encrypted by default.
 	
@@ -170,164 +185,297 @@ To be more precise, our work's contributions can be summarized as follows:
 
 \chapter{Architecture}
 
-From an architectural point of view, our system software framework acts as a simple client-server model, according to which processes are divided into two groups:
+Our software is technically a standalone orchestrator, QoS-aware model-bases optimizer and profiler for serverless applications, whose functions can be hosted on multiple FaaS platforms.
+
+From an architectural point of view, according to the applications taxonomy proposed by \citet{MSA}, our software system is a \textit{cloud-native application} because the \textit{Tier-1}, which represents \ItalicQuotMark{the cloud} in today’s parlance, is the unique execution site where our application performs its tasks \footnote{Despite some design and development efforts are still required, from a methodological point of view, there is no reason to constrain the execution of this software on the cloud to achieve the goals of this work. Any future development should consider to built a distribute version of this system, in order to exploit the advantages provided by an edge-accelerated or edge-native solution, like network proximity, ingress bandwidth demand reduction etc.}.
+
+Our system was designed and implemented according to simple \textit{client-server architecture}, where we recognize two types of processes:
 
 \begin{itemize}
+	\item The \textit{server process} implementing our service.
 	
-	\item fdsfdsfsd
-	
-	\item dfsfffsdfdsfdsfsdfdfdsfsdfdfsdfdfsdfsd
-	
+	\item The \textit{client processes} which request a service from our server.
 \end{itemize}
 
 
-In the basic client-server model, processes in a distributed system are divided
-into two (possibly overlapping) groups. A server is a process implementing
-a specific service, for example, a file system service or a database service. A
-client is a process that requests a service from a server by sending it a request
-and subsequently waiting for the server’s reply. This client-server interaction,
-also known as request-reply behavior 
-A framework 
+Since our system is made up of a centralized component, capable to handle all communications between users and all supported FaaS platform providers, our system acts as a \textit{broker}.
+
+Clearly, for the purposes of our work, our application has to have all required knowledge about the interfaces adopted by all supported providers regarding serverless functions managing; therefore, from an architectural point of view, our system requires a set of \textit{adapters}\cite{SDCC}, that is software components having aforementioned knowledge. At the current state of this work, only the adapters for following public serverless cloud platforms are provided:
+
+\begin{itemize}
+	\item AWS Lambda \cite{AWSLambda};
+	\item Apache OpenWhisk \cite{OpenWhisk};
+\end{itemize}
+
+As trivial as it sounds, a very important advantage of this design choice is the \textit{access transparency} provided to final users, because they can manage their applications using identical operations forwarded to our system without interact directly with FaaS providers \cite{SDCC}.
+
+Despite it is very easy to implement, the adopted centralized approach also has, obviously, several shortcomings since it is both not scalable and and network traffic inefficient, exacerbating traffic congestion problems, beside from representing a single point of failure \cite{SDCC}. 
+
+We want to emphasize that, since they are out from our goal, most issues and pitfalls regarding the design of our system, like transparency, processes decoupling, message delivery reliability issues, scalability, traffic congestion, fault-tolerance or replication management, were out of the scope our this work.
+
+\section{System's components overview}
+
+Our framework consists of following main logical entities:
+
+\begin{description}
+	
+	\item[Orchestrator] This is the most important software component of our system whose aim to allow the composition of serverless functions in order to properly execute applications, defining a stateful serverless workflows. 
+	
+	As already said, the orchestrator is needed to chain together all functions of the application, triggering them in the correct order according to both the business logic and, clearly, the user inputs.
+	
+	More concretely, the orchestrator is invoked when the execution of any serverless application is required by an user, passing a JSON input which represent, obviously, the input data for the invoked application; then, when the execution is ended, it will be generated a JSON output which will be sent to the client.
+	
+	Each function's invocation of any serverless workflows is performed synchronously, which means that the orchestrator waits for the execution of the orchestrated functions to complete before to attempting to invoke the next one. Unfortunately, at the current state of our design, if any error occurred during the execution of any orchestrated functions, the entire application's execution will be aborted. When the execution of any orchestrated function ends, the orchestrator retrieves log information, mostly regarding performances and billed costs, from live metric streams from FaaS provider logs, which are forwarder to our logging subsystem. 
+	
+	Concerning workflow's state management, state parameters are passed between orchestrated functions, always passing through the orchestrator. Currently, there is no limit on the size of state parameter, however is expected that overheads related to state passing can significantly grow with increasing parameter sizes.
+	
+	Actually, our orchestrator subsystem supports \textit{function chaining} and \textit{nesting} exploiting several control-flow structures in order to allow:
+	
+	\begin{itemize}
+		\item \textit{functions branching}, through the support for \texttt{if} and \texttt{switch} statements.
+		\item \textit{functions looping}, according to which the use of both \texttt{for} and \texttt{while} statements are supported.
+	\end{itemize}
+	
+	Moreover, the orchestrator is capable to manage \textit{parallel executions}. It is also possible to \textit{abort} current application's execution exploiting the \texttt{exit} statement.
+		
+	Today, all serverless functions orchestration services provided by main public FaaS platforms providers, like \textit{IBM Composer}\cite{IBMComposer}, \textit{Amazon Step Functions}\cite{StepFunctions}, and \textit{Azure Durable Functions}\cite{DurableFunctions}, enforce developers to hardcode the specific function implementation to use inside a serverless workflow \cite{AFCL}; this fact prevents the possibility to select a specific function implementation for an optimal execution in order to meet user specified constraints. Similarly, since each FaaS platforms providers does not support the possibility to invoke a serverless function hosted on different FaaS platform, can be difficult to satisfy user specified QoS levels under some conditions, like high traffic situations towards a specific FaaS platform or resources shortage for functions executions.
+	
+	To overcome aforementioned limitation, our orchestrator is able to select a specific implementation of a functions inside any serverless workflow; concretely, it can run a function that implements the Pollard's rho algorithm for integer factorization, written in Python, instead of a function implementing the trial division based algorithm, written in JAVA. Moreover, it can invoke functions hosted on multiple FaaS platforms, which can very useful in some situations.
+	
+	However, only our QoS-aware model-bases optimizer has the responsibility to determine which implementation, for each function belonging to an application, must be invoked in order to meet QoS level constraints. To be more precise, during function orchestration, the orchestrator limits itself to invoke function implementations according to the so-called \textit{choreography configuration}, or simply \textit{configuration}, produced by the optimizer. The choreography configuration tells to the orchestrator which implementation and configuration must be used for each function in order to meet user specified QoS level constraints; we will talk more in detail about this shortly.
+	
+	\item[QoS-aware model-bases optimizer] As already said, the optimizer has the responsibility to identify, for each serverless function belonging to an application, which configuration and implementation must be used in order to satisfy user specified constraints.
+	
+	The optimizer is invoked every time a user requests the invocation of a serverless applications; then, only one of the following event can occurs:
+	
+	\begin{itemize}
+		\item if the user does not specify any QoS level constraints, the optimizer will produce the choreography configuration by select configurations and implementations randomly.
+		
+		\item if QoS level constraints are specified, the optimizer firstly  retrieving, interacting mostly with our logging subsytem, all needed metrics to perform its task, such as observed average response times and charged cost for each implementation and configuration for every function inside the invoked applications; moreover, the optimizer will also checks both the status for each FaaS platforms and the actual users requests traffics on the system. We will precise what metrics are effectively used by the optimizer in next chapter.
+		
+		When all needed data are collected, the optimizer provides a suitable configuration of each serverless function within an application, by solving an optimization problem, derived from our performance model. 
+		
+	\end{itemize}
+	
+	When a configuration is finally produced, the orchestrator will be subsequently invoked with it to actually perform the execution of the requested application.
+	
+\end{description} 
+	
+\subsubsection{Logging subsystem}
 
 
+In order that our optimizer performs its tasks, a live overview of the state of both all FaaS platforms executions environment and the system is, obviously, required, including a dataset containing all historical information regarding serverless function performances under any possible configuration (in term of RAM memory size values).
 
+As known, anytime a serverless function belonging to a given application is invoked by the orchestrator, the FaaS platform provider, which hosts aforementioned function, produce a log containing several kind of information as:
 
-and has the ability to adapt
-to changes in the execution time of serverless functions. 
+\begin{itemize}
+	\item Time spent to complete the serverless function's execution.
+	\item Charged cost.
+	\item RAM memory size value.
+	\item The occurrence, or not, of a cold start.
+\end{itemize}
 
+In order to build our aforementioned dataset, all FaaS produced logs are continuously retrieved, parsed and stored by the logging subsystem during the entire life-cycle of our system.  
 
-
-The basic goal of adaptation is to make the system
-able to fulfill its functional and/or non functional require-
-ments, despite variations in its operating environment,
-which are very likely to occur in the SOA domain. As
-pointed out in the introduction, our focus in this paper is
-on non functional requirements concerning the delivered
-QoS and cost. In the SOA domain, these requirements
-are usually the result of a negotiation process engaged
-between the service provider and user, which culmi-
-nates in the definition of a Service Level Agreement (SLA)
-concerning their respective obligations and expectations
-[39]. In a stochastic setting, a SLA specifies guarantees
-about the average value of quality attributes, or more
-tough guarantees about the higher moments or percentiles
-of these attributes.
-
-
-
-
-
-From an architectural point of view, our software system uses a top-down approach based on MAPE-K feedback control loop. Re-
-searchers wrote that:
-
-
-This section details the architecture of Sequoia. Sequoia is a
-standalone scheduling framework that can be deployed as a
-proxy to existing cloud services or directly integrated into
-platforms such as OpenWhisk. The framework consists of
-three main logical entities (Figure 9): a QoS Scheduler, a Log-
-ging Framework, and a Policy Framework. The QoS Scheduler
-decides where, when, and how to run specic functions or
-function chains. The QoS Scheduler integrates tightly with
-the Logging Framework, whose responsibility is to store
-real-time metrics that describe the current and historical
-state of the serverless environment. Both the QoS Scheduler
-and Logging Framework interface with the Policy Frame-
-work to make scheduling decisions. All three components
-are highlighted below.
-
-
-Modern software systems typically operate in dynamic
-environments and deal with highly changing operational con-
-ditions: 
-
- well recognized engineering approach
-to realize self-adaptation is by means of a feedback control
-loop called MAPE-K [26], [13] and conceived as a sequence
-of four computations Monitor-Analyze-Plan-Execute over a
-Knowledge base.
-
-
-Why. The basic goal of adaptation is to make the system
-able to fulfill its functional and/or non functional require-
-ments, despite variations in its operating environment,
-which are very likely to occur in the SOA domain. As
-pointed out in the introduction, our focus in this paper is
-on non functional requirements concerning the delivered
-QoS and cost. In the SOA domain, these requirements
-are usually the result of a negotiation process engaged
-between the service provider and user, which culmi-
-nates in the definition of a Service Level Agreement (SLA)
-concerning their respective obligations and expectations
-[39]. In a stochastic setting, a SLA specifies guarantees
-about the average value of quality attributes, or more
-tough guarantees about the higher moments or percentiles
-of these attributes.
-
-\subsection{Communication Semantics}
-
-Since message delivery reliability issues were out of the scope our this work, we have adopt the so-called maybe comunication semantics
-
-Maybe semantics: With maybe semantics, the remote procedure call may be executed
-once or not at all. Maybe semantics arises when no fault-tolerance measures are applied
-and can suffer from the following types of failure:
-• omission failures if the request or result message is lost;
-• crash failures when the server containing the remote operation fails.
-If the result message has not been received after a timeout and there are no retries, it is
-uncertain whether the procedure has been executed. If the request message was lost, then
-the procedure will not have been executed. On the other hand, the procedure may have
-been executed and the result message lost. A crash failure may occur either before or
-after the procedure is executed. Moreover, in an asynchronous system, the result of
-executing the procedure may arrive after the timeout. Maybe semantics is useful only for
-applications in which occasional failed calls are acceptable.
-
-
-\subsection{title}
-
-When building a distributed system out of existing components, we immedi-
-ately bump into a fundamental problem: the interfaces offered by the legacy
-component are most likely not suitable for all applications. In Section 1.3 we
-discussed how enterprise application integration could be established through
-middleware as a communication facilitator, but there we still implicitly as-
-sumed that, in the end, components could be accessed through their native
-interfaces.
-
-
-\section{Software system architecture}
-
-From an architectural point of view, our software system acts as a standalone framework QoS-driven runtime adaptation for serverless applications.
-
-
-
- that implements it, for QoS-
-driven runtime adaptation 
-
-
-This section details the architecture of Sequoia. Sequoia is a
-standalone scheduling framework that can be deployed as a
-proxy to existing cloud services or directly integrated into
-platforms such as OpenWhisk. The framework consists of
-three main logical entities (Figure 9): a QoS Scheduler, a Log-
-ging Framework, and a Policy Framework. The QoS Scheduler
-decides where, when, and how to run specic functions or
-function chains. The QoS Scheduler integrates tightly with
-the Logging Framework, whose responsibility is to store
-real-time metrics that describe the current and historical
-state of the serverless environment. Both the QoS Scheduler
-and Logging Framework interface with the Policy Frame-
-work to make scheduling decisions. All three components
-are highlighted below.
+FaaS platforms logs data \textit{can}\footnote{Strictly speaking they aren't.} be considered as time series data, that is data points indexed in time order. Each data point following attributes:
 
 
 
 
 
+ according to which each data point  the time of each instance, containing the attribute value regarding power consumption, is given by a timestamp attribute; thus our data-set represents a sequence of discrete-
+time data 
 
-\subsection{Resource owner}
 
-A \textit{resource owner}, henceforward denoted with $R$, represents an entity capable of \textit{creating}, \textit{modifying} and \textit{authorizing} access to several resources of our system.
 
-\newpage
+From an architectural point of view, the logging subsystem is made up of three main logical components:
+
+\begin{description}
+	
+	\item An 
+	
+	
+\end{description}
+
+
+
+As the Logging Framework receives logs from each of
+its sources, it computes running metrics such as total con-
+currency of specic functions and chains, number of drops
+observed in the serverless framework, and inter-arrival times
+of function chains tracked by the Producer. These metrics
+are available to be read at any time by the Policy Framework
+and can be exported to long-term storage to be available for
+post-hoc analysis.
+
+
+A very important characteristic of our data-set it that it contains time series data, where the time of each instance, containing the attribute value regarding power consumption, is given by a timestamp attribute; thus our data-set represents a sequence of discrete-
+time data [8]. All data are listed in time order.
+
+
+InfluxDB is a TSDB that stores \textit{points}, that is single values indexed by time. 
+
+Using InfluxDB terminology, each point is uniquely identified by four components:
+
+\begin{itemize}
+	\item A timestamp.
+	
+	\item Zero o more tags, key-value pairs that are used to store metadata associated with the point. 
+	
+	\item One or more fields, that is scalars which represent the value recorded by that point.
+	
+	\item A measurement, which acts as a container used to group together all related points.
+	
+\end{itemize}
+
+Is very important to note that  
+
+In our implementation, data points 
+
+A bucket is a named location where time series data is stored.
+
+
+In fact, besides parameters configuration, serverless functions performance is affected by several other factors like traffic, \textit{cold starts} and network conditions. 
+	
+	
+	
+	
+
+	
+%	\item[Profiler]  In the performance profiling phase, the function
+	
+%	\item[Parser] This is the component
+	
+
+
+
+
+
+
+
+
+\section{Architectural style}
+
+Our system was been developed following the \textit{Representational State Transfer} (REST) as software architectural style, according to which the system can be viewed as a huge collection of \textit{resources}, that is applications components that can be uniquely identified through a single naming scheme. 
+
+\subsection{Resource identification}
+
+According to the REST architectural style, the identification of any resources relies on identifiers called \textit{Uniform Resource Identifiers} (URIs) which, in an \texttt{HTTP} context, are also known as \textit{Uniform Resource Locator} (URLs). Like many other REST systems, the resources of our system are organized in a hierarchy and that hierarchy is used as a basis to identify a resource.
+
+Firstly, our system supports only two resources:
+
+\begin{itemize}
+	\item \textit{Resource owners}, which are at the top of the resources hierarchy.
+	
+	\item \textit{Serverless applications}, which, instead, are at the bottom.
+\end{itemize}
+
+Resource owners represent the entities capable of \textit{creating} and \textit{modifying} their own serverless applications. Most importantly, a resource owner name is unique in all our system.
+
+The URI, assigned to each serverless applications resources, is made up of the following:
+
+\begin{itemize}
+	\item the name of the serverless applications owner, that is the resource owner name.
+	\item the name of the serverless application itself which must be unique among all applications owned by the resource owner.
+\end{itemize}
+
+For instance, a URI such as the one reported in listing \ref{URIexample} denotes the serverless application called \ItalicQuotMark{application} owned by the resource owner called \ItalicQuotMark{andrea}.
+
+\begin{lstlisting}[frame=lines, caption={A serverless application URI example}, label={URIexample}]
+http://<DOMAIN>:80/andrea/application
+\end{lstlisting}
+
+\subsection{Operations on resources}
+
+As known \texttt{HTTP} protocol provides several methods to interact with resources. Constraining operations on resources only to \texttt{HTTP} provided methods is one of the keys to enable loose-coupling between our software and clients, as they only need to support \texttt{HTTP} protocol to use our framework\cite{Guinard}.   
+
+Moreover, as known, when an operation on a specified resource is invoked, \texttt{HTTP} protocol offers a way of expressing errors and exceptions, which are represented by standardized status codes sent back as part of the header in the \texttt{HTTP} response message. Naturally, we have adopt them to report any issue occurring during any operation performed on any resources because, since \texttt{HTTP} status codes have well-known meanings for HTTP clients, we can achieve a lower coupling between our software and clients \cite{Guinard}\cite{HTTP}. 
+
+According to our design, following operations are supported:
+
+\begin{description}
+	
+	\item[\texttt{PUT}] which is generally used to create a new resource, like a new serverless application or new user. 
+		
+	More concretely, as an example, a \texttt{PUT} on \QuoteIntro\texttt{/genericOwner/app1}", with the  \texttt{JSON} representation of the serverless application to create, returns an \texttt{HTTP} response message having one of the following status codes:
+	
+	\begin{itemize}
+		\item If a new serverless application called \texttt{app1} and belonging to \texttt{genericOwner} has been successfully created, the response code will be \texttt{201} (Created).
+		
+		\item If our framework encountered an unexpected condition which prevented it from fulfilling the serverless application creation request, the response code will be \texttt{500} (Internal Server Error). Moreover, a JSON formatted data, describing occurred error, will be sent as part of the \texttt{HTTP} response message. 
+		
+		\item If our framework detects that a serverless application called \texttt{app1} and owned by \texttt{genericOwner} already exists, the status code \texttt{409} (Conflict) will be sent.
+		
+		\item If the JSON's representation of the serverless application to create contains syntax errors, the code \texttt{400} (Bad Request) will be sent. That status code, will be sent also when a malformed URI is submitted, that is when the user \texttt{genericOwner} does not exist.
+		
+	\end{itemize}
+	
+	Similarly to the previous example, a \texttt{PUT} on \QuoteIntro\texttt{/genericOwner}", is used to register a resource owner whose name is \QuoteIntro\texttt{genericOwner}". Returned status codes are similar to those used in the previous example. 
+	
+	\item[\texttt{GET}]  which is used both to execute serverless applications and to retrieve the state of both a resource owner and the system.
+	
+	For example, a \texttt{GET} on \QuoteIntro\texttt{/genericOwner/app1}" triggers the execution of the serverless application called \texttt{app1} and owned by \texttt{genericOwner}. The request message can include a JSON representation of the data to pass to the invoked application as input.
+	
+	One of the following event can occurs:
+	\begin{itemize}
+		\item If no error occurred during serverless application's execution, an HTTP response message, having status code \texttt{200} (OK) with a JSON representation of the data produced as output by the invoked application, will be sent to the client. 
+		
+		\item If specified URI refers to an inexistent serverless application, naturally, the status code \texttt{404} (Not Found) will be sent.
+		
+		\item If any error occurred, the response code will be \texttt{500} and the response message will include a JSON formatted data describing occurred exception.
+	\end{itemize}
+
+	It is also possible to submit a \texttt{GET} on \QuoteIntro\texttt{/genericOwner}" whose message response, when no error has occurred, contains a JSON representation of the resource owner \texttt{genericOwner}. When some errors has occurred, similar status code like in previous example are adopted.
+	
+	Finally, submitting a \texttt{GET} on \QuoteIntro\texttt{/}", will be sent a response message containing the RSA public key which must be used for encrypting messages.
+	
+	\item[\texttt{DELETE}] is used to delete a resource. 
+	
+	For example a \texttt{DELETE} on \QuoteIntro\texttt{/genericOwner}", is used to delete the resource owner whose name is \QuoteIntro\texttt{genericOwner}", including all its serverless applications. The returned status code can be one of the following:
+	
+	\begin{itemize}
+		\item \texttt{200} when submitted operation succeeded without errors
+		
+		\item \texttt{410} (Gone), if specified URI refers to an inexistent or already deleted resource owner.
+		
+		\item \texttt{500} when any error occurred. In that case, the response message will include a JSON formatted data describing occurred exception.
+	\end{itemize}
+
+	Naturally, is possible to submit a \texttt{DELETE} to permanently remove a serverless application. 
+	
+	\item[\texttt{POST}] is used to change the state of a resource.
+	
+	To be more precise, if a \texttt{POST} is submitted on a serverless application whose URI is \QuoteIntro\texttt{/genericOwner/app1}", the profiling task, regarding the application called \texttt{app1}, will be started. We will talk about profiling task for serverless applications very soon. In this case, one of the following status codes will be sent:
+	
+	\begin{itemize}
+		\item \texttt{201} when submitted operation succeeded without errors
+		
+		\item \texttt{404} if specified URI refers to an inexistent serverless application.
+		
+		\item \texttt{500} when any error occurred during profiling task. Like always, the response message will include a JSON formatted data describing occurred exception.
+	\end{itemize}
+	
+	Conversely, when a \texttt{POST} operation is submitted on \QuoteIntro\texttt{/genericOwner}", with a JSON data including FaaS platforms credentials, the latter will be stored on our system letting it to invoke any serverless functions on FaaS platform.   
+	
+\end{description}	
+
+\section{Communication's features}
+
+Unfortunately, clients are obliged to communicate directly with our application running on the cloud using a classical \textit{client-server style communication}, which use classic \textit{point-to-point} and \textit{synchronous} communications, according to which users wait until their requests has been fully processed by our system \cite{SDCC}. 
+
+As known, the use of communication style leads to an high degree of coupling between our server and clients; to be more precise, they are: 
+
+\begin{itemize}
+	
+	\item \textit{temporally} coupled, which means that both our server and our clients processes that are communicating will both have to be up and running \cite{SDCC};
+	
+	\item \textit{referentially} coupled, since explicit referencing in communication is adopted \cite{SDCC};
+	
+\end{itemize}
+
+Since all currently supported operations are factually idempotent, that is they can be performed repeatedly with the same effect as if they had been performed exactly once\cite{SDCCNUMERO2}, an \textit{at-least-once} communication's semantics is safely adopted; therefore, any client receives either a result, in which case the invoker knows that the procedure was executed at least once, or an exception. As known, aforementioned communication semantics is achieved exploiting the retransmission of request messages, which masks so-called omission failures\footnote{An omission failure occurs when a server fails to respond to a request.}. Unfortunately, our system cannot manage neither crash or arbitrary failures\footnote{Arbitrary failures, also known as \textit{Byzantine failures}, represent the most severe type of failure which happens when a server produces an output that it should never have produced, but which cannot be detected as being incorrect} \cite{SDCCNUMERO2}.
+
+Finally, we assume that all processes are connected by \textit{reliable channels}, that is no messages are lost, duplicated or corrupted; in our prototype, that feature is obviously guaranteed by the use of the \texttt{HTTP} application layer protocol, which, as known, exploits the reliable transport layer protocol \texttt{TCP}. 
 
 \chapter{Model's formalization}
 
@@ -417,7 +565,7 @@ Then, we will adopt following notations:
 
 \subsection{Serverless choreography definition}
 
-According to serverless paradigm, the execution of an application always starts with a particular function, usually triggered through events or HTTP requests, acting as ``\textit{entry point}" of the serverless workflow; any other functions, belonging to the application, will be invoked subsequently according to the business logic specified by customer. Conversely, the execution of an application ends when the execution of its last function ends, which acts as the ``\textit{end point}" of the serverless workflow. 
+According to serverless paradigm, the execution of an application always starts with a particular function, usually triggered through events or \texttt{HTTP} requests, acting as ``\textit{entry point}" of the serverless workflow; any other functions, belonging to the application, will be invoked subsequently according to the business logic specified by customer. Conversely, the execution of an application ends when the execution of its last function ends, which acts as the ``\textit{end point}" of the serverless workflow. 
 
 Assuming that any serverless application has only one function acting as entry point, let $n \in \N \SetMinusZero$ and $R$ a resource owner, then a choreography, owned by $R$, is a weakly connected\footnote{A directed graph is called \textit{weakly connected} if replacing all of its directed edges with undirected edges produces a connected undirected graph.} weighted directed graph denoted as follows:
 
@@ -2186,33 +2334,6 @@ filled in.
 
 \subsection{InfluxDB}
 
-A very important characteristic of our data-set it that it contains time series data, where the time of each instance, containing the attribute value regarding power consumption, is given by a timestamp attribute; thus our data-set represents a sequence of discrete-
-time data [8]. All data are listed in time order.
-
-
-InfluxDB is a TSDB that stores \textit{points}, that is single values indexed by time. 
-
-Using InfluxDB terminology, each point is uniquely identified by four components:
-
-\begin{itemize}
-	\item A timestamp.
-	
-	\item Zero o more tags, key-value pairs that are used to store metadata associated with the point. 
-	 
-	\item One or more fields, that is scalars which represent the value recorded by that point.
-	
-	\item A measurement, which acts as a container used to group together all related points.
-	
-\end{itemize}
-
-Is very important to note that  
-
-In our implementation, data points 
-
-A bucket is a named location where time series data is stored.
-
-
- In fact, besides parameters configuration, serverless functions performance is affected by several other factors like traffic, \textit{cold starts} and network conditions. 
 
 
 
