@@ -65,7 +65,7 @@
 	\Facolta{Ingegneria} 
 	\Corso[Laurea Magistrale]{Ingegneria Informatica} 
 	\Annoaccademico{2020--2021} 
-	\Titolo{A QoS-Aware Orchestrator Broker \\ for Multi-Provider Serverless Applications}
+	\Titolo{A QoS-Aware Broker \\ for Multi-Provider Serverless Applications}
 	\NCandidato{Studente} 
 	\Candidato[0273395]{Andrea Graziani} 
 	\NRelatore{Docente}{} 
@@ -220,13 +220,14 @@ This section details all software components of our system, which consists of fo
 \begin{itemize}
 	\item A Logging subsystem.
 	\item An Orchestrator.
+	\item A profiler.
 	\item A QoS-aware model-bases optimizer.
 	\item An Custom AFCL Parser
 \end{itemize}
 
 We will give a very brief overview of how these entities works while all details about the model on which they are based will be given in next chapter.
 
-\subsubsection{Logging subsystem}
+\subsection{Logging subsystem}
 
 In order to achieve our goal, a live overview of the state of both all FaaS platforms executions environment and system's traffic is required.
 
@@ -274,13 +275,13 @@ Actually, data points are stored into our InfluxDB instance using a simple first
 
 With very few exceptions, all iterations involving our logging subsystem is done asynchronously, without blocking current tasks eventually performed by our system.  
 
-\subsubsection{Orchestrator}
+\subsection{Orchestrator}
 	
 The orchestrator, or coordinator, is probably the most important software component of our system, whose aim is to allow the composition of serverless functions in order to properly execute applications.
 
 As already said, the orchestrator is needed to chain together all functions of the application, triggering them in the correct order according to both the business logic and, clearly, the user inputs.
 
-More concretely, the orchestrator is invoked anytime a user requests the execution of any serverless application. It mandatory requires a JSON input, eventually empty, representing the input data for the invoked application; when application's execution is ended, a JSON object, representing the application's output, will be sent to the client.
+More concretely, the orchestrator is invoked anytime a user requests the execution of any serverless application. It mandatory requires a \texttt{JSON} input, eventually empty, representing the input data for the invoked application; when application's execution is ended, a \texttt{JSON} object, representing the application's output, will be sent to the client.
 
 Each function's invocation of any serverless workflows is performed synchronously, which means that the orchestrator waits for the execution of the orchestrated functions to complete before to attempting to invoke the next one. Unfortunately, at the current state of our design, if any error occurred during the execution of any orchestrated functions, the entire application's execution will be aborted. When the execution of any orchestrated function ends, the orchestrator retrieves log information, mostly regarding performances and billed costs, from live metric streams from FaaS provider logs, which are forwarder, as already said asynchronously, to our logging subsystem. 
 
@@ -302,8 +303,23 @@ To overcome aforementioned limitation, our orchestrator is able to select a spec
 
 However, only our QoS-aware model-bases optimizer has the responsibility to determine which implementation, for each function belonging to an application, must be invoked in order to meet QoS level constraints. To be more precise, during function orchestration, the orchestrator limits itself to invoke function implementations according to the so-called \textit{choreography configuration}, or simply \textit{configuration}. The choreography configuration, produced by our optimizer, is a sort of table which tells to the orchestrator which implementation and configuration must be used for each function in order to meet user specified QoS level constraints; we will talk more in detail about this shortly.
 	
+\subsection{Profiler}
+
+When a serverless application is created for the first time, the QoS-aware optimizer has no performance metric data about serverless functions to perform its task since they does not exist yet. 
+
+Therefore a performance profiling phase in order to acquire a series of function response time and cost under different memory sizes is needed. 
+
+According to our design, it is mandatory that the profiling phase for a given serverless application must be executed before its first execution. According to the currently implementation, aforementioned phase must be invoked explicitly by the resource owner (despite no further actions are required by him).
+
+Synchronously interacting with the logging subsystem, it retrieves all needed performance metrics referring to each implementation and configuration regarding all serverless functions inside the invoked application. Aforementioned metrics includes observed average response times and charged cost when both cold and warm starts are occurred. Once the data is obtained, they are processed according to our performance model, which we will explain in next chapter.
+
+However, perform aforementioned tasks are generally expensive due to several reasons like the huge amount of data, expensive computation and network delay during data transmission between system components. In general, in a real situation, thousands data point must be collected and analyzed. It may happen that the InfluxDB instance, from which the data is obtained, can be connected to our framework through a lower-bandwidth and multi-hop connection. 
+
+Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from InfluxDB, then it stores locally processed data. Data synchronization is performed periodically \footnote{By default every 15 minutes}.
+
+Since according to our performance model processed data must used for future invocations, they are stored inside a Apache Cassandra instance for future use.
 	
-\subsubsection{QoS-aware model-bases optimizer}
+\subsection{QoS-aware model-bases optimizer}
 	
 As already said, the optimizer has the responsibility to determine which configuration and implementation must be used during the execution of a given serverless application in order to satisfy user specified constraints.
 
@@ -315,28 +331,23 @@ The optimizer is invoked every time a user requests the invocation of a serverle
 	\item if QoS level constraints are specified, the optimizer performs following activities:
 	
 	\begin{itemize}
-		\item synchronously interacting with the logging subsystem, it retrieves all needed performance metrics referring to each implementation and configuration regarding all serverless functions inside the invoked application. Aforementioned metrics includes observed average response times and charged cost when both cold and warm starts are occurred. Once the data is obtained , they are processed according to our performance model, which we will explain in next chapter.
+		\item It retrieves all the series of function response time and cost under different memory sizes for each serverless functions implementations involved in the current application. These data must be already computed by our profiler subsystem.
 		
-		However, perform all this is generally expensive due to several reasons like the huge amount of data, expensive computation and network delay during data transmission between system components. In general, in a real situation, thousands data point must be collected and analyzed and, moreover, it may happen that the InfluxDB instance, from which the data is obtained, can be connected to our framework through a lower-bandwidth and multi-hop connection. 
+		\item The status of all FaaS platforms where serverless functions will be executed is checked, including average arrival rate regarding user requests. All these data are used to compute cold/warm start probabilities in order to built the best configuration to meet QoS levels.
 		
-		Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from InfluxDB, then it stores locally processed data. Data synchronization is performed periodically \footnote{By default every 15 minutes}.
-		
-		To avoid to reanalyze data subsequently in case of crash failure of the system, processed data are stored inside a Apache Cassandra instance.
-		
-		\item The status of all FaaS platforms where serverless functions will be executed is checked, including average arrival rate regarding user requests. All these data are used to compute cold/warm start probabilities in order to built the best configuration to meet QoS levels; in next chapter we will give more detail about it. 
-		
-		\item An optimization problem, derived from our performance model, is resolved producing a choreography configuration and the orchestrator subsequently invoked. All details about both our performance model and the optimization problem will be discussed in next chapter.
+		\item An optimization problem, derived from our performance model, is resolved producing a choreography configuration. Then the orchestrator will be subsequently invoked passing to him the produced configuration. 
 			
 	\end{itemize}
 
 \end{itemize}
 
+All details about how the optimizer really works will be discussed in next chapter.
 
-\subsubsection{Custom AFCL Parser}
+\subsection{Custom AFCL Parser}
 
 As already said in previous chapter, rather than to require a separate implementation for each FaaS platform, our framework uses an unique serverless application's representation scheme using which very little modification are needed to switch form a provider to another, partially overcoming portability limitations and vendor lock-in issues.
 
-Aforementioned representation scheme is based on an existing language called \textit{Abstract Function Choreography Language} (AFCL), which is a feature-rich markup language developed to facilitate the creation of serverless workflows encoded in YAML or JSON. AFCL supports event-based, synchronous and asynchronous invocation of functions and it includes several control-flow constructs in order to construct iterations, branch, sequence or parallel executions inside a serverless workflow \cite{AFCL}.
+Aforementioned representation scheme is based on an existing language called \textit{Abstract Function Choreography Language} (AFCL), which is a feature-rich markup language developed to facilitate the creation of serverless workflows encoded in \texttt{YAML} or \texttt{JSON}. AFCL supports event-based, synchronous and asynchronous invocation of functions and it includes several control-flow constructs in order to construct iterations, branch, sequence or parallel executions inside a serverless workflow \cite{AFCL}.
 
 In order to integrate the use of aforementioned language in our framework, we have developed an our AFCL parser, which is invoked whenever a serverless application needs to be instantiated from its AFCL representation. However, only a subset of AFCL's features are really needed to achieve our goals and, at the same time, AFCL lacks of some features which are indispensable to us. Therefore, more concretely, our serverless application's representation scheme is based on a custom version of AFCL having following characteristics:
 
@@ -345,27 +356,27 @@ In order to integrate the use of aforementioned language in our framework, we ha
 	
 	\item Both \texttt{parallelFor} and \texttt{sequence} statements are neither supported and recognized by our parser since they are redundant because their effects on the workflow are achievable using existing control-flow statements.
 	
-	\item According to our custom AFCL language, in order to allow our users to exploit different implementations of a serverless function, which can be eventually hosted on multiple hosts, any \texttt{function} JSON object literal must have the \texttt{implementations} field.
+	\item According to our custom AFCL language, in order to allow our users to exploit different implementations of a serverless function, which can be eventually hosted on multiple hosts, any \texttt{function} \texttt{JSON} object literal must have the \texttt{implementations} field.
 	
 	As the name suggests, the \texttt{implementations} field is used to specify so-called concrete functions, that is the actual implementations of a serverless function. Concrete functions must be semantically and logically equivalent which means that they have to accept the same set of input data returning the same type of output data; however, they may expose different performance or cost behavior since they may be implemented with different programming languages or algorithms and they may be hosted on different FaaS platforms.
 	
-	Technically, the \texttt{implementations} field is an JSON array containing one or more JSON object having following fields:
+	Technically, the \texttt{implementations} field is an \texttt{JSON} array containing one or more \texttt{JSON} object having following fields:
 	
 	\begin{description}
-		\item[\texttt{providerName}] which, clearly, represents the FaaS provider name. Currently, only \texttt{openwhisk} and \texttt{aws} values are allowd and recognized by our software.
+		\item[\texttt{providerName}] which, clearly, represents the FaaS provider name. Currently, only \texttt{openwhisk} and \texttt{aws} values are allowed and recognized by our software.
 		
 		\item[\texttt{concreteFunctionName}] which represents the name of the serverless function hosted on the specified FaaS platform.
 		
 		\item[\texttt{host}] which contains the IP address of the FaaS platform provider. Currently, it is required only for providers using Apache OpenWhisk.  
 	\end{description}
 
-	\item According to our custom language, \texttt{function} object has to include another JSON key called \texttt{profilingPayloads} whose value is a a JSON array of JSON objects, every of which contains the JSON representation of a valid input for the function.
+	\item According to our custom language, \texttt{function} object has to include another \texttt{JSON} key called \texttt{profilingPayloads} whose value is a a \texttt{JSON} array of \texttt{JSON} objects, every of which contains the \texttt{JSON} representation of a valid input for the function.
 	
 	That statement is used to provide valid input data for the profiling process, which is needed to collect performance metrics about a given serverless function's implementation for the first run.
 	
-	\item Unlike the original one, our custom AFLC language supports the use of the \texttt{exit} statement, whose effects are quite similar to \texttt{exit} system call inside a classical application. More precisely, the \texttt{exit} statement is used to terminate the execution of a serverless application returning a JSON output to the user. 
+	\item Unlike the original one, our custom AFLC language supports the use of the \texttt{exit} statement, whose effects are quite similar to \texttt{exit} system call inside a classical application. More precisely, the \texttt{exit} statement is used to terminate the execution of a serverless application returning a \texttt{JSON} output to the user. 
 	
-	Technically, the \texttt{exit} is a JSON key like any other AFCL's key like \texttt{function}, \texttt{for}, \texttt{if}, etc. Its corresponding JSON value is a JSON object that, like any other AFCL object\cite{AFCL}, has to contain the \texttt{dataIns} AFCL statement, which is a JSON key used to specify input data\cite{AFCL}. Unlike other AFLC objects, when the \texttt{exit} statement is used, the \texttt{dataOuts} field, used to specify output data\cite{AFCL}, is not required since it is assumed equal to \texttt{dataIns}.  
+	Technically, the \texttt{exit} is a \texttt{JSON} key like any other AFCL's key like \texttt{function}, \texttt{for}, \texttt{if}, etc. Its corresponding \texttt{JSON} value is a \texttt{JSON} object that, like any other AFCL object\cite{AFCL}, has to contain the \texttt{dataIns} AFCL statement, which is a \texttt{JSON} key used to specify input data\cite{AFCL}. Unlike other AFLC objects, when the \texttt{exit} statement is used, the \texttt{dataOuts} field, used to specify output data\cite{AFCL}, is not required since it is assumed equal to \texttt{dataIns}.  
 	
 	Despite the \texttt{exit} statement can be used anywhere in a serverless workflow, due to several limitations regarding both our implementation and performance model, its use is not allowed inside a parallel block.
 	
@@ -441,32 +452,34 @@ According to our design, following operations are supported:
 	\begin{itemize}
 		\item If a new serverless application called \texttt{app1} and belonging to \texttt{genericOwner} has been successfully created, the response code will be \texttt{201} (Created).
 		
-		\item If our framework encountered an unexpected condition which prevented it from fulfilling the serverless application creation request, the response code will be \texttt{500} (Internal Server Error). Moreover, a JSON formatted data, describing occurred error, will be sent as part of the \texttt{HTTP} response message. 
+		\item If our framework encountered an unexpected condition which prevented it from fulfilling the serverless application creation request, the response code will be \texttt{500} (Internal Server Error). Moreover, a \texttt{JSON} formatted data, describing occurred error, will be sent as part of the \texttt{HTTP} response message. 
 		
 		\item If our framework detects that a serverless application called \texttt{app1} and owned by \texttt{genericOwner} already exists, the status code \texttt{409} (Conflict) will be sent.
 		
-		\item If the JSON's representation of the serverless application to create contains syntax errors, the code \texttt{400} (Bad Request) will be sent. The same status code will be sent also when a malformed URI is submitted, that is when the user \texttt{genericOwner} does not exist.
+		\item If the \texttt{JSON}'s representation of the serverless application to create contains syntax errors, the code \texttt{400} (Bad Request) will be sent. The same status code will be sent also when a malformed URI is submitted, that is when the user \texttt{genericOwner} does not exist.
 		
 	\end{itemize}
 	
 	Similarly to the previous example, a \texttt{PUT} on \QuoteIntro\texttt{/genericOwner}", is used to register a resource owner whose name is \QuoteIntro\texttt{genericOwner}". Returned status codes are similar to those used in the previous example. 
 	
+	All data about created objects are stored inside our Cassandra instance.
+	
 	\item[\texttt{GET}]  which is used both to execute serverless applications and to retrieve the state of both a resource owner and the system.
 	
-	For example, a \texttt{GET} on \QuoteIntro\texttt{/genericOwner/app1}" triggers the execution of the serverless application called \texttt{app1} and owned by \texttt{genericOwner}. The request message can include a JSON representation of the data to pass to the invoked application as input.
+	For example, a \texttt{GET} on \QuoteIntro\texttt{/genericOwner/app1}" triggers the execution of the serverless application called \texttt{app1} and owned by \texttt{genericOwner}. The request message can include a \texttt{JSON} representation of the data to pass to the invoked application as input.
 	
 	One of the following event can occurs:
 	\begin{itemize}
-		\item If no error occurred during serverless application's execution, an HTTP response message, having status code \texttt{200} (OK) with a JSON representation of the data produced as output by the invoked application, will be sent to the client. 
+		\item If no error occurred during serverless application's execution, an HTTP response message, having status code \texttt{200} (OK) with a \texttt{JSON} representation of the data produced as output by the invoked application, will be sent to the client. 
 		
 		\item If specified URI refers to an inexistent serverless application, naturally, the status code \texttt{404} (Not Found) will be sent.
 		
-		\item If any error occurred, the response code will be \texttt{500} and the response message will include a JSON formatted data describing occurred exception.
+		\item If any error occurred, the response code will be \texttt{500} and the response message will include a \texttt{JSON} formatted data describing occurred exception.
 	\end{itemize}
 
-	It is also possible to submit a \texttt{GET} on \QuoteIntro\texttt{/genericOwner}" whose message response, when no error has occurred, contains a JSON representation of the resource owner \texttt{genericOwner}. When some errors has occurred, similar status code like in previous example are adopted.
+	It is also possible to submit a \texttt{GET} on \QuoteIntro\texttt{/genericOwner}" whose message response, when no error has occurred, contains a \texttt{JSON} representation of the resource owner \texttt{genericOwner}. When some errors has occurred, similar status code like in previous example are adopted.
 	
-	Finally, submitting a \texttt{GET} on \QuoteIntro\texttt{/}", will be sent a response message containing the RSA public key which must be used for encrypting messages.
+	Finally, submitting a \texttt{GET} on \QuoteIntro\texttt{/}", will be sent a response message containing the RSA public key which must be used for message encrypting.
 	
 	\item[\texttt{DELETE}] is used to delete a resource. 
 	
@@ -477,7 +490,7 @@ According to our design, following operations are supported:
 		
 		\item \texttt{410} (Gone), if specified URI refers to an inexistent or already deleted resource owner.
 		
-		\item \texttt{500} when any error occurred. In that case, the response message will include a JSON formatted data describing occurred exception.
+		\item \texttt{500} when any error occurred. In that case, the response message will include a \texttt{JSON} formatted data describing occurred exception.
 	\end{itemize}
 
 	Naturally, is possible to submit a \texttt{DELETE} to permanently remove a serverless application. 
@@ -491,10 +504,10 @@ According to our design, following operations are supported:
 		
 		\item \texttt{404} if specified URI refers to an inexistent serverless application.
 		
-		\item \texttt{500} when any error occurred during profiling task. Like always, the response message will include a JSON formatted data describing occurred exception.
+		\item \texttt{500} when any error occurred during profiling task. Like always, the response message will include a \texttt{JSON} formatted data describing occurred exception.
 	\end{itemize}
 	
-	Conversely, when a \texttt{POST} operation is submitted on \QuoteIntro\texttt{/genericOwner}", with a JSON data including FaaS platforms credentials, the latter will be stored on our system letting it to invoke any serverless functions on FaaS platform.   
+	A \texttt{POST} operation can be submitted for FaaS platforms credentials uploading too; we will discuss about this very shortly. 
 	
 \end{description}	
 
@@ -515,6 +528,40 @@ As known, the use of communication style leads to an high degree of coupling bet
 Since all currently supported operations are factually idempotent, that is they can be performed repeatedly with the same effect as if they had been performed exactly once\cite{SDCCNUMERO2}, an \textit{at-least-once} communication's semantics is safely adopted; therefore, any client receives either a result, in which case the invoker knows that the procedure was executed at least once, or an exception. As known, aforementioned communication semantics is achieved exploiting the retransmission of request messages, which masks so-called omission failures\footnote{An omission failure occurs when a server fails to respond to a request.}. Unfortunately, our system cannot manage neither crash or arbitrary failures\footnote{Arbitrary failures, also known as \textit{Byzantine failures}, represent the most severe type of failure which happens when a server produces an output that it should never have produced, but which cannot be detected as being incorrect} \cite{SDCCNUMERO2}.
 
 Finally, we assume that all processes are connected by \textit{reliable channels}, that is no messages are lost, duplicated or corrupted; in our prototype, that feature is obviously guaranteed by the use of the \texttt{HTTP} application layer protocol, which, as known, exploits the reliable transport layer protocol \texttt{TCP}. 
+
+\section{Security issues}
+
+Unfortunately, to invoke serverless function hosted on multiple FaaS providers, our framework requires security tokens of  FaaS platforms, that is the set of authorization information required to actually use FaaS services  paid by resource owners. 
+
+According to our design, token must be provided by resource owner itself and stored inside our system; this situation exposes users to serious security issues. 
+
+Despite security problems are out of the scope of our work, we have decided to guarantee at least data confidentiality through message encryption. This is done exploiting asymmetric encryption which works by creating a key pair with a public and private key. As known, the private key is kept secret from everyone but the creator of the key, while the public key is available to everyone.
+
+The key pair is generated by our framework at start up. As already said previously, the public key can be obtained by our users submitting an \texttt{GET} method.
+
+When an user called \texttt{genericOwner} wants to upload its FaaS tokens, it have to submit a \texttt{POST} operation on \QuoteIntro\texttt{/genericOwner}", with a \texttt{JSON} object containing following fields:
+
+\begin{description}
+	\item[\texttt{ActionName}] That field is used to specifiy if the user want to insert or delete a FaaS credential. According to current implementation, only \texttt{InsertUserCredentials} and \texttt{DeleteUserCredentials} values are allowed.
+	
+	\item[\texttt{Credential}] An array of \texttt{JSON} object containing FaaS credentials, every of which is made up of following fields:
+	
+	\begin{description}
+		\item[\texttt{ProviderName}] a string value representing the FaaS provider name. Currently, only \texttt{openwhisk} and \texttt{aws} values are allowed.
+		
+		\item[\texttt{ProviderIPAddress}] which contains the IP address of the FaaS platform provider. It is valid only for providers using Apache OpenWhisk.  
+		
+		\item[\texttt{Credential}] which contains the FaaS token. 
+	\end{description}
+\end{description}
+
+Clearly, the value of \texttt{Credential} field is raw bytes of the \texttt{CSV} file containing credentials of the corresponding FaaS provider. The structure of this \texttt{CSV} file depend on the requirement of the particular FaaS provider; however, when referring to an Apache OpenWhisk based provider, this \texttt{CSV} file must have one column and two rows where the first one contains the string \texttt{auth} while the second the token string.
+
+The value of \texttt{Credential} fields inside all objects included into \texttt{Credential} array must be encrypted using the public key of our framework. 
+
+All encrypted credential data sent to our framework are then stored inside our Cassandra instance. When our orchestrator need to invoke a serverless function on a given FaaS, it decrypts credentials using its private key.
+
+Unfortunately, since data signing is not currently supported, data integrity, message authentication, and non-repudiation are not provided.
 
 \chapter{Model's formalization}
 
@@ -2321,60 +2368,13 @@ Then, our algorithm stops when:
 \newpage
 
 
-\chapter{Computational Model}
+\chapter{Implementation}
 
+????????????????????????
 
+\chapter{Experimental evaluations}
 
-
-
-We have adopted for follwoing reasons:
-
-\begin{enumerate}
-	\item We are able to guarantee access transparency. 
-	
-	In fact, hiding any difference regarding serverless compound functions representation and the way according to which the latter can be accessed, reaching an agreement on how a compound function is to be represented among different FaaS providers, we allow our users to access to any serverless function hosted on any supported provider using identical operations.
-	
-	\item We can significantly reduce the impact of vendor lock-in problem. 
-	
-	Providing an unique way to represent a serverless compound functions, if our final users wish, they will be able to use serverless functions hosted on another FaaS provider without rewriting their serverless compound functions entirely, because very little changes to FC representation code are needed to complete the switching process. 
-	
-	In that way, guaranteeing reduced switching costs, using our system is possible to mitigate provider lock-in.
-	
-\end{enumerate}
-
-\section{Abstract Function Choreography Language}
-
-To overcome these weaknesses, we introduce a new Abstract
-Function Choreography Language (AFCL), which is a novel approach
-to specify FCs at a high-level of abstraction. 
-
-
-
-From implementation point of view, our AFCL parser implementation is completely indepented from 
-garanteeing low level coupling betweeng AFLC parser and choreography implementation.
-
-
-
-\section{Pr}
-
-Data collection is a major bottleneck in machine learning and an active res
-
-
-f there are no existing datasets that can be used for training,
-then another option is to generate the datasets either manu-
-ally or automatically. For manual construction, crowdsourc-
-ing is the standard method where human workers are given
-tasks to gather the necessary bits of data that collectively
-become the generated dataset. Alternatively, automatic tech-
-niques can be used to generate synthetic datasets. Note that
-data generation can also be viewed as data augmentation if
-there is existing data where some missing parts needs to be
-filled in.
-
-\subsection{InfluxDB}
-
-
-
+????????????????????????
 
 \bibliographystyle{plainnat}
 \bibliography{Bibliography.bib}
