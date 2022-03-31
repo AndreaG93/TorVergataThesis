@@ -168,7 +168,7 @@ To be more precise, our work's contributions can be summarized as follows:
 
 	\item Owing to the complexity of the problem, since can be very difficult to find an optimal configuration for a serverless applications that guarantees the fulfillment of customer's constraints for very big applications, hence discouraging the adoption of serverless paradigm, we have built an heuristic approach based on a probabilistic technique belonging to \textit{Colony Optimization Algorithm} (ACO) family in order to provide a very rapid system response to our problem.
 	
-	Moreover, we have developed a custom ACO based algorithm, which we have called \textit{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}", in order to achieve a faster system response than existing ACO based solutions.
+	Moreover, we have developed a custom ACO based algorithm, which we have called \textit{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}, in order to achieve a faster system response than existing ACO based solutions.
 	
 	\item In order to mitigate the impact of vendor lock-in issue, primarily related to the high migration costs paid by users when they wish change FaaS provider to better meet their needs, 
 	we have developed our software providing an unique way to represent a serverless application, in such a way that very little changes to that representation code are needed to complete any switching process. 
@@ -209,113 +209,41 @@ Clearly, for the purposes of our work, our application has to have all required 
 
 As trivial as it sounds, a very important advantage of this design choice is the \textit{access transparency} provided to final users, because they can manage their applications using identical operations forwarded to our system without interact directly with FaaS providers \cite{SDCC}.
 
-Despite it is very easy to implement, the adopted centralized approach also has, obviously, several shortcomings since it is both not scalable and and network traffic inefficient, exacerbating traffic congestion problems, beside from representing a single point of failure \cite{SDCC}. 
+Despite it is very easy to implement, the adopted centralized approach also has, obviously, several shortcomings: it is not scalable, it potentially suffer of serious the traffic congestion problems and, lastly, it represents a single point of failure \cite{SDCC}. 
 
 We want to emphasize that, since they are out from our goal, most issues and pitfalls regarding the design of our system, like transparency, processes decoupling, message delivery reliability issues, scalability, traffic congestion, fault-tolerance or replication management, were out of the scope our this work.
 
 \section{System's components overview}
 
-Our framework consists of following main logical entities:
-
-\begin{description}
-	
-	\item[Orchestrator] This is the most important software component of our system whose aim to allow the composition of serverless functions in order to properly execute applications, defining a stateful serverless workflows. 
-	
-	As already said, the orchestrator is needed to chain together all functions of the application, triggering them in the correct order according to both the business logic and, clearly, the user inputs.
-	
-	More concretely, the orchestrator is invoked when the execution of any serverless application is required by an user, passing a JSON input which represent, obviously, the input data for the invoked application; then, when the execution is ended, it will be generated a JSON output which will be sent to the client.
-	
-	Each function's invocation of any serverless workflows is performed synchronously, which means that the orchestrator waits for the execution of the orchestrated functions to complete before to attempting to invoke the next one. Unfortunately, at the current state of our design, if any error occurred during the execution of any orchestrated functions, the entire application's execution will be aborted. When the execution of any orchestrated function ends, the orchestrator retrieves log information, mostly regarding performances and billed costs, from live metric streams from FaaS provider logs, which are forwarder to our logging subsystem. 
-	
-	Concerning workflow's state management, state parameters are passed between orchestrated functions, always passing through the orchestrator. Currently, there is no limit on the size of state parameter, however is expected that overheads related to state passing can significantly grow with increasing parameter sizes.
-	
-	Actually, our orchestrator subsystem supports \textit{function chaining} and \textit{nesting} exploiting several control-flow structures in order to allow:
-	
-	\begin{itemize}
-		\item \textit{functions branching}, through the support for \texttt{if} and \texttt{switch} statements.
-		\item \textit{functions looping}, according to which the use of both \texttt{for} and \texttt{while} statements are supported.
-	\end{itemize}
-	
-	Moreover, the orchestrator is capable to manage \textit{parallel executions}. It is also possible to \textit{abort} current application's execution exploiting the \texttt{exit} statement.
-		
-	Today, all serverless functions orchestration services provided by main public FaaS platforms providers, like \textit{IBM Composer}\cite{IBMComposer}, \textit{Amazon Step Functions}\cite{StepFunctions}, and \textit{Azure Durable Functions}\cite{DurableFunctions}, enforce developers to hardcode the specific function implementation to use inside a serverless workflow \cite{AFCL}; this fact prevents the possibility to select a specific function implementation for an optimal execution in order to meet user specified constraints. Similarly, since each FaaS platforms providers does not support the possibility to invoke a serverless function hosted on different FaaS platform, can be difficult to satisfy user specified QoS levels under some conditions, like high traffic situations towards a specific FaaS platform or resources shortage for functions executions.
-	
-	To overcome aforementioned limitation, our orchestrator is able to select a specific implementation of a functions inside any serverless workflow; concretely, it can run a function that implements the Pollard's rho algorithm for integer factorization, written in Python, instead of a function implementing the trial division based algorithm, written in JAVA. Moreover, it can invoke functions hosted on multiple FaaS platforms, which can very useful in some situations.
-	
-	However, only our QoS-aware model-bases optimizer has the responsibility to determine which implementation, for each function belonging to an application, must be invoked in order to meet QoS level constraints. To be more precise, during function orchestration, the orchestrator limits itself to invoke function implementations according to the so-called \textit{choreography configuration}, or simply \textit{configuration}, produced by the optimizer. The choreography configuration tells to the orchestrator which implementation and configuration must be used for each function in order to meet user specified QoS level constraints; we will talk more in detail about this shortly.
-	
-	\item[QoS-aware model-bases optimizer] As already said, the optimizer has the responsibility to identify, for each serverless function belonging to an application, which configuration and implementation must be used in order to satisfy user specified constraints.
-	
-	The optimizer is invoked every time a user requests the invocation of a serverless applications; then, only one of the following event can occurs:
-	
-	\begin{itemize}
-		\item if the user does not specify any QoS level constraints, the optimizer will produce the choreography configuration by select configurations and implementations randomly.
-		
-		\item if QoS level constraints are specified, the optimizer firstly  retrieving, interacting mostly with our logging subsytem, all needed metrics to perform its task, such as observed average response times and charged cost for each implementation and configuration for every function inside the invoked applications; moreover, the optimizer will also checks both the status for each FaaS platforms and the actual users requests traffics on the system. We will precise what metrics are effectively used by the optimizer in next chapter.
-		
-		When all needed data are collected, the optimizer provides a suitable configuration of each serverless function within an application, by solving an optimization problem, derived from our performance model. 
-		
-	\end{itemize}
-	
-	When a configuration is finally produced, the orchestrator will be subsequently invoked with it to actually perform the execution of the requested application.
-	
-\end{description} 
-	
-\subsubsection{Logging subsystem}
-
-
-In order that our optimizer performs its tasks, a live overview of the state of both all FaaS platforms executions environment and the system is, obviously, required, including a dataset containing all historical information regarding serverless function performances under any possible configuration (in term of RAM memory size values).
-
-As known, anytime a serverless function belonging to a given application is invoked by the orchestrator, the FaaS platform provider, which hosts aforementioned function, produce a log containing several kind of information as:
+This section details all software components of our system, which consists of following main logical entities:
 
 \begin{itemize}
-	\item Time spent to complete the serverless function's execution.
-	\item Charged cost.
+	\item A Logging subsystem.
+	\item An Orchestrator.
+	\item A QoS-aware model-bases optimizer.
+	\item An Custom AFCL Parser
+\end{itemize}
+
+We will give a very brief overview of how these entities works while all details about the model on which they are based will be given in next chapter.
+
+\subsubsection{Logging subsystem}
+
+In order to achieve our goal, a live overview of the state of both all FaaS platforms executions environment and system's traffic is required.
+
+More concretely, our framework builds and continuously updates a dataset containing all historical information regarding serverless function performances under any possible configuration.
+
+After the invocation of any serverless function, the corresponding FaaS platform provider produces a log containing several kind of information as:   
+
+\begin{itemize}
+	\item The time spent to complete the serverless function's execution.
+	\item The charged cost.
 	\item RAM memory size value.
 	\item The occurrence, or not, of a cold start.
 \end{itemize}
 
-In order to build our aforementioned dataset, all FaaS produced logs are continuously retrieved, parsed and stored by the logging subsystem during the entire life-cycle of our system.  
+After every serverless function execution completion, FaaS produced logs are parsed and stored by the logging subsystem into an instance of InfluxDB, an open-source \textit{time series database} (TSDB) \cite{influx}. Believing that our domain requires the capability to handle thousands of parallel inputs streams, to manage time-indexed data, horizontal scaling and a fast access to stored data, the use of a TSDB was been preferred respect to conventional \textit{Relational DataBase Management System} (RDBMS).  
 
-FaaS platforms logs data \textit{can}\footnote{Strictly speaking they aren't.} be considered as time series data, that is data points indexed in time order. Each data point following attributes:
-
-
-
-
-
- according to which each data point  the time of each instance, containing the attribute value regarding power consumption, is given by a timestamp attribute; thus our data-set represents a sequence of discrete-
-time data 
-
-
-
-From an architectural point of view, the logging subsystem is made up of three main logical components:
-
-\begin{description}
-	
-	\item An 
-	
-	
-\end{description}
-
-
-
-As the Logging Framework receives logs from each of
-its sources, it computes running metrics such as total con-
-currency of specic functions and chains, number of drops
-observed in the serverless framework, and inter-arrival times
-of function chains tracked by the Producer. These metrics
-are available to be read at any time by the Policy Framework
-and can be exported to long-term storage to be available for
-post-hoc analysis.
-
-
-A very important characteristic of our data-set it that it contains time series data, where the time of each instance, containing the attribute value regarding power consumption, is given by a timestamp attribute; thus our data-set represents a sequence of discrete-
-time data [8]. All data are listed in time order.
-
-
-InfluxDB is a TSDB that stores \textit{points}, that is single values indexed by time. 
-
-Using InfluxDB terminology, each point is uniquely identified by four components:
+The data contained in FaaS platforms logs \textit{can}\footnote{Strictly speaking they aren't. FaaS platforms use an activation ID to index their logs since two or more serverless functions can start or terminate at the same time. However, according to our design, it is meaningless.} be considered as time series data, that is data points indexed in time order. Using InfluxDB terminology, each point is uniquely identified by four components:
 
 \begin{itemize}
 	\item A timestamp.
@@ -324,27 +252,138 @@ Using InfluxDB terminology, each point is uniquely identified by four components
 	
 	\item One or more fields, that is scalars which represent the value recorded by that point.
 	
-	\item A measurement, which acts as a container used to group together all related points.
+	\item A \textit{measurement}, which acts as a container used to group together all related points.
 	
 \end{itemize}
 
-Is very important to note that  
+According to the InfluxDB's design, the main difference between tags and fields is that the former are indexed, therefore searching by tag is quicker than searching by field; in fact, when a search by field is performed, a scan of entire value list - point after point - is required, making that operation slower on large datasets \cite{influx}.
 
-In our implementation, data points 
+To groups together all points related to all serverless functions owned by an resource owner we have exploit the InfluxDB's concept called \textit{bucket}. A bucket is equivalent to a directory where time series data can be stored. Moreover, differently form a directory, a bucket has a retention period according to which InfluxDB drops all points with timestamps older than the bucket’s retention period; however, our prototype do not exploit this feature, therefore buckets retention periods are disable by default.
 
-A bucket is a named location where time series data is stored.
+According to our design, there is a bucket for each resource owner and they share the same name.
 
+All data points, produced by a common FaaS platform provider, are grouped in a measurement, whose name is the same of the corresponding FaaS platform. Then following tags are used: 
 
-In fact, besides parameters configuration, serverless functions performance is affected by several other factors like traffic, \textit{cold starts} and network conditions. 
+\begin{description}
+	\item[\texttt{FunctionName}] to group together all point relating an unique serveless function. 
+	\item[\texttt{MemorySize}] to perform a quick search regarding data points having a given memory size.
+	\item[\texttt{StartType}] to distinguish if data was been collected after a warm or a cold start.
+\end{description}
+
+Actually, data points are stored into our InfluxDB instance using a simple first-come-first-served approach, therefore data point's index coincides with the actual time on our system framework. 
+
+With very few exceptions, all iterations involving our logging subsystem is done asynchronously, without blocking current tasks eventually performed by our system.  
+
+\subsubsection{Orchestrator}
+	
+The orchestrator, or coordinator, is probably the most important software component of our system, whose aim is to allow the composition of serverless functions in order to properly execute applications.
+
+As already said, the orchestrator is needed to chain together all functions of the application, triggering them in the correct order according to both the business logic and, clearly, the user inputs.
+
+More concretely, the orchestrator is invoked anytime a user requests the execution of any serverless application. It mandatory requires a JSON input, eventually empty, representing the input data for the invoked application; when application's execution is ended, a JSON object, representing the application's output, will be sent to the client.
+
+Each function's invocation of any serverless workflows is performed synchronously, which means that the orchestrator waits for the execution of the orchestrated functions to complete before to attempting to invoke the next one. Unfortunately, at the current state of our design, if any error occurred during the execution of any orchestrated functions, the entire application's execution will be aborted. When the execution of any orchestrated function ends, the orchestrator retrieves log information, mostly regarding performances and billed costs, from live metric streams from FaaS provider logs, which are forwarder, as already said asynchronously, to our logging subsystem. 
+
+Concerning workflow's state management, state parameters are passed between orchestrated functions, always passing through the orchestrator. Currently, there is no limit on the size of state parameter, however is expected that overheads related to state passing can significantly grow with increasing parameter sizes.
+
+Currently, our orchestrator subsystem supports \textit{function chaining} and \textit{nesting} exploiting several control-flow structures in order to allow:
+
+\begin{itemize}
+	\item \textit{functions branching}, through the support for some conditional control-flow statements like \texttt{if} and \texttt{switch}.
+
+	\item \textit{functions looping}, providing the support for both \texttt{for} and \texttt{while} loop control-flow statements.
+\end{itemize}
+
+Moreover, the orchestrator supports parallel execution of two or more functions and the possibility to abort current application's execution.
+	
+Today, all serverless functions orchestration services provided by main public FaaS platforms providers, like \textit{IBM Composer}\cite{IBMComposer}, \textit{Amazon Step Functions}\cite{StepFunctions}, and \textit{Azure Durable Functions}\cite{DurableFunctions}, enforce developers to hardcode the specific function implementation to use inside a serverless workflow \cite{AFCL}; this fact prevents the possibility to select a specific function implementation for an optimal execution in order to meet user specified constraints. Similarly, since each FaaS platforms providers does not support the possibility to invoke a serverless function hosted on different FaaS platform, can be difficult to satisfy user specified QoS levels under some conditions, like high traffic situations towards a specific FaaS platform or resources shortage for functions executions.
+
+To overcome aforementioned limitation, our orchestrator is able to select a specific implementation of a functions inside any serverless workflow; for example, it can run a function that implements the Pollard's rho algorithm for integer factorization, written in Python, instead of a function implementing the trial division based algorithm, written in JAVA. Moreover, aforementioned implementation can be hosted on multiple FaaS platforms.
+
+However, only our QoS-aware model-bases optimizer has the responsibility to determine which implementation, for each function belonging to an application, must be invoked in order to meet QoS level constraints. To be more precise, during function orchestration, the orchestrator limits itself to invoke function implementations according to the so-called \textit{choreography configuration}, or simply \textit{configuration}. The choreography configuration, produced by our optimizer, is a sort of table which tells to the orchestrator which implementation and configuration must be used for each function in order to meet user specified QoS level constraints; we will talk more in detail about this shortly.
 	
 	
+\subsubsection{QoS-aware model-bases optimizer}
 	
+As already said, the optimizer has the responsibility to determine which configuration and implementation must be used during the execution of a given serverless application in order to satisfy user specified constraints.
+
+The optimizer is invoked every time a user requests the invocation of a serverless applications; then, only one of the following event can occurs:
+
+\begin{itemize}
+	\item if the user does not specify any QoS level constraints, the optimizer will produce the choreography configuration by select configurations and implementations randomly.
+	
+	\item if QoS level constraints are specified, the optimizer performs following activities:
+	
+	\begin{itemize}
+		\item synchronously interacting with the logging subsystem, it retrieves all needed performance metrics referring to each implementation and configuration regarding all serverless functions inside the invoked application. Aforementioned metrics includes observed average response times and charged cost when both cold and warm starts are occurred. Once the data is obtained , they are processed according to our performance model, which we will explain in next chapter.
+		
+		However, perform all this is generally expensive due to several reasons like the huge amount of data, expensive computation and network delay during data transmission between system components. In general, in a real situation, thousands data point must be collected and analyzed and, moreover, it may happen that the InfluxDB instance, from which the data is obtained, can be connected to our framework through a lower-bandwidth and multi-hop connection. 
+		
+		Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from InfluxDB, then it stores locally processed data. Data synchronization is performed periodically \footnote{By default every 15 minutes}.
+		
+		To avoid to reanalyze data subsequently in case of crash failure of the system, processed data are stored inside a Apache Cassandra instance.
+		
+		\item The status of all FaaS platforms where serverless functions will be executed is checked, including average arrival rate regarding user requests. All these data are used to compute cold/warm start probabilities in order to built the best configuration to meet QoS levels; in next chapter we will give more detail about it. 
+		
+		\item An optimization problem, derived from our performance model, is resolved producing a choreography configuration and the orchestrator subsequently invoked. All details about both our performance model and the optimization problem will be discussed in next chapter.
+			
+	\end{itemize}
+
+\end{itemize}
+
+
+\subsubsection{Custom AFCL Parser}
+
+As already said in previous chapter, rather than to require a separate implementation for each FaaS platform, our framework uses an unique serverless application's representation scheme using which very little modification are needed to switch form a provider to another, partially overcoming portability limitations and vendor lock-in issues.
+
+Aforementioned representation scheme is based on an existing language called \textit{Abstract Function Choreography Language} (AFCL), which is a feature-rich markup language developed to facilitate the creation of serverless workflows encoded in YAML or JSON. AFCL supports event-based, synchronous and asynchronous invocation of functions and it includes several control-flow constructs in order to construct iterations, branch, sequence or parallel executions inside a serverless workflow \cite{AFCL}.
+
+In order to integrate the use of aforementioned language in our framework, we have developed an our AFCL parser, which is invoked whenever a serverless application needs to be instantiated from its AFCL representation. However, only a subset of AFCL's features are really needed to achieve our goals and, at the same time, AFCL lacks of some features which are indispensable to us. Therefore, more concretely, our serverless application's representation scheme is based on a custom version of AFCL having following characteristics:
+
+\begin{itemize}
+	\item Unlike the original one, only synchronous invocation are supported.
+	
+	\item Both \texttt{parallelFor} and \texttt{sequence} statements are neither supported and recognized by our parser since they are redundant because their effects on the workflow are achievable using existing control-flow statements.
+	
+	\item According to our custom AFCL language, in order to allow our users to exploit different implementations of a serverless function, which can be eventually hosted on multiple hosts, any \texttt{function} JSON object literal must have the \texttt{implementations} field.
+	
+	As the name suggests, the \texttt{implementations} field is used to specify so-called concrete functions, that is the actual implementations of a serverless function. Concrete functions must be semantically and logically equivalent which means that they have to accept the same set of input data returning the same type of output data; however, they may expose different performance or cost behavior since they may be implemented with different programming languages or algorithms and they may be hosted on different FaaS platforms.
+	
+	Technically, the \texttt{implementations} field is an JSON array containing one or more JSON object having following fields:
+	
+	\begin{description}
+		\item[\texttt{providerName}] which, clearly, represents the FaaS provider name. Currently, only \texttt{openwhisk} and \texttt{aws} values are allowd and recognized by our software.
+		
+		\item[\texttt{concreteFunctionName}] which represents the name of the serverless function hosted on the specified FaaS platform.
+		
+		\item[\texttt{host}] which contains the IP address of the FaaS platform provider. Currently, it is required only for providers using Apache OpenWhisk.  
+	\end{description}
+
+	\item According to our custom language, \texttt{function} object has to include another JSON key called \texttt{profilingPayloads} whose value is a a JSON array of JSON objects, every of which contains the JSON representation of a valid input for the function.
+	
+	That statement is used to provide valid input data for the profiling process, which is needed to collect performance metrics about a given serverless function's implementation for the first run.
+	
+	\item Unlike the original one, our custom AFLC language supports the use of the \texttt{exit} statement, whose effects are quite similar to \texttt{exit} system call inside a classical application. More precisely, the \texttt{exit} statement is used to terminate the execution of a serverless application returning a JSON output to the user. 
+	
+	Technically, the \texttt{exit} is a JSON key like any other AFCL's key like \texttt{function}, \texttt{for}, \texttt{if}, etc. Its corresponding JSON value is a JSON object that, like any other AFCL object\cite{AFCL}, has to contain the \texttt{dataIns} AFCL statement, which is a JSON key used to specify input data\cite{AFCL}. Unlike other AFLC objects, when the \texttt{exit} statement is used, the \texttt{dataOuts} field, used to specify output data\cite{AFCL}, is not required since it is assumed equal to \texttt{dataIns}.  
+	
+	Despite the \texttt{exit} statement can be used anywhere in a serverless workflow, due to several limitations regarding both our implementation and performance model, its use is not allowed inside a parallel block.
+	
+\end{itemize}
+
+
+
+
+
+
+
+
 	
 
 	
 %	\item[Profiler]  In the performance profiling phase, the function
 	
-%	\item[Parser] This is the component
+
 	
 
 
@@ -397,7 +436,7 @@ According to our design, following operations are supported:
 	
 	\item[\texttt{PUT}] which is generally used to create a new resource, like a new serverless application or new user. 
 		
-	More concretely, as an example, a \texttt{PUT} on \QuoteIntro\texttt{/genericOwner/app1}", with the  \texttt{JSON} representation of the serverless application to create, returns an \texttt{HTTP} response message having one of the following status codes:
+	More concretely, as an example, a \texttt{PUT} on \QuoteIntro\texttt{/genericOwner/app1}", with the \texttt{JSON} representation of the serverless application to create, returns an \texttt{HTTP} response message having one of the following status codes:
 	
 	\begin{itemize}
 		\item If a new serverless application called \texttt{app1} and belonging to \texttt{genericOwner} has been successfully created, the response code will be \texttt{201} (Created).
@@ -406,7 +445,7 @@ According to our design, following operations are supported:
 		
 		\item If our framework detects that a serverless application called \texttt{app1} and owned by \texttt{genericOwner} already exists, the status code \texttt{409} (Conflict) will be sent.
 		
-		\item If the JSON's representation of the serverless application to create contains syntax errors, the code \texttt{400} (Bad Request) will be sent. That status code, will be sent also when a malformed URI is submitted, that is when the user \texttt{genericOwner} does not exist.
+		\item If the JSON's representation of the serverless application to create contains syntax errors, the code \texttt{400} (Bad Request) will be sent. The same status code will be sent also when a malformed URI is submitted, that is when the user \texttt{genericOwner} does not exist.
 		
 	\end{itemize}
 	
