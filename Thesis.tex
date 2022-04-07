@@ -101,6 +101,87 @@ We define a serverless application as a stateless and event-driven software syst
 
 Nowadays, there are many public cloud platforms which provide serverless computing services to deploy and execute serverless functions, including AWS Lambda \cite{AWSLambda}, IBM Cloud Function \cite{IBMCloudFunctions}, Microsoft Azure Functions \cite{AzureFunctions} and Google Cloud Functions \cite{GoogleCloud}. Moreover, some providers have even introduced FaaS platforms acting as coordinator to build serverless application; AWS Step Functions is an example which allows to combine multiple Lambda functions, including other serverless services offered by AWS, like the storage service Amazon S3, into an application. 
 
+\section{Function instances}
+
+According to serverless computing paradigm, computation is done inside isolated environments, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes, called \textit{function instances}.
+
+As known, these instances can be considered as lightweight servers which management, provisioning and the fulfillment of any other infrastructure issues are the responsibilities of serverless computing platform provider.
+
+We can identify three states for each function instance:
+
+\begin{description}
+	
+	\item[Initialization State] which happens when the infrastructure is spinning up new function instance, which is needed to handle incoming requests. 
+	
+	A function instance will remain in the initializing state until it is able to handle incoming requests. According to FaaS policies, the time spent in this state is not billed. 
+	
+	\item[Idle State] After the fulfillment of all initialization tasks or when the processing of a previously received serverless function invocation request is over, the serverless platform keeps a function instances in idle state.
+	
+	In that way, the FaaS provider keep aforementioned function instance able to handle future invocation request faster, since no initialization task is needed to be performed.
+	
+	However, FaaS platform provider keeps a function instance in idle state for a limited amount of time; after that, all resources used to execute the function instance will be deallocated.
+	
+	The user is not charged for an instance that is in the idle state.
+	
+	\item[Running State] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
+	
+	Clearly, the time spent in the running state is billed by the provider.
+	
+\end{description}
+
+In order to be clear, we will use the expression \textit{warm pool} when referring to the set of all function instances whose state is either idle or running state.
+
+\section{FaaS auto-scaling technique}
+
+According to serverless computing paradigm, the FaaS platform provider has the responsibility to manage the amount of function instances required to allow users to perform their computation.
+
+In this dissertation, we assume that all FaaS providers adopt an auto-scaling technique called \textit{scale-per-request}.
+
+If such technique is adopted, when a request comes in, only one of the following events can occur:
+
+\begin{description}
+	
+	\item[Warm start] if there is at least one function instance in idle state, the FaaS platform reuses it to serve the incoming request without launching a new one.
+	
+	\item[Cold start] If the warm pool is empty or busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, FaaS platform will trigger the launching of a new function instance, which will be added to the warm pool.
+	
+	As said previously, from the FaaS provider point of view, this operation requires the start of a virtualized and isolated execution environment (i.e. virtual machine, container and so on) where user code will be run; in any case, regardless of the virtualization solution adopted, a cold start introduces a very important overhead to the response time experienced by users. 
+	
+	Therefore, due to initialization tasks performed to spin up a new function instance, cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application responsiveness and user experience.
+\end{description} 
+
+As long as, for a given instance, requests are received within an interval time less than an \textit{expiration threshold}, the function instance will be not deallocated.
+
+At the same time, for each instance, at any moment in time, if a request has not been received in the last \textit{expiration threshold} units of time, it will be expired and thus terminated by the platform, and the consumed resources will be released. 
+
+This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions. 
+
+\section{FaaS request routing}
+
+In this dissertation, we assume that, in order to minimize the number of
+function instances that are kept warm and thus to free up system resources, the FaaS routes requests giving priority to instances which they have been idle for less time.
+
+In other words the FaaS request routing gives low priority to function instances being in idle state for long time, increasing thus the chances of resource deallocation referring aforementioned instances.
+
+\section{Concurrency limit}
+
+Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
+
+Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
+
+Informally speaking, there are two type of concurrency limit models:
+
+\begin{description}
+	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
+	
+	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
+	
+	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
+	
+	This approach is adopted by Google Cloud Functions \footnote{Despite there is no explicitly mentioned global concurrency limit, previous studies have observed a kind of global concurrency limit varying between $1000$ and $2000$.}
+	
+\end{description}
+
 Although serverless computing paradigm makes cloud application developing easier guaranteeing a cost-effective solution, there are several obstacles that prevent FaaS platforms to support more general workloads, especially those that must meet strict guarantees.
 
 Scientific literature have already reported a huge amount of limitations preventing its worldwide adoption, some of which are:
@@ -183,7 +264,11 @@ To be more precise, our contributions can be summarized as follows:
 	
 \end{itemize}
 
-\chapter{Architecture}
+\section{Organization}
+
+The remainder of this dissertation is organized as follows. In Chapter \ref{chapterArch} we will present an overview of our framework, outlining its architecture and the main tasks of its components. In Chapter \ref{chapterModel} we will describe all mathematical details about our QoS-aware analytical model, included all equations and algorithms used by our framework to compute average end-to-end response time and cost of any serverless workflow. Based on aforementioned analytical model, in Chapter \ref{chapterOptimizationProble} we will present two different formulations of the optimization problem that must be solved to determine a suitable configuration in order to meet user specified constraints. Moreover we will present a heuristic algorithm to solve one of the aforementioned formulation. In Chapter \ref{chapterExperimental} we will present the experimental evaluation of the aforementioned models and algorithms. \textbf{In Chapter ?? we will discuss related works}. Finally, Chapter \ref{chapterConclusion} discusses and concludes our work, presenting directions for future work.
+
+\chapter{System Architecture and Implementation}\label{chapterArch}
 
 Our software is a standalone orchestrator, QoS-aware model-based optimizer and profiler for serverless applications, whose functions can be hosted on multiple FaaS platforms.
 
@@ -541,7 +626,7 @@ All encrypted credential data sent to our framework are then stored inside our C
 
 Unfortunately, since data signing is not currently supported, data integrity, message authentication, and non-repudiation are not provided.
 
-\chapter{System Model}
+\chapter{System Model}\label{chapterModel}
 
 \section{SLA's definition}
 
@@ -1330,93 +1415,12 @@ At any time $t$, following is true that:
 
 
 
-\section{Concrete function's performance evaluation}
+\section{Concrete function performance evaluation}
 
-Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete serverless, in terms of average values regarding response time and charged costs.
+Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete functions, in terms of average values regarding response time and charged costs.
 
 However, to develop both an analytical way and a software framework capable to evaluate concrete serverless function performance, we first need to understand
 how they are managed by FaaS platforms.
-
-\subsection{Function instances}
-
-According to serverless computing paradigm, computation is done inside isolated environments, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes, called \textit{function instances}.
-
-As known, these instances can be considered as lightweight servers which management, provisioning and the fulfillment of any other infrastructure issues are the responsibilities of serverless computing platform provider.
-
-We can identify three states for each function instance:
-
-\begin{description}
-	
-	\item[Initialization State] which happens when the infrastructure is spinning up new function instance, which is needed to handle incoming requests. 
-	
-	A function instance will remain in the initializing state until it is able to handle incoming requests. According to FaaS policies, the time spent in this state is not billed. 
-	
-	\item[Idle State] After the fulfillment of all initialization tasks or when the processing of a previously received serverless function invocation request is over, the serverless platform keeps a function instances in idle state.
-	
-	In that way, the FaaS provider keep aforementioned function instance able to handle future invocation request faster, since no initialization task is needed to be performed.
-	
-	However, FaaS platform provider keeps a function instance in idle state for a limited amount of time; after that, all resources used to execute the function instance will be deallocated.
-	
-	The user is not charged for an instance that is in the idle state.
-	
-	\item[Running State] When an invocation request is submitted to an function instance, the latter goes into the running state, according to which aforementioned request is parsed and processed.
-	
-	Clearly, the time spent in the running state is billed by the provider.
-	
-\end{description}
-
-In order to be clear, we will use the expression \textit{warm pool} when referring to the set of all function instances whose state is either idle or running state.
-
-\subsection{FaaS auto-scaling technique}
-
-According to serverless computing paradigm, the FaaS platform provider has the responsibility to manage the amount of function instances required to allow users to perform their computation.
-
-In this dissertation, we assume that all FaaS providers adopt an auto-scaling technique called \textit{scale-per-request}.
-
-If such technique is adopted, when a request comes in, only one of the following events can occur:
-
-\begin{description}
-	
-	\item[Warm start] if there is at least one function instance in idle state, the FaaS platform reuses it to serve the incoming request without launching a new one.
-	
-	\item[Cold start] If the warm pool is empty or busy, that is there are no serverless function instances in idle state able to serve an newly incoming request, FaaS platform will trigger the launching of a new function instance, which will be added to the warm pool.
-	
-	As said previously, from the FaaS provider point of view, this operation requires the start of a virtualized and isolated execution environment (i.e. virtual machine, container and so on) where user code will be run; in any case, regardless of the virtualization solution adopted, a cold start introduces a very important overhead to the response time experienced by users. 
-	
-	Therefore, due to initialization tasks performed to spin up a new function instance, cold starts could be orders of magnitude longer than warm starts for some applications; therefore, too many cold starts could impact the application’s responsiveness and user experience.
-\end{description} 
-
-As long as, for a given instance, requests are received within an interval time less than an \textit{expiration threshold}, the function instance will be not deallocated.
-
-At the same time, for each instance, at any moment in time, if a request has not been received in the last \textit{expiration threshold} units of time, it will be expired and thus terminated by the platform, and the consumed resources will be released. 
-
-This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions. 
-
-\subsection{FaaS request routing}
-
-In this dissertation, we assume that, in order to minimize the number of
-function instances that are kept warm and thus to free up system resources, the FaaS routes requests giving priority to instances which they have been idle for less time.
-
-In other words the FaaS request routeing give low priority to function instances being in idle state for long time, increasing thus the chances of resource deallocation referring aforementioned instances.
-
-\subsection{Concurrency limit}
-
-Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
-
-Clearly, this kind of limitation is needed to assure enough resources for all users using the services provided by FaaS platform. However, despite all FaaS providers impose aforementioned limitation, these restriction are applied differently.
-
-Informally speaking, there are two type of concurrency limit models:
-
-\begin{description}
-	\item[Global (Per-Account) Concurrency Model] according to which invocation threshold is shared by all serverless functions belonging to a given resource owner. 
-	
-	For example, in $2022$, this approach is adopted both by AWS Lambda and IBM Cloud Functions, which do not allow more than $1000$ serverless concrete function in running state at the same time.
-	
-	\item[Local (Per-Function) Concurrency Model] where, opposed to global concurrency model, any invocation threshold is applied only on individual concrete functions. 
-	
-	This approach is adopted by Google Cloud Functions \footnote{Despite there is no explicitly mentioned global concurrency limit, previous studies have observed a kind of global concurrency limit varying between $1000$ and $2000$.}
-	
-\end{description}
 
 \subsection{FaaS platform modeling}
 
@@ -1722,7 +1726,7 @@ For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, l
 	\end{cases}\,.
 \end{equation}
 
-\section{Executable function's performance evaluation}
+\section{Executable function performance evaluation}
 
 In this section, we will describe how to evaluate the performance of any executable serverless, in terms of average values regarding response time and charged costs, when it is executed. 
 
@@ -1827,7 +1831,7 @@ where:
 
 
 
-\section{Choreography's performance evaluation}
+\section{Choreography performance evaluation}
 
 In this section, we will briefly explore the analytical methodology to compute the average end-to-end response time and charged cost of generic serverless applications, having branches, loops or even workflow's portions executed in parallel, when a choreography configuration is given.
 
@@ -1911,7 +1915,7 @@ where:
 	\item $RT_{\textbf{max}}(t)$ ($RT_{\textbf{min}}(t)$) and $C_{\textbf{max}}(t)$ ($C_{\textbf{min}}(t)$) denote, respectively, the maximum (minimum) value of the response time and billed cost at time $t$, observed using all possible configuration in $\textbf{X}_{\mathcal{C}}$.
 \end{itemize}
 
-\chapter{Optimization Problem Formulations}
+\chapter{Optimization Problem Formulations}\label{chapterOptimizationProble}
 
 To achieve our goal consisting in to find the best choreography configuration capable to guarantee QoS constraints imposed by an user, we have to solve an optimization problem, which we have formulated in two very different manners, where:
 
@@ -1922,7 +1926,7 @@ To achieve our goal consisting in to find the best choreography configuration ca
 
 In this section, we will describe and analyze both approach, despite only for the second one we have developed and implemented an heuristic approach capable to solve it in a faster way respect to exact algorithms. 
 
-\subsection{Multidimensional Knapsack Problem Formulation}
+\section{Multidimensional Knapsack Problem Formulation}
 
 A very naive formulation to our problem can be expressed in term of the \textit{Multidimensional Knapsack Problem} (MKP), a well-studied, strongly NP-hard combinatorial optimization problem occurring in many different applications, whose goal is to choose an item, in our case a choreography configuration, having maximum total profit; selected item  must, however, not exceed resource capacities, which are called as knapsack constraints.
 
@@ -1951,7 +1955,7 @@ For example, suppose to have a serverless choreography $\mathcal{C}$ made up of 
 
 Even if we had a way of generating all configurations, that is all columns of our problem, due to its complexity, any attempt to find the optimal solution rapidly will be an illusion. Moreover, it will be very likely that any computer runs out his memory.
 
-\subsection{Multi-dimensional Multi-choice Knapsack Problem Formulation}
+\section{Multi-dimensional Multi-choice Knapsack Problem Formulation}
 
 To avoid the enumeration of all possible choreography configuration, we have decided to use another kind of formulation, which is base on the \textit{Multidimensional Multiple-choice Knapsack Problem} (MMKP), a variant of the previous one. 
 
@@ -2029,7 +2033,7 @@ To simplify our notations, from now, we will use the notation $o_{i_j}$ to repre
 
 A solution for our MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldots o_{n} \right\}$ representing, obliviously, a choreography configuration.
 
-\subsubsection{The heuristic approach based on ACO}
+\section{The heuristic approach based on ACO}
 
 According to our experiments, the MMKP formulation performs notably better than MKP one, producing the exact solution quicker and using less memory; this is due both to the lack of need of choreography's configurations enumeration, which require a lot of memory and time, and to a minor number of columns, despite the MMKP's formulation has more constraints respect to the MKP one.
 
@@ -2049,7 +2053,7 @@ Any ACO algorithm is based on a set of computational agent, called \textit{artif
 
 In very simple terms, each ant incrementally constructs the partial solution to the problem and, after evaluating the find solution, it modifies the pheromone trail on the components used in its solution; that pheromone information will be use by future ants to find a better solutions to the problem instance. In fact, by increasing or decreasing the level of pheromone trails, ants distinguish "\textit{good}" from "\textit{bad}" solutions. In other words, pheromone trails represent the way according to which each ants communicate in order to find the best solution.
  
-\subsubsection{Solution components graph}
+\subsection{Solution components graph}
 
 To solve MMKPs with ACO, we have to define how pheromone trails are laid by artificial ants, explaining how they follow them when constructing new partial solutions. In other words we need to decide which components of the constructed solutions should be rewarded, and how to exploit these rewards when constructing new solutions.
 
@@ -2091,7 +2095,7 @@ is called solution components graph, where:
 	trails while pheromone trails are set to $w_{\textbf{max}}$ at the beginning of the search.
 \end{itemize}
 
-\subsubsection{Algorithm description}
+\subsection{Algorithm description}
 
 ACO algorithms are conceptually very simple and they follow a specific scheme outlined in algorithm \ref{ACO}.
 
@@ -2107,7 +2111,7 @@ In general, after the initialization of the pheromone trails and some parameters
 	\caption{Algorithmic skeleton for ACO algorithms}
 \end{algorithm}
 
-\subsubsection{Transition Probabilities}
+\subsection{Transition Probabilities}
 
 Although firstly each ants selects randomly a object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depend on several parameters:
 
@@ -2139,7 +2143,7 @@ Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represent
 
 Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in O$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
 
-\subsubsection{Ant's solution construction algorithm}
+\subsection{Ant's solution construction algorithm}
 
 A complete description of the algorithm performed by ants to build partial solutions is reported in algorithm \ref{antsolutiongen}
 
@@ -2246,7 +2250,7 @@ We can now define the heuristic factor formula as follows:
 \end{equation}
 
 
-\subsubsection{Local Search}
+\subsection{Local Search}
 
 According to \cite{}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current best solution.
 
@@ -2290,7 +2294,7 @@ To be precise, we have adopted a \textit{random local search} algorithm, which r
 	\Return $\textbf{S}_k$
 \end{algorithm}
 
-\subsubsection{Pheromone Trail Update}
+\subsection{Pheromone Trail Update}
 
 Let $m \in \N \SetMinusZero$ the amount of ants, $l \in \SetFromOneTo{m}$, $S_{best}$ the best solution, having maximal profit, constructed from the beginning of the algorithm and $\textbf{S}_k = \left\{S_{k_1}, \ldots, S_{k_m} \right\}$ the set containing all partial solutions constructed by ants during $k$-th iteration, where $S_{k_l}$ is the partial solution found by $l$-th ant. Finally, if the $l$-th ant fails to discover a partial solution, we will assume that $S_{k_l} = \emptyset$. 
 
@@ -2330,7 +2334,7 @@ where:
 	\end{itemize}
 \end{itemize}
 
-\subsubsection{Termination Conditions}
+\subsection{Termination Conditions}
 
 According to our model, let $\mathcal{C} = (\Phi,E)$ a choreography, an upper bound on the value of the optimal solution exists; since is true that $0 \leq p_{i_j}(t) \leq 1$, where $p_{i_j}(t)$ is the score associated to the executable function configuration $x_{\phi_{i_j}}$, the upper bound of the optimal solution is simply equal to $|\mathscr{F_E}(\mathcal{C})|$.
 
@@ -2348,9 +2352,11 @@ Then, our algorithm stops when:
 
 
 
-\chapter{Experimental evaluations}
+\chapter{Experimental evaluations}\label{chapterExperimental}
 
 ????????????????????????
+
+\chapter{Conclusion}\label{chapterConclusion}
 
 \bibliographystyle{plainnat}
 \bibliography{Bibliography.bib}
