@@ -56,8 +56,16 @@
     linkcolor=black,  %choose some color if you want links to stand out
 }
 
+\def\abstract{
+	\chapter*{\abstractname}
+}
+\def\endabstract{\clearpage}
 
+\pagenumbering{roman}
 \begin{document}
+
+
+	
 	
 \begin{frontespizio} 
 	\Universita{Roma ``Tor Vergata'' } 
@@ -74,16 +82,33 @@
 	\Correlatore{Dott. Gabriele Russo Russo}
 \end{frontespizio} 
 	
+\begin{abstract}
 	
-\tableofcontents
+In recent years, due to their high scalability, ease of resource management, and pay-as-you-go pricing model, the \textit{Function-as-a-Service} (FaaS) service model has significantly increased its popularity, allowing cloud users to decompose their applications into state-less and standalone \textit{serverless functions}, which are executed on a FaaS platform.  
+
+Generally, to run serverless functions, developers have to configure multiple parameters, such as memory, CPU or timeout, selecting the most appropriate FaaS platform where to execute aforementioned function, in order to satisfy users expectation and constraints. Moreover, since multiple logically equivalent serverless functions can exist, every of which exhibit different performances and cost, developers have to the select the most appropriate one in order to respect aforementioned constraints. Finally, the status of the FaaS platform, where the function will be executed, need to be considered in order to manage the problem of cold starts and all unavoidable delays due to users traffics.
+
+Unfortunately, the situation can become quite more complicated when dealing with serverless applications, due to the presence of parallels, branches, loop in their workflows; due to the lack of an appropriate analytical model, selecting an appropriate configuration for all serverless functions belonging to a generic serverless workflow, guaranteeing the meeting of quality of service (QoS) levels, can be not trivial.
+
+This work is focused on the developing of a formal definition of generic serverless application workflow, called \textit{serverless choreographies}, including the analytical model capable to compute its average end-to-end response time and the charged cost, providing a methodological way to determine all its serverless function configurations to meet QoS constraints.
+
+Consequently, we propose a heuristic algorithm based on colony Optimization Algorithm (ACO) family in order to rapidly build the \ItalicQuotMark{best} configuration for running a generic serverless workflow.
+
+Finally, we have built a prototype implementation to obtain experimental results to show the effectiveness of the proposed approach.
+\end{abstract}
+	
+\tableofcontents	
 
 \chapter{Introduction}
+\pagenumbering{arabic}
 
 \section{The serverless computing paradigm}
 
 In recent years, thanks to an increased popularity of several lightweight virtualization solutions, specifically containers and container-orchestration systems, many public cloud providers have launched a new set of cloud computing services belonging to new service type category called \textit{Function-as-a-Service} (\textit{FaaS}), where almost every aspect of the system administration tasks, needed to deploy a workload on the cloud, like provisioning, monitoring, resource management and scaling, are directly managed by the provider with a minimum involvement of the user.
 
 With the development of FaaS platforms, the \textit{serverless computing paradigm}, a new applications service model according to which cloud application are abstracted as a group of so-called \textit{serverless functions}, hosted and orchestrated by FaaS platforms, has emerged. 
+
+\subsection{Background}
 
 A serverless function represents a stateless, event-driven, self-contained unit of computation implementing a business functionality.
 
@@ -97,11 +122,11 @@ Moreover, since many FaaS provider have adopted a very small-granularity billing
 
 Despite the most basic scenario is represented by the invocation of a single function, when a more complex application is needed, serverless functions can be connected and appropriately orchestrated in a \textit{workflow}, obtaining a so-called \textit{serverless application}.
 
-We define a serverless application as a stateless and event-driven software system made up of a serverless functions set hosted on one or more FaaS platforms and combined together by a so-called \textit{coordinator} (or \textit{orchestrator}). The latter is usually represented by is a broker, needed to implement the business logic of any application; it chains together serverless function, handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
+We define a serverless application as a stateless and event-driven software system made up of a serverless functions set hosted on one or more FaaS platforms and combined together by a so-called \textit{coordinator} (or \textit{orchestrator}). The latter is usually represented by a broker, needed to implement the business logic of any application; it chains together serverless function, handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
 
 Nowadays, there are many public cloud platforms which provide serverless computing services to deploy and execute serverless functions, including AWS Lambda \cite{AWSLambda}, IBM Cloud Function \cite{IBMCloudFunctions}, Microsoft Azure Functions \cite{AzureFunctions} and Google Cloud Functions \cite{GoogleCloud}. Moreover, some providers have even introduced FaaS platforms acting as coordinator to build serverless application; AWS Step Functions is an example which allows to combine multiple Lambda functions, including other serverless services offered by AWS, like the storage service Amazon S3, into an application. 
 
-\section{Function instances}
+\section{Function instances states}
 
 According to serverless computing paradigm, computation is done inside isolated environments, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes, called \textit{function instances}.
 
@@ -199,37 +224,6 @@ Scientific literature have already reported a huge amount of limitations prevent
 	
 \end{itemize}
 
-\section{Motivations of the study}
-
-One of the most important obstacles concerns the \textit{quality of service} (\textit{QoS}) levels, quantitatively measured considering charged cost and response time, that should be guaranteed when a serverless application is executed.
-
-The main difficulty relating to QoS constraints fulfillment depend mostly on the lack of an adequate performance model, which is crucial to analyze and predict response times and billed costs for any generic workload serverless application. 
-
-To be precise, the aforementioned model is needed to select a configuration for each serverless function belonging to a given application. In fact, as we said previously, when cloud application developers want to run a serverless function, is necessary to specify several configuration parameters regarding its execution environment, like memory size, time limits or CPU power.
-
-Unfortunately configuring such parameters correctly, meeting cost and response time constraints, is not trivial. In fact, several studies have already shown that aforementioned configuration parameters significantly affect the cost and response time of serverless functions; for instance, \citet{COSE} have shown that function response time decreases when the memory size allocated to the function is increased; however, due to pricing models adopted by the vast majority of FaaS providers, according to which cost depends proportionally on the amount of memory allocated to a serverless function, a too large value for memory can result in higher costs. Conversely, a small value of memory size can lead to higher costs too, due to a longer execution time of the functions. Moreover, a decrease of the marginal improvement in response time as the memory increases is observed.
-
-Obviously, several researchers have already proposed some  performance and cost models which can be useful to address the aforementioned issue. For instance: 
-
-\begin{itemize}
-	\item \citet{PMSCP} proposed a very interesting analytical model to determine both the delay and charged cost for a generic serverless workflow, including a methodology to obtain a configuration for each serverless function belonging to the application, computed exploiting a heuristic approach based on critical path method, in order to respect either delay or cost constraints imposed by a user.
-	
-	\item \citet{COSE} proposed a framework that, using bayesian optimization to statistically learn the relationship between cost/run-time, selects a serverless function configuration in order to respect either delay or cost constraints imposed by a user, minimizing the cost.
-	
-	\item \citet{Modelling} presented, according to our opinion, one of the best analytical performance model available today, which is suitable for analyzing and predict performance, utilization and cost of current FaaS platforms. 
-	
-\end{itemize}
-
-Despite the high quality of aforementioned solutions, they still have some problems which can sometimes hinder the fulfillment of QoS requirements. 
-
-For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP} do not consider the current state of the FaaS platform when a serverless function configuration has to be selected, totally ignoring the problem of cold starts and their impact on application performance. Conversely, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequence, or chain, of serverless functions, therefore useless for generic workload. 
-
-We believe that existing solutions suffer from a major limitation, as they limit their focus only on serverless function configurations parameters; in fact, none of existing performance models and frameworks, when they have to select a suitable configuration to fulfill QoS requirements, considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Sometimes, depending on QoS requirements, can be useful to select a particular implementation with respect to another. 
-
-Similarly, no existing solution is able to manage serverless application whose functions are hosted on multiple FaaS platforms. Proposed solutions are generally unaware of the current status of FaaS platforms and they cannot adapt themselves in response to changes in their execution environments. Therefore, they are incapable to prevent cold starts or the unavoidable delays which usually occur when a FaaS platform is too overloaded or to select the provider having the best cost/performance ratio in order to better meet customer's expectations.
-
-However, exploiting multiple FaaS platform in order to meet QoS levels is not trivial. Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions, using a variety of conventions for creating, executing, logging and monitoring serverless applications and its functions, exacerbating the so-called vendor lock-in issue, a very common problem in distributed systems. There is no even agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution.
-
 \section{Contributions}
 
 The aim of our work is to overcome aforementioned limitations regarding existing performance models, building a QoS-aware framework for the orchestration of serverless functions, belonging to generic workflow serverless application, which supports multiple FaaS providers and functions implementations.
@@ -266,7 +260,52 @@ To be more precise, our contributions can be summarized as follows:
 
 \section{Organization}
 
-The remainder of this dissertation is organized as follows. In Chapter \ref{chapterArch} we will present an overview of our framework, outlining its architecture and the main tasks of its components. In Chapter \ref{chapterModel} we will describe all mathematical details about our QoS-aware analytical model, included all equations and algorithms used by our framework to compute average end-to-end response time and cost of any serverless workflow. Based on aforementioned analytical model, in Chapter \ref{chapterOptimizationProble} we will present two different formulations of the optimization problem that must be solved to determine a suitable configuration in order to meet user specified constraints. Moreover we will present a heuristic algorithm to solve one of the aforementioned formulation. In Chapter \ref{chapterExperimental} we will present the experimental evaluation of the aforementioned models and algorithms. \textbf{In Chapter ?? we will discuss related works}. Finally, Chapter \ref{chapterConclusion} discusses and concludes our work, presenting directions for future work.
+The remainder of this dissertation is organized as follows. In Chapter \ref{chapterRelated} we will discuss related works. In Chapter \ref{chapterArch} we will present an overview of our framework, outlining its architecture and the main tasks of its components. In Chapter \ref{chapterModel} we will describe all mathematical details about our QoS-aware analytical model, included all equations and algorithms used by our framework to compute average end-to-end response time and cost of any serverless workflow. Based on aforementioned analytical model, in Chapter \ref{chapterOptimizationProble} we will present two different formulations of the optimization problem that must be solved to determine a suitable configuration in order to meet user specified constraints. Moreover we will present a heuristic algorithm to solve one of the aforementioned formulation. In Chapter \ref{chapterExperimental} we will present the experimental evaluation of the aforementioned models and algorithms.  Finally, Chapter \ref{chapterConclusion} discusses and concludes our work, presenting directions for future work.
+
+\chapter{Related works}\label{chapterRelated}
+
+The serverless computing paradigm has attracted a great deal of interest from both academia and industry [8], [19],
+[40]. However, few research studies have been directed at
+the modeling and optimization of performance and cost of
+serverless applications. Therefore, we provide an extensive
+review of the literature in three fields, which are inherently
+related to our topic, namely the performance modeling
+of cloud applications, workflow scheduling in the cloud
+environment, and serverless architecture.
+
+
+One of the most important obstacles concerns the \textit{quality of service} (\textit{QoS}) levels, quantitatively measured considering charged cost and response time, that should be guaranteed when a serverless application is executed.
+
+The main difficulty relating to QoS constraints fulfillment depend mostly on the lack of an adequate performance model, which is crucial to analyze and predict response times and billed costs for any generic workload serverless application. 
+
+To be precise, the aforementioned model is needed to select a configuration for each serverless function belonging to a given application. In fact, as we said previously, when cloud application developers want to run a serverless function, is necessary to specify several configuration parameters regarding its execution environment, like memory size, time limits or CPU power.
+
+Unfortunately configuring such parameters correctly, meeting cost and response time constraints, is not trivial. In fact, several studies have already shown that aforementioned configuration parameters significantly affect the cost and response time of serverless functions; for instance, \citet{COSE} have shown that function response time decreases when the memory size allocated to the function is increased; however, due to pricing models adopted by the vast majority of FaaS providers, according to which cost depends proportionally on the amount of memory allocated to a serverless function, a too large value for memory can result in higher costs. Conversely, a small value of memory size can lead to higher costs too, due to a longer execution time of the functions. Moreover, a decrease of the marginal improvement in response time as the memory increases is observed.
+
+Obviously, several researchers have already proposed some  performance and cost models which can be useful to address the aforementioned issue. For instance: 
+
+\begin{itemize}
+	\item \citet{PMSCP} proposed a very interesting analytical model to determine both the delay and charged cost for a generic serverless workflow, including a methodology to obtain a configuration for each serverless function belonging to the application, computed exploiting a heuristic approach based on critical path method, in order to respect either delay or cost constraints imposed by a user.
+	
+	\item \citet{COSE} proposed a framework that, using bayesian optimization to statistically learn the relationship between cost/run-time, selects a serverless function configuration in order to respect either delay or cost constraints imposed by a user, minimizing the cost.
+	
+	\item \citet{Modelling} presented, according to our opinion, one of the best analytical performance model available today, which is suitable for analyzing and predict performance, utilization and cost of current FaaS platforms. 
+	
+	\item \citet{NUOVODOCUMENTO}
+	
+\end{itemize}
+
+Despite the high quality of aforementioned solutions, they still have some problems which can sometimes hinder the fulfillment of QoS requirements. 
+
+For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP} do not consider the current state of the FaaS platform when a serverless function configuration has to be selected, totally ignoring the problem of cold starts and their impact on application performance. Conversely, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequence, or chain, of serverless functions, therefore useless for generic workload. 
+
+We believe that existing solutions suffer from a major limitation, as they limit their focus only on serverless function configurations parameters; in fact, none of existing performance models and frameworks, when they have to select a suitable configuration to fulfill QoS requirements, considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Sometimes, depending on QoS requirements, can be useful to select a particular implementation with respect to another. 
+
+Similarly, no existing solution is able to manage serverless application whose functions are hosted on multiple FaaS platforms. Proposed solutions are generally unaware of the current status of FaaS platforms and they cannot adapt themselves in response to changes in their execution environments. Therefore, they are incapable to prevent cold starts or the unavoidable delays which usually occur when a FaaS platform is too overloaded or to select the provider having the best cost/performance ratio in order to better meet customer's expectations.
+
+However, exploiting multiple FaaS platform in order to meet QoS levels is not trivial. Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions, using a variety of conventions for creating, executing, logging and monitoring serverless applications and its functions, exacerbating the so-called vendor lock-in issue, a very common problem in distributed systems. There is no even agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution.
+
+
 
 \chapter{System Architecture and Implementation}\label{chapterArch}
 
@@ -626,7 +665,44 @@ All encrypted credential data sent to our framework are then stored inside our C
 
 Unfortunately, since data signing is not currently supported, data integrity, message authentication, and non-repudiation are not provided.
 
+\section{Implementation}
+
+We developed our system from scratch using Go programming language\cite{Go} and the external libraries reported in table \ref{tab:libraries}. 
+
+During development process our aim was to produce a software having high quality standards, despite limitations on time which naturally imposed to us the trad-off
+between delivery and quality. 
+
+Precisely, in order to reach our software quality aims, during all development process time, we try to reduce the number of \textit{code smells} as much as possible. 
+
+Code smells are neither bug nor technically incorrect events and do not prevent the program from its expected behavior, however scientific literature shows that a correlation between code smells and the risk of bugs exists; in fact, the greater the number of code smells, the greater the risk of bugs within the code. 
+
+Moreover, code smells can be an indicator of factors that contribute to so-called \textit{technical debt}. We call technical debt the result of past decisions from software development point of view that negatively affect the project future. Steve McConnell defined technical debt as  \QuoteIntro \textit{A design or construction approach that's expedient in the short-term but that creates a technical context in which the same work will cost more to do later than it would cost to do now}". In other words, technical debt regards any quality problem in the source code like duplication, excessive complexity and design problems.
+
+When technical debt grows at an uncontrollable rate, you can be rapidly reach a point making the software evolution unfeasible, requiring a complete software refactoring. To overcome such situation, it is important that the technical debt is properly managed and kept under control during software development.
+
+To manage technical debt of our system we used SonarQube\cite{SonarQube}, a tool able to report the technical debt as the amount of effort required to fix all code smells in a project; however, it does not just report the technical debt, it computes the number of duplicated code blocks, vulnerabilities, test coverage percentage and many other software metrics.
+
+At the end of our software development process, which ends with a software made up of $8405$ lines of code, SonarQube reports $0$ code smells, $0$ duplicated code blocks and $0$ security vulnerabilities. This result should ensure an high software maintainability, simplifying the development of future release.
+
+\begin{table}
+	\caption{Libraries used in our implementation}
+	\label{tab:libraries}
+	\begin{tabular}{l|l|l}
+		\toprule
+		Name & Description & Link \\
+		\midrule
+		\texttt{go-zookeeper/go} & Native Go Zookeeper Client Library & \url{https://github.com/samuel/go-zookeeper} \\
+		\texttt{logrus} & A structured logger for Go & \url{https://github.com/Sirupsen/logrus} \\
+		\texttt{aws-sdk-go} & AWS SDK for the Go programming language. & \url{https://github.com/aws/aws-sdk-go} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+
 \chapter{System Model}\label{chapterModel}
+
+In this section, we will first formally describe the workflow of a serverless application, then we will develop the analytical model used by our framework to predict its the performance and cost.
 
 \section{SLA's definition}
 
@@ -2348,9 +2424,6 @@ Then, our algorithm stops when:
 
 
 \newpage
-
-
-
 
 \chapter{Experimental evaluations}\label{chapterExperimental}
 
