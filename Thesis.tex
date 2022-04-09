@@ -396,7 +396,7 @@ According to several TSDB design, the main difference between tags and fields is
 
 All data points, produced by a common FaaS platform provider, are grouped in a measurement, whose name is the same of the corresponding FaaS platform. 
 
-To group together all points related to all serverless functions owned by an resource owner, they are stored inside directory whose name is shared with correlated user one.
+At the same time all points, related to all serverless functions owned by an resource owner, are stored inside directory whose name is shared with correlated user one.
 
 Then following tags are used: 
 
@@ -444,7 +444,7 @@ When a serverless application is created for the first time, the QoS-aware optim
 
 Therefore a performance profiling phase in order to acquire a series of function response time and cost under different memory sizes is needed. 
 
-According to our design, it is mandatory that the profiling phase for a given serverless application must be executed before its first execution. According to the current implementation, aforementioned phase must be invoked explicitly by the resource owner (despite no further actions are required by him).
+According to our design, it is mandatory that the profiling phase for a given serverless application must be executed before its first execution; that phase must be explicitly started by the resource owner.
 
 Synchronously interacting with the logging subsystem, it retrieves all needed performance metrics referring to each implementation and configuration regarding all serverless functions inside the invoked application. Aforementioned metrics include observed average response times and charged cost when both cold and warm starts occurred. Once data are obtained, they are processed according to our performance model, which we will explain in next chapter.
 
@@ -749,7 +749,7 @@ We developed our system from scratch using Go\cite{Go}, a compiled programming s
 
 We choose to use Go rather than any objected oriented language, like Java or C\#, in order to maximize framework performance and to develop applications efficiently and faster. In fact, according to \citet{JAVAVSGO}'s research, Go has quite better result than Java regarding concurrency performance too. Moreover, its compile time  is about three times faster than Java and its model, which doesn't allow cyclic import, makes dependency analysis and management very easy \cite{JAVAVSGO}. Moreover, the use of goroutine and channel mechanisms hide the complexity of concurrent processes, simplifying our develop.
 
-All external libraries used to build our system are reported in table \ref{tab:libraries}. 
+All external libraries used to build our system are reported in table \ref{tab:libraries}; some of them require additional steps to be fully utilizable by our system. Anyway, please refer to guidelines produced by their respective authors.
 
 \begin{table}
 	\caption{Libraries used in our implementation}
@@ -763,6 +763,7 @@ All external libraries used to build our system are reported in table \ref{tab:l
 		\texttt{aws/aws-sdk-go-v2}\footnote{\url{https://github.com/aws/aws-sdk-go-v2}} & AWS SDK for the Go programming language \\
 		\texttt{apache/openwhisk-client-go}\footnote{\url{https://github.com/apache/openwhisk-client-go/}} & Openwhisk Go Client library \\
 		\texttt{rs/zerolog}\footnote{\url{https://github.com/rs/zerolog}} & A simple JSON Logger. \\
+		\texttt{draffensperger/golp}\footnote{\url{https://github.com/draffensperger/golp}} & Golang wrapper for the LPSolve . \\
 		\bottomrule
 	\end{tabular}
 \end{table}
@@ -797,22 +798,15 @@ Therefore, only \texttt{openwhisk} and \texttt{aws} values are allowed and recog
 
 Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers. Our framework limits itself to invoke serverless function already deployed on FaaS platforms; conversely, CRUD operations regarding serverless application are fully implemented.
 
-\section{Databases}
+\section{Final considerations}
 
+As TSDB, that is for the storage and the retrieval of time series data regarding serverless function performance, we adopted InfluxDB\cite{influx}, an open-source time series database written in the Go programming language.
 
-As TSDB, we have 
+To implement the directory where to store all points related to a specified resource owner, we exploit the InfluxDB's concept called \textit{bucket}. A bucket is equivalent to a directory where time series data can be stored. Moreover, differently form a directory, a bucket has a retention period according to which InfluxDB drops all points with timestamps older than the bucket retention period; however, our prototype does not exploit this feature, therefore buckets retention periods are disabled by default.
 
-open source TSDB
-\cite{influx}
+Conversely, to store data about users, serverless applications and FaaS security token we used Cassandra\cite{cassandra}, a free and open-source, distributed, wide-column store, NoSQL database written in Java. 
 
-
-To group together all points related to all serverless functions owned by an resource owner we exploit the InfluxDB's concept called \textit{bucket}. A bucket is equivalent to a directory where time series data can be stored. Moreover, differently form a directory, a bucket has a retention period according to which InfluxDB drops all points with timestamps older than the bucket retention period; however, our prototype does not exploit this feature, therefore buckets retention periods are disabled by default.
-
-
-
-
-
-
+Finally, to resolve the optimization problems, which according to our model must be solved to find a configuration allowing us to respect QoS constraints, we adopted \texttt{lp\_solve}, a \textit{Mixed Integer Linear Programming} (MILP) solver written in C \cite{lpsolve}.
 
 \chapter{System Model}\label{chapterModel}
 
