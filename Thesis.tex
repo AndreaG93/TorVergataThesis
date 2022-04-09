@@ -286,7 +286,7 @@ Our contributions can be summarized as follows:
 
 The remainder of this dissertation is organized as follows. In Chapter \ref{chapterRelated} we will discuss related works. In Chapter \ref{chapterArch} we will present an overview of our framework, outlining its architecture and the main tasks of its components. In Chapter \ref{chapterModel} we will describe all mathematical details about our QoS-aware analytical model, included all equations and algorithms used by our framework to compute average end-to-end response time and cost of any serverless workflow. Based on aforementioned analytical model, in Chapter \ref{chapterOptimizationProble} we will present two different formulations of the optimization problem that must be solved to determine a suitable configuration in order to meet user specified constraints. Moreover we will present a heuristic algorithm to solve one of the aforementioned formulation. In Chapter \ref{chapterExperimental} we will present the experimental evaluation of the aforementioned models and algorithms.  Finally, Chapter \ref{chapterConclusion} discusses and concludes our work, presenting directions for future work.
 
-\chapter{Related works}\label{chapterRelated}
+\chapter{Related Works}\label{chapterRelated}
 
 The serverless computing paradigm has attracted a great deal of interest from both academia and industry, therefore in this chapter we provide a shortly preview of the literature inherently related to our topic, namely the performance modeling
 of serverless applications.
@@ -348,7 +348,7 @@ Despite being very easy to implement, the adopted centralized approach also has 
 
 We want to emphasize that, since they are out from our goal, most issues and pitfalls regarding the design of our system, like transparency, processes decoupling, message delivery reliability issues, scalability, traffic congestion, fault-tolerance or replication management, were out of the scope our this work.
 
-\section{System components overview}
+\section{System Components Overview}
 
 This section details all software components of our system, which consists of following main logical entities:
 
@@ -362,7 +362,7 @@ This section details all software components of our system, which consists of fo
 
 We will give a very brief overview of how these entities work while all details about the model on which they are based will be given in next chapter.
 
-\subsection{Logging subsystem}
+\subsection{Logging Subsystem}
 
 In order to achieve our goal, a live overview of the state of both all FaaS platforms executions environment and system traffic is required.
 
@@ -454,7 +454,7 @@ Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in o
 
 Since according to our performance model processed data must used for future invocations, they are stored inside a NoSQL distributed database instance for future use.
 	
-\subsection{QoS-aware model-based optimizer}
+\subsection{QoS-Aware Model-Based Optimizer}
 	
 As already said, the optimizer has the responsibility to determine which configuration and implementation must be used during the execution of a given serverless application in order to satisfy user specified constraints.
 
@@ -588,7 +588,7 @@ Listing \ref{AFCL2} shows the definition of a serverless function according to o
 
 Our system was been developed following the \textit{Representational State Transfer} (REST) software architectural style, according to which the system can be viewed as a huge collection of \textit{resources}, that is applications components that can be uniquely identified through a single naming scheme. 
 
-\subsection{Resource identification}
+\subsection{Resource Identification}
 
 According to the REST architectural style, the identification of any resources relies on identifiers called \textit{Uniform Resource Identifiers} (URIs) which, in an \texttt{HTTP} context, are also known as \textit{Uniform Resource Locator} (URLs). Like many other REST systems, the resources of our system are organized in a hierarchy and that is used as a basis to identify a resource.
 
@@ -615,7 +615,7 @@ For instance, a URI such as the one reported in listing \ref{URIexample} denotes
 http://<DOMAIN>:80/andrea/application
 \end{lstlisting}
 
-\subsection{Operations on resources}
+\subsection{Operations on Resources}
 
 As known \texttt{HTTP} protocol provides several methods to interact with resources. Constraining operations on resources only to \texttt{HTTP} provided methods is one of the keys to enable loose-coupling between our software and clients, as they only need to support \texttt{HTTP} protocol to use our framework\cite{Guinard}.   
 
@@ -743,7 +743,7 @@ All encrypted credential data sent to our framework are then stored inside our N
 
 Unfortunately, since data signing is not currently supported, data integrity, message authentication, and non-repudiation are not provided.
 
-\section{Implementation details}
+\section{Implementation Details}
 
 We developed our system from scratch using Go\cite{Go}, a compiled programming syntactically similar to C, but with memory safety, garbage collection and structural typing \cite{go2}.
 
@@ -785,7 +785,7 @@ To manage technical debt of our system we used SonarQube\cite{SonarQube}, a tool
 
 At the end of our software development process, which ends with a software made up of $8405$ lines of code, SonarQube reports $0$ code smells, $0$ duplicated code blocks and $0$ security vulnerabilities. This result should ensure an high software maintainability, simplifying the development of future release.
 
-\section{FaaS provider support}
+\subsection{FaaS provider support}
 
 At the current state of this work, our system supports serverless functions invocation hosted on following FaaS platform providers:
 
@@ -798,7 +798,7 @@ Therefore, only \texttt{openwhisk} and \texttt{aws} values are allowed and recog
 
 Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers. Our framework limits itself to invoke serverless function already deployed on FaaS platforms; conversely, CRUD operations regarding serverless application are fully implemented.
 
-\section{Final considerations}
+\subsection{Final Considerations}
 
 As TSDB, that is for the storage and the retrieval of time series data regarding serverless function performance, we adopted InfluxDB\cite{influx}, an open-source time series database written in the Go programming language.
 
@@ -812,9 +812,9 @@ Finally, to resolve the optimization problems, which according to our model must
 
 In this section, we will first formally describe the workflow of a serverless application, then we will develop the analytical model used by our framework to predict its the performance and cost.
 
-\section{SLA's definition}
+\section{SLA definition}
 
-As said previously, our system's goal is the fulfillment of both \textit{functional requirements}, concerning the orchestration of a serverless workflow, and \textit{non-functional} requirements, concerning the \textit{quality of service} (QoS) levels that should be guaranteed.
+As said previously, our system goal is the fulfillment of both \textit{functional requirements}, concerning the orchestration of a serverless workflow, and \textit{non-functional} requirements, concerning the \textit{quality of service} (QoS) levels that should be guaranteed.
 
 In our context, aforementioned non-functional requirements are the result of a commitment, signed by both our software system and a customer, which lead  up to the definition of a \textit{Service Level Agreement} (SLA) specifying guarantees about the \textit{average values} of the following attributes:
 
@@ -842,22 +842,22 @@ where:
 	
 	\item $w_{RT}, w_{C} \in \Rplus \cap \left[ 0,1 \right]$ represent, respectively, the SLA attributes weights regarding the response time and the cost; simply, greater a SLA attribute weight value, the greater is the importance of that attribute. Weights for the different SLAs attributes are used to improve our flexibility regarding meeting customer's expectations. 
 	
-	Formally, following constraint must be hold:
+	Formally, following constraint must hold:
 	
 	\begin{equation}
 		w_{RT} + w_{C} = 1
 	\end{equation}
 
-	We will describe later how weights for the different SLA's attributes can be used.
+	We will describe later how weights for the different SLA attributes can be used.
 \end{itemize}
 
-\section{Serverless choreography}
+\section{Serverless Choreography}
 
 According to our model, a \textit{serverless choreography}, or simply \textit{choreography}, represents the \textit{resource} used to model both the concepts of serverless function and serverless application (or compound serverless function).
 
 Informally, that abstraction has been derived from that of a \textit{control-flow graph} which, as known, describes, using graphs notation, all paths that might be traversed through a serverless application during its execution. Similarly, a choreography describes calling relationships between functions belonging to an application in a serverless environment, combining them using several types of control-flow structures, like sequence, branch, loop or connectors for a parallel execution. 
 
-\subsection{Preliminary definitions}
+\subsection{Preliminary Definitions}
 
 In order to provide a formal definition of a choreography, we have to define some very useful notations. 
 
@@ -896,7 +896,7 @@ Then, we will adopt following notations:
 	\end{eqnarray}
 \end{itemize}
 
-\subsection{Serverless choreography definition}
+\subsection{Serverless Choreography Definition}
 
 According to serverless paradigm, the execution of an application always starts with a particular function, usually triggered through events or \texttt{HTTP} requests, acting as ``\textit{entry point}" of the serverless workflow; any other functions, belonging to the application, will be invoked subsequently according to the business logic specified by customer. Conversely, the execution of an application ends when the execution of its last function ends, which acts as the ``\textit{end point}" of the serverless workflow. 
 
@@ -935,7 +935,7 @@ where:
 			TPP(\pi, t) = \prod_{i = 1}^{n-1} P\left(\phi_i, \phi_{i+1}, t \right)
 		\end{equation}
 	
-		Particularly, an abstract function $\phi \in \Phi$ is said \textit{unreachable} if, for any time $t$, following condition is hold:
+		Particularly, an abstract function $\phi \in \Phi$ is said \textit{unreachable} if, for any time $t$, following condition holds:
 	
 		\begin{equation}\label{cond3}
 			\displaystyle \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi, t) = 0
@@ -949,7 +949,7 @@ where:
 		
 	\end{itemize}
 
-	\item $\Phi$ must be such that following condition are hold:
+	\item $\Phi$ must be such that following condition holds:
 	
 	\begin{eqnarray}
 		\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \label{cond1} \\
@@ -968,13 +968,13 @@ where:
 	Finally, we will use the notation $\alpha(\mathcal{C}_R)$ to denote the vertex $\phi \in \Phi$ acting as entry point of the choreography $\mathcal{C}_R$; conversely, we will adopt the notation $\omega(\mathcal{C}_R)$ to denote the end point.
 	
 	
-	\item Following condition must be hold:
+	\item Following condition must hold:
 	
 	\begin{equation}\label{cond3}
 		|\Pi(\alpha(\mathcal{C}_R), \phi)| \geq 1 \qquad \forall \phi \in \Phi
 	\end{equation}
 
-	in other words, at least one path starting from the entry point of $\mathcal{C}_R$ to each abstract function $\phi \in \Phi$ must to exist. 
+	in other words, at least one path starting from the entry point of $\mathcal{C}_R$ to each abstract function $\phi \in \Phi$ must  exist. 
 	
 \end{itemize} 
 
@@ -1004,7 +1004,7 @@ According to our model, there are two types of abstract functions implementation
 	
 	However, multiple different implementations of a given executable function can be provided by developers which, although they must be semantically and logically equivalent, may eventually expose different performance or cost behavior. We call these different implementations as \textit{concrete serverless function}, or simply, \textit{concrete function} of $\phi$.
 	
-	For any $\phi \in \mathscr{F_E}(\mathcal{C})$, we will use $\textbf{F}_{\phi}$ notation to represent the so-called \textit{implementation-set} of $\phi$, that is the set containing all concrete function implementing $\phi$, which are denoting using $f_{\phi}$ notation. 
+	For any $\phi \in \mathscr{F_E}(\mathcal{C})$, we will use $\textbf{F}_{\phi}$ notation to represent the so-called \textit{implementation-set} of $\phi$, that is the set containing all concrete function implementing $\phi$, which are denoted using $f_{\phi}$ notation. 
 
 	Later, we will explain how our framework is able to pick, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, exactly one $f_{\phi} \in \textbf{F}_{\phi}$ whose properties allow us to meet user-specified QoS requirements.
 	
@@ -1019,7 +1019,7 @@ According to our model, there are two types of abstract functions implementation
 
 	\item $\phi$ is called \textit{serverless orchestration functions}, or simply \textit{orchestration functions}, when $\phi$ contains \textit{orchestration code}. 
 	
-	According to our model, orchestration code represents the logic required to chain together any components of an application, evaluate branch and loop conditions, handling events and triggering executable functions in the correct order according to the business logic. In other words, orchestration code is used to manage the control-flow of any application.
+	According to our model, orchestration code represents the logic required to chain together any components of an application, evaluate branch and loop conditions, handle events and trigger executable functions in the correct order according to the business logic. In other words, orchestration code is used to manage the control-flow of any application.
 	
 	$\mathscr{F_O}(\mathcal{C})$ is defined as the set containing all orchestration functions of $\mathcal{C}$ and it is formally defined as follows:
 	
@@ -1027,11 +1027,11 @@ According to our model, there are two types of abstract functions implementation
 		\mathscr{F_O}(\mathcal{C}) \mathDef \left\lbrace \phi \in \Phi \mid \phi \text{ is a serverless orchestration function }\right\rbrace 
 	\end{equation}
 
-	Moreover, each orchestration function $\phi \in \mathscr{F_O}(\mathcal{C})$ has a \textit{type} which, as we will explain later, determines how choreography's performances are computed. The orchestration function's type can be determined based on certain characteristics of the graph of $\mathcal{C}$. According to our model, we distinguish four orchestration functions types exist: \textit{Branch}, \textit{Conditional Loop}, \textit{Parallel} and \textit{Exit}. We will give a better explanation about them very soon.
+	Moreover, each orchestration function $\phi \in \mathscr{F_O}(\mathcal{C})$ has a \textit{type} which, as we will explain later, determines how choreography performances are computed. The orchestration function type can be determined based on certain characteristics of the graph of $\mathcal{C}$. According to our model, we distinguish four orchestration functions types: \textit{Branch}, \textit{Conditional Loop}, \textit{Parallel} and \textit{Exit}. We will give a better explanation about them very soon.
 
-	Moreover, according to our model, orchestration functions travel always in pairs. Each $\phi \in \mathscr{F_O}(\mathcal{C})$ can be either an \textit{opening} or a \textit{closing} orchestration function of a given type: the first indicates the beginning of particular section of $\mathcal{C}$, called \textit{structure}, while the second denotes its  end. Anyway, if $\tau$ denotes the orchestration function's type, we will use $\tau_{\alpha}$ and $\tau_{\omega}$ notations to denote, respectively, an opening and a closing orchestration function of type $\tau$. Moreover, we will use the notation $\mathscr{T}(\phi)$ to represent the function returning the orchestration function type of $\phi$. We will give more details about this very soon.
+	Moreover, according to our model, orchestration functions travel always in pairs. Each $\phi \in \mathscr{F_O}(\mathcal{C})$ can be either an \textit{opening} or a \textit{closing} orchestration function of a given type: the first indicates the beginning of particular section of $\mathcal{C}$, called \textit{structure}, while the second denotes its  end. Anyway, if $\tau$ denotes the orchestration function type, we will use $\tau_{\alpha}$ and $\tau_{\omega}$ notations to denote, respectively, an opening and a closing orchestration function of type $\tau$. Moreover, we will use the notation $\mathscr{T}(\phi)$ to represent the function returning the orchestration function type of $\phi$. We will give more details about this very soon.
 	
-	Finally, following condition must be hold:
+	Finally, following condition must hold:
 	
 	\begin{eqnarray}
 		|succ(\phi)| & = & n \qquad \forall \phi \in \mathscr{F_O}(\mathcal{C}) : \mathscr{T}(\phi) = \tau_{\omega} \wedge n \in \left\{0,1\right\} \\		
@@ -1055,7 +1055,7 @@ Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$,
 	\item $b$ is the name of the abstract serverless function $\phi$;
 \end{itemize}
 
-\subsubsection{Executability condition}
+\subsubsection{Executability Condition}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography, we always assume that all concrete functions $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, are already deployed on one or more FaaS platform by customers. Then, in order to effectively start the execution of $\mathcal{C}$, is required that, for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, \textit{at least one} implementation exists.
 
@@ -1068,7 +1068,7 @@ Formally, we said that a choreography is \textit{executable} when:
 
 We will only deal with executable choreographies.
 
-\subsubsection{Serverless sub-choreography}
+\subsubsection{Serverless Sub-Choreography}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted directed sub-graph $\mathcal{C}^*$ of $\mathcal{C}$, defined as follows:
 
@@ -1078,7 +1078,7 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted direc
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
-\subsubsection{Serverless pipeline choreography}\label{PipelineDefinitionSection}
+\subsubsection{Serverless Pipeline Choreography}\label{PipelineDefinitionSection}
 
 Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
 
@@ -1090,22 +1090,22 @@ Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following con
 
 Any choreography $\mathcal{C}$ satisfying \ref{pipeline1}, \ref{pipeline2} and \ref{pipeline3} will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
 
-\section{Serverless choreography configuration}
+\section{Serverless Workflow Configuration}
 
-In order to reach his goal, our framework has to determine a so-called \textit{serverless choreography configuration}, or simply \textit{choreography configuration} or \textit{configuration}, specifying which concrete function will be invoked when the corresponding executable function is executed; moreover, its configuration's parameters, like RAM memory size or CPU power, has to be determined.
+In order to reach its goal, our framework has to determine a so-called \textit{serverless choreography configuration}, or simply \textit{choreography configuration} or \textit{configuration}, specifying which concrete function will be invoked when the corresponding executable function is executed; moreover, its configuration parameters, like memory size or CPU power, have to be determined.
 
-Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation's request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
+Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
 
 \begin{itemize}
 	\item For each $\phi \in \mathscr{F_E}(\mathcal{C})$, it selects only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$, which will be effectively invoked and executed on its corresponding FaaS platform. 
-	\item For each selected concrete function $f_{\phi}$, it selects a value for RAM memory size.
+	\item For each selected concrete function $f_{\phi}$, it selects a value for memory size.
 \end{itemize}
 
 Clearly, as we will explain in detail later, to perform aforementioned selection, our framework has to acquire a series of function response time and charged costs when the $\mathcal{C}$ is executed using different concrete functions and memory sizes.  
 
-\subsection{Executable function configuration}
+\subsection{Executable Function Configuration}
 
-To build a configuration for a given choreography, is clearly needed to select a configuration for its executable functions. 
+To build a configuration for a given choreography, it is clearly needed to select a configuration for its executable functions. 
 
 Then, let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set, formally an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
 
@@ -1120,7 +1120,7 @@ where:
 	\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
 \end{itemize}
 
-\subsection{Serverless choreography configuration}
+\subsection{Serverless Choreography Configuration}
 
 Let $n,k \in \N \setminus \left\lbrace 0 \right\rbrace$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\Phi| = n$ and $|\mathscr{F_E}| = k$ where $k \leq n$.
 
@@ -1147,7 +1147,7 @@ where:
 
 From now, we will use $RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ and $C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ notations to represent the average response time and billed cost when the choreography $\mathcal{C}$ is executed with the configuration $\textbf{x}_{\mathcal{C}}$ at time $t$. 
 
-\section{Serverless choreography's structure}
+\section{Serverless Choreography's Structure}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
 
@@ -1181,7 +1181,7 @@ that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end po
 	\end{array} \right\} \nonumber
 \end{eqnarray}
 
-Sometimes, to reach our objective, will be necessary to \ItalicQuotMark{replace} the structures, inside a given choreography, in order to convert it into a pipeline type, performing the so-called \textit{workflow simplification process},
+Sometimes, to reach our goal, it will be necessary to \ItalicQuotMark{replace} the structures, inside a given choreography, in order to convert it into a pipeline type, performing the so-called \textit{workflow simplification process}.
 
 Exploiting different methods for different structures which we will describe shortly, our model trims the graph associated with a choreography by removing or modifying vertices and edges in order to convert it into a pipeline choreography. Formally, this is done by replacing any structure with a single orchestration function $\phi_{fake}$, obtaining a new choreography $\mathcal{C}' = (\Phi',E')$, such that:
 
@@ -1420,7 +1420,7 @@ The exit probability of a branch structure can be computed as follows:
 	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
 \end{equation}
 
-\subsection{Conditional loop}
+\subsection{Conditional Loop}
 
 Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
 
@@ -1532,7 +1532,7 @@ At any time $t$, the response time and the cost of the conditional loop structur
 	C(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
-The exit probability of a conditional loop structure was been modeled, once again, exploiting geometric distribution with success probability equal to $P_{exit}(\theta, t)$. To be precise, exit probability is modeled as the probability that the termination of the execution of the choreography to which $\mathcal{L}$ belongs requires $\lfloor E[I_{\theta}(t)] \rfloor$  executions of $\mathcal{L}$. Formally:
+The exit probability of a conditional loop structure was been modeled, once again, exploiting the geometric distribution with success probability equal to $P_{exit}(\theta, t)$. To be precise, exit probability is modeled as the probability that the termination of the execution of the choreography to which $\mathcal{L}$ belongs requires $\lfloor E[I_{\theta}(t)] \rfloor$  executions of $\mathcal{L}$. Formally:
 
 \begin{eqnarray}
 	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)\\
@@ -1597,14 +1597,14 @@ At any time $t$, following is true that:
 
 
 
-\section{Concrete function performance evaluation}
+\section{Performance Evaluation of Concrete Functions}
 
 Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete functions, in terms of average values regarding response time and charged costs.
 
 However, to develop both an analytical way and a software framework capable to evaluate concrete serverless function performance, we first need to understand
 how they are managed by FaaS platforms.
 
-\subsection{FaaS platform modeling}
+\subsection{FaaS Platform Modeling}
 
 According to our model point of view, at any time $t$, any FaaS platform provider acts as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, also called \textit{$K(t)$-server loss systems}, where:
 
@@ -1726,13 +1726,13 @@ According to our model point of view, at any time $t$, any FaaS platform provide
 	\caption{An overview of the proposed system model using $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queening systems.}
 \end{figure}
 
-\subsection{Concrete function's swarm}
+\subsection{Concrete Function Swarm}
 
-To complete the formalization of our model and understand how concrete function performances are evaluated, is necessary to introduce another very important concept needed to make our model compatible with all concurrency limit models adoptable by FaaS providers.
+To complete the formalization of our model and understand how concrete function performances are evaluated, it is necessary to introduce another very important concept to make our model compatible with all concurrency limit models adoptable by FaaS providers.
 
 Let $l \in \N$, $R$ a resource owner, $P$ a serverless computing platform provider and $\Omega_{P_R}$ the set of all concrete serverless functions hosted on $P$ belonging to $R$.
 
-A \textit{concrete function's swarm}, or simply \textit{swarm}, is the set $\omega_{P_R}^{(l)} \subseteq \Omega_{P_R}$ containing all concrete functions sharing the same limit $l$ in term of the max number of serverless function instance runnable at the same time by $P$; in that case, we call $l$ as \textit{swarm's concurrency limit}.
+A \textit{concrete function swarm}, or simply \textit{swarm}, is the set $\omega_{P_R}^{(l)} \subseteq \Omega_{P_R}$ containing all concrete functions sharing the same limit $l$ in term of the max number of serverless function instance runnable at the same time by $P$; in that case, we call $l$ as \textit{swarm's concurrency limit}.
 
 In simple terms, only at most $l$ executions of any concrete functions belonging to $\omega_{P_R}^{(l)}$ can be performed simultaneously by $P$. The value of $l$ depends on the concurrency model adopted by $P$. 
 
@@ -1740,9 +1740,9 @@ In simple terms, only at most $l$ executions of any concrete functions belonging
 	
 	\item If $P$ imposed a \textit{per-function} limit, then $|\omega_{P_{R_l}}| = 1$, that is, $\omega_{P_R}^{(l)}$ contains only one function and $l$ will represent the provider's per-function limit. 
 	
-	In that case, to each concrete function belonging to $\omega_{P_R}^{(l)}$ corresponds a dedicated $M/G/K(t)_{l}/K(t)_{l}$ queuing system, which will serve all invocation request regarding only its corresponding concrete function.  
+	In that case, a dedicated $M/G/K(t)_{l}/K(t)_{l}$ queuing system corresponds to each concrete function belonging to $\omega_{P_R}^{(l)}$, which will serve all invocation request regarding only its corresponding concrete function.  
 	
-	\item If $P$ imposed a \textit{per-account} limit, then $\omega_{P_R}^{(l)} = \Omega_{P_R}$, that is the swarm includes all concrete serverless concrete function deployed on $P$ by $R$, while $l$ represents the provider's global concurrency limit. 
+	\item If $P$ imposed a \textit{per-account} limit, then $\omega_{P_R}^{(l)} = \Omega_{P_R}$, that is the swarm includes all concrete function deployed on $P$ by $R$, while $l$ represents the provider's global concurrency limit. 
 	
 	In that case, there is only one $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation requests regarding any concrete function belonging to $\Omega_{P_R}$. 
 
@@ -1750,11 +1750,11 @@ In simple terms, only at most $l$ executions of any concrete functions belonging
 
 From now, the sets $\omega_{P_R}^{(l)}$ and $\Omega_{P_R}$ will be briefly and respectively denoted by $\omega_{P}^{(l)}$ and $\Omega_{P}$ when no confusion can arise about the resource owner $R$. Moreover, we will adopt $\textbf{Q}_{\omega_{P}^{(l)}}$ notation to refer to the $M/G/K(t)_{l}/K(t)_{l}$ queuing system serving all invocation requests of any concrete function belonging to $\omega_{P}$. 
 
-\subsubsection{Cold start probability}
+\subsubsection{Cold Start Probability}
 
-According to our model, if maximum concurrency level is not exceed, the rejection of a request by the warm pool will trigger a cold start, adding a new function instance to the warm pool in order to handle aforementioned request. 
+According to our model, if maximum concurrency level is not exceeded, the rejection of a request by the warm pool will trigger a cold start, adding a new function instance to the warm pool in order to handle aforementioned request. 
 
-Now we have to know the probability according to which a request is rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
+Now we have to estimate the probability according to which a request is rejected by the warm pool; in other words, we must to compute the \textit{cold start probability}. 
 
 Formally, let $l \in \N$, $P$ a serverless computing platform provider, $\omega_{P}^{(l)}$ a swarm and $\textbf{Q}_{\omega_{P}^{(l)}}$ its corresponding queuing system on the FaaS platform provider. Following functions will be used:
 
@@ -1766,22 +1766,22 @@ Formally, let $l \in \N$, $P$ a serverless computing platform provider, $\omega_
 
 In this section, to simplify our notations, since no confusion can arise about the queuing system, $R(\textbf{Q}_{\omega_{P}^{(l)}}, t)$ will be briefly denoted as $R(t)$ and $K(\textbf{Q}_{\omega_{P}^{(l)}}, t)$ as $K(t)$.
 
-When a new invocation's request of any function belonging to $\omega_{P}^{(l)}$ arrives on $\textbf{Q}_{\omega_{P}^{(l)}}$, one of the following events can occur:
+When a new invocation request of any function belonging to $\omega_{P}^{(l)}$ arrives on $\textbf{Q}_{\omega_{P}^{(l)}}$, one of the following events can occur:
 
 \begin{itemize}
-	\item If $K(t_n) < l$ and $R(t_n) < K(t_n)$, that is the number of function instances into the warm pool is less than the swarm's maximum concurrency level and there are some function instance in idle state, a warm start will occur, resulting that $R(t_{n+1}) = R(t_n) + 1$.
+	\item If $K(t_n) < l$ and $R(t_n) < K(t_n)$, that is the number of function instances into the warm pool is less than the swarm maximum concurrency level and there are some function instance in idle state, a warm start will occur, resulting that $R(t_{n+1}) = R(t_n) + 1$.
 	
 	
-	\item If $K(t_n) < l$ and $R(t_n) = K(t_n)$, that is the number of function instances into the warm pool is once again less than the swarm's maximum concurrency level but there is no function instance in idle state, a cold start will occur and the size of the warm pool will be increased by one, that is $K(t_{n+1}) = K(t_n) + 1$.
+	\item If $K(t_n) < l$ and $R(t_n) = K(t_n)$, that is the number of function instances into the warm pool is once again less than the swarm maximum concurrency level but there is no function instance in idle state, a cold start will occur and the size of the warm pool will be increased by one, that is $K(t_{n+1}) = K(t_n) + 1$.
 	
-	The newly accepted request will be managed by the newly spinned up function instance, causing that $R(t_{n+1}) = R(t_n) + 1$.
+	The accepted request will be managed by the newly spinned up function instance, causing that $R(t_{n+1}) = R(t_n) + 1$.
 	
-	\item If $K(t) = R(t) = l$, that is the warm pool reaches is maximum possible size according to FaaS policies, aforementioned request will be rejected.
+	\item If $K(t) = R(t) = l$, that is the warm pool reaches its maximum possible size according to FaaS policies, aforementioned request will be rejected.
 \end{itemize}
 
-If at time $t_n$ a concrete function execution's has been completed, that event will cause $R(t_{n+1}) = R(t_n) - 1$. 
+If at time $t_n$ a concrete function execution has been completed, that event will cause $R(t_{n+1}) = R(t_n) - 1$. 
 
-Conversely, if a function instance has not been received any request during the last expiration threshold units of time, it will be expired causing the decreasing of warm pool size, that is $K(t_{n+1}) = K(t_n) - 1$.
+Conversely, if a function instance has not  received any request during the last expiration threshold units of time, it will expire causing the decreasing of warm pool size, that is $K(t_{n+1}) = K(t_n) - 1$.
 
 Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}_{\omega_{P_R}^{(l)}}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all function instances of the warm pool busy; using Erlang-B formula, that probability can be calculated as follows:
 
@@ -1799,9 +1799,9 @@ where:
 		
 		\item $\lambda(t)$ represents the \textit{average arrival rate} at time $t$, that is the rate at which invocation requests, regarding serverless concrete functions belonging to $\omega_{P_R}^{(l)}$, arrive to our system. It is expressed in $invocations \cdot s^{-1}$.
 				
-		Since arrival rate varies during the day, $\lambda(t)$ must be estimate at runtime, over multiple time intervals spent observing our system.
+		Since arrival rate varies during the day, $\lambda(t)$ must be estimated at runtime, over multiple time intervals spent observing our system.
 		
-		We have adopt the exponential moving average based approach to compute an estimation of $\lambda(t)$. Periodically, at any time $t$, our framework compute the number $Y_t$ of all received invocation requests for any function belonging to $\omega_{P_R}^{(l)}$ within last second. Then $\lambda(t)$ is estimated as follows:
+		We adopt the exponential moving average based approach to compute an estimation of $\lambda(t)$. Periodically, at any time $t$, our framework computes the number $Y_t$ of all received invocation requests for any function belonging to $\omega_{P_R}^{(l)}$ within last second. Then $\lambda(t)$ is estimated as follows:
 		
 		\begin{equation}
 			\lambda(t) \mathDef
@@ -1812,31 +1812,31 @@ where:
 			\end{cases}\,.
 		\end{equation}
 		
-		\item $\mu_{w} = E[S_w]$ represents the \textit{warm start average service rate}, that is the rate at which executions requests are served when a warm start is occurred, while $E[S_w]$ is the \textit{warm start average time}, which is the average time required to complete aforementioned request.
+		\item $\mu_{w} = E[S_w]$ represents the \textit{warm start average service rate}, that is the rate at which executions requests are served when a warm start occurs, while $E[S_w]$ is the \textit{warm start average time}, which is the average time required to complete aforementioned request.
 		
 	\end{itemize}
 	
 \end{itemize}
 
-\subsubsection{Choreography's swarm}
+\subsubsection{Choreography Swarm}
 
-Let $\mathcal{C} = (\Phi,E)$ a choreography, to build its configuration $\textbf{x}_{\mathcal{C}}$, we firstly need to identify all swarms corresponding to each concrete function $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}$, because we have to check if we can execute all concrete functions specified in $\textbf{x}_{\mathcal{C}}$, without exceeding maximum concurrency level on each FaaS platforms where aforementioned functions will be executed.
+Let $\mathcal{C} = (\Phi,E)$ a choreography, to build its configuration $\textbf{x}_{\mathcal{C}}$, we first need to identify all swarms corresponding to each concrete function $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}$, because we have to check if we can execute all concrete functions specified in $\textbf{x}_{\mathcal{C}}$, without exceeding maximum concurrency level on each FaaS platforms where aforementioned functions will be executed.
 
-Informally, a \textit{choreography's swarm} $\widetilde{\textbf{S}}_{\mathcal{C}}$ represents the set of all swarms corresponding to all concrete functions used by $\mathcal{C}$. 
+Informally, a \textit{choreography swarm} $\widetilde{\textbf{S}}_{\mathcal{C}}$ represents the set of all swarms corresponding to all concrete functions used by $\mathcal{C}$. 
 
-Formally, let $m \in \N$ the total number of FaaS platform providers where at least one concrete function is deployed by a given resource owner, a choreography's swarm can be defined as follows:
+Formally, let $m \in \N$ the total number of FaaS platform providers where at least one concrete function is deployed by a given resource owner, a choreography swarm can be defined as follows:
 
 \begin{equation}
 	\widetilde{\textbf{S}}_{\mathcal{C}} \mathDef \left\{ \omega_{P}^{(l)} \in \bigcup_{i=1}^n \Omega_{P_i} : \exists f_{\phi} \in \omega_{P}^{(l)} \text{ such that } f_{\phi} \in \textbf{F}_{\phi}, \forall \phi \in \mathscr{F_E}(\mathcal{C}) \right\}
 \end{equation}
 
-Please note that, let $\mathcal{C}_1 = (\Phi_1,E_1)$ and $\mathcal{C}_2 = (\Phi_2,E_2)$ two different choreographies belonging to a same resource owner, is generally verified that:
+Please note that, let $\mathcal{C}_1 = (\Phi_1,E_1)$ and $\mathcal{C}_2 = (\Phi_2,E_2)$ two different choreographies belonging to the same resource owner, it is generally verified that:
 
 \begin{equation}
 	\widetilde{\textbf{S}}_{\mathcal{C}_1} \cap \widetilde{\textbf{S}}_{\mathcal{C}_2} \neq \emptyset
 \end{equation}
 
-that is a swarm can be shared by multiple choreographies, therefore any implementation of our model has to pay attention on eventually race conditions. 
+that is a swarm can be shared by multiple choreographies, therefore any implementation of our model has to pay attention on possible race conditions. 
 
 Finally, we will use following function:
 
@@ -1844,10 +1844,10 @@ Finally, we will use following function:
 	N(\mathcal{C},\textbf{x}_{\mathcal{C}},\omega_{P}^{(l)}) = \sum_{x_{\phi} \in \textbf{x}_{\mathcal{C}}} \sum_{\substack{f_{\phi} \in x_{\phi} \\ f_{\phi} \in \omega_{P}^{(l)}}} 1
 \end{equation}
 
-that is, $N(\mathcal{C},\textbf{x}_{\mathcal{C}},\omega_{P}^{(l)},t)$ denotes the number of concrete function used in $\textbf{x}_{\mathcal{C}}$ 
+that is, $N(\mathcal{C},\textbf{x}_{\mathcal{C}},\omega_{P}^{(l)},t)$ denotes the number of concrete functions used in $\textbf{x}_{\mathcal{C}}$ 
 
 
-\subsection{Concrete function performance computation}
+\subsection{Concrete Function Performance Computation}
 
 Finally, we can introduce how concrete function performance can be computed according to our model.
 
@@ -1895,9 +1895,9 @@ Let's define following functions:
 	\end{itemize}
 \end{itemize}
 
-Obliviously, our framework's duty is to determine $RT_{avg}^{(c)}(f_{\phi}, m,t)$, $RT_{avg}^{(w)}(f_{\phi}, m,t)$, $C_{avg}^{(c)}(f_{\phi}, m,t)$ and $C_{avg}^{(w)}(f_{\phi}, m,t)$ using time series data, containing historical performance data of $f_{\phi}$ under different memory configurations, collected by our logging framework. To compute aforementioned estimations, we have adopt the exponential moving average based approach.
+Obviously, our framework has to determine $RT_{avg}^{(c)}(f_{\phi}, m,t)$, $RT_{avg}^{(w)}(f_{\phi}, m,t)$, $C_{avg}^{(c)}(f_{\phi}, m,t)$ and $C_{avg}^{(w)}(f_{\phi}, m,t)$ using time series data, containing historical performance data of $f_{\phi}$ under different memory configurations, collected by our logging framework. To compute aforementioned estimations, we adopt the exponential moving average based approach.
 
-For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, let $Y_t$ the response time of $f_{\phi}$ when it is executed with memory size $m$ at a given time $t$, following formula was been used:
+For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, let $Y_t$ the response time of $f_{\phi}$ when it is executed with memory size $m$ at a given time $t$, following formula is used:
 
 \begin{equation}
 	RT_{avg}^{(c)}(f_{\phi}, m,t) \mathDef
@@ -1908,9 +1908,9 @@ For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, l
 	\end{cases}\,.
 \end{equation}
 
-\section{Executable function performance evaluation}
+\section{Executable Function Performance Evaluation}
 
-In this section, we will describe how to evaluate the performance of any executable serverless, in terms of average values regarding response time and charged costs, when it is executed. 
+In this section, we will describe how to evaluate the performance of any executable serverless function, in terms of average values regarding response time and charged costs, when it is executed. 
 
 Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}} = (f_j, m_j)$ an executable function configuration for $\phi_i \in \mathscr{F_E}(\mathcal{C})$, for some $i \in \N \cap [1,|\mathscr{F_E}(\mathcal{C})|]$ and $j \in \N \cap [1,|\textbf{F}_{\phi_{i}} \times \N|]$. In order to evaluate the performance of $\phi$, we have to introduce some useful notations and functions as follows:
 
@@ -1929,7 +1929,7 @@ Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}}
 		\theta^{(\phi_i)}_k = (\Phi_k, E_k) \text{ is a sub-choreography of } \theta^{(\phi_i)}_{k+1} \qquad \forall k \in \left[1;n-1\right]
 	\end{equation}
 
-	\item $E[I_{\phi_i}(t)]$ represents the expected value regarding the number's invocation of the executable function $\phi_i$ at time $t$, which can be defined as follows.
+	\item $E[I_{\phi_i}(t)]$ represents the expected value regarding the number of invocation of the executable function $\phi_i$ at time $t$, which can be defined as follows.
 	
 	\begin{equation}	
 		E[I_{\phi_i}(t)] \mathDef \left\{
@@ -1939,7 +1939,7 @@ Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}}
 		\end{array} \right.
 	\end{equation}
 	
-	\item $P_{exe}^C(\theta^{(\phi_i)}_k, t)$ is the probability to execute the entry point $\alpha(\theta^{(\phi_i)}_k)$ of the choreography $\theta^{(\phi_i)}_k$ when the function $pred(\alpha(\theta^{(\phi_i)}_k))$ is executed at time $t$. Obliviously, it is equal to the transition probability associated to the edge starting from $pred( \alpha(\theta^{(\phi_i)}_{k}) )$ and ending to $\alpha(\theta^{(\phi_i)}_{k}))$. Formally:
+	\item $P_{exe}^C(\theta^{(\phi_i)}_k, t)$ is the probability to execute the entry point $\alpha(\theta^{(\phi_i)}_k)$ of the choreography $\theta^{(\phi_i)}_k$ when the function $pred(\alpha(\theta^{(\phi_i)}_k))$ is executed at time $t$. Obviously, it is equal to the transition probability associated whit the edge starting from $pred( \alpha(\theta^{(\phi_i)}_{k}) )$ and ending to $\alpha(\theta^{(\phi_i)}_{k}))$. Formally:
 	
 	\begin{equation}	
 		P_{exe}^C(\theta^{(\phi_i)}_k, t) \mathDef \left\{
@@ -1952,7 +1952,7 @@ Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}}
 	
 	\item $P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t)$ is the probability to execute $\phi \in \mathscr{F_E}(\theta_k)$ when $\alpha(\theta_k)$ is executed at time $t$. 
 	
-	In order to compute this probability, is necessary to process any orchestration function $\phi_x \in \Pi(\alpha(\theta_k),\phi)$, in order to obtain a sort of pipeline choreography from $\alpha(\theta_k)$ to $\phi$.
+	In order to compute this probability, it is necessary to process any orchestration function $\phi_x \in \Pi(\alpha(\theta_k),\phi)$, in order to obtain a sort of pipeline choreography from $\alpha(\theta_k)$ to $\phi$.
 	
 	Then, after performing the workflow simplification process, we will obtain a set $\Phi_k' = \left\{\phi_1, \ldots, \phi_n \right\} \subseteq \Phi_k$ such that:
 	
@@ -2013,13 +2013,13 @@ where:
 
 
 
-\section{Choreography performance evaluation}
+\section{Choreography Performance Evaluation}
 
-In this section, we will briefly explore the analytical methodology to compute the average end-to-end response time and charged cost of generic serverless applications, having branches, loops or even workflow's portions executed in parallel, when a choreography configuration is given.
+In this section, we will briefly explore the analytical methodology to compute the average end-to-end response time and charged cost of generic serverless applications, having branches, loops or even workflow portions executed in parallel, when a choreography configuration is given.
 
-\subsection{Pipeline choreography performance}
+\subsection{Pipeline Choreography Performance}
 
-Let $\mathcal{C} = (\Phi,E)$ a pipeline choreography as defined in section \ref{PipelineDefinitionSection} and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration. Fortunately, exploiting pipeline choreography's properties, is very simple to obtain a performance evaluation when $\textbf{x}_{\mathcal{C}}$ is given. 
+Let $\mathcal{C} = (\Phi,E)$ a pipeline choreography as defined in section \ref{PipelineDefinitionSection} and $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration. Fortunately, exploiting pipeline choreography's properties, it is very simple to obtain a performance evaluation when $\textbf{x}_{\mathcal{C}}$ is given. 
 
 Let $\Phi = \left\{\phi_1, \ldots, \phi_n \right\}$ such that:
 
@@ -2035,11 +2035,11 @@ Then, at any time $t$, following equations can be used:
 	C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t) & \mathDef &  C(x_{\phi_1},t) + \sum_{x = 2}^n P_{exe}^F(\mathcal{C},\phi_{x-1},t) \cdot C(x_{\phi_x},t) \label{eq:perfF2}
 \end{eqnarray}
 
-\subsection{Generic choreography's performance}
+\subsection{Generic Choreography Performance}
 
 Unfortunately, equations \ref{eq:perfF1} and \ref{eq:perfF2} can be used only dealing with pipeline type choreographies, therefore they are not suitable for general choreographies having branch or loops. 
 
-However, exploiting what was said before regarding choreography's structures, is very simple to convert a generic choreography into a pipeline type one. A very naive iterative approach is reported in algorithm \ref{naiveIter}.
+However, exploiting what was said before regarding choreography structures, it is very simple to convert a generic choreography into a pipeline type one. A very naive iterative approach is reported in Algorithm \ref{naiveIter}.
 
 \begin{algorithm}\caption{Pseudo-code regarding a possible iterative approach to convert a generic choreography into a pipeline type one}\label{naiveIter}
 	
@@ -2099,18 +2099,18 @@ where:
 
 \chapter{Optimization Problem Formulations}\label{chapterOptimizationProble}
 
-To achieve our goal consisting in to find the best choreography configuration capable to guarantee QoS constraints imposed by an user, we have to solve an optimization problem, which we have formulated in two very different manners, where:
+To achieve our goal consisting in finding the best choreography configuration capable to guarantee QoS constraints imposed by an user, we have to solve an optimization problem, which we have formulated in two  different manners, where:
 
 \begin{itemize}
-	\item the first one is based on the Multidimensional Knapsack Problem formulation.
-	\item the second one is based on the multi-dimensional multi-choice knapsack problem formulation. 
+	\item the first one is based on the \textit{Multi-Dimensional Knapsack Problem Formulation}.
+	\item the second one is based on the \textit{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}. 
 \end{itemize}
 
-In this section, we will describe and analyze both approach, despite only for the second one we have developed and implemented an heuristic approach capable to solve it in a faster way respect to exact algorithms. 
+In this section, we will describe and analyze both approaches, although only for the second one we have developed and implemented a heuristic approach capable to solve it in a faster way respect to exact algorithms. 
 
 \section{Multidimensional Knapsack Problem Formulation}
 
-A very naive formulation to our problem can be expressed in term of the \textit{Multidimensional Knapsack Problem} (MKP), a well-studied, strongly NP-hard combinatorial optimization problem occurring in many different applications, whose goal is to choose an item, in our case a choreography configuration, having maximum total profit; selected item  must, however, not exceed resource capacities, which are called as knapsack constraints.
+A very naive formulation to our problem can be expressed in term of the \textit{Multidimensional Knapsack Problem} (MKP), a well-studied, strongly NP-hard combinatorial optimization problem occurring in many different applications, whose goal is to choose an item, in our case a choreography configuration, having maximum total profit; selected item must, however, not exceed resource capacities, which are called \textit{knapsack constraints}.
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography and the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$, the MKP formulation for our problem can be defined by the following ILP:
 
@@ -2129,23 +2129,23 @@ where:
 	\item $x_i$ is a binary variable set to $1$ when  $\textbf{x}_{\mathcal{C}_i}$ is used as configuration for $\mathcal{C}$; otherwise it is set to $0$.
 \end{itemize}
 
-Is very important to observe, that each column of above formulation represents the profit and resource requirements referring to a choreography configuration.
+It is very important to observe, that each column of above formulation represents the profit and resource requirements referring to a choreography configuration.
 
-The number of existing choreography configuration (or columns above LP) is very large because it grows exponentially. Therefore, become impractical to generate and enumerate all possible choreography configuration.
+The number of existing choreography configurations (or columns of LP) is very large because it grows exponentially. Therefore, it becomes impractical to generate and enumerate all possible choreography configurations.
 
-For example, suppose to have a serverless choreography $\mathcal{C}$ made up of $6$ executable functions. Supposing to have $46$ possible memory choices, even if only one concrete function exist for each executable function, the solution space $\Omega$ will contain $9.47$ billion different configurations, making any exhaustive enumeration and search computationally unfeasible. 
+For example, let's suppose to have a serverless choreography $\mathcal{C}$ made up of $6$ executable functions. Supposing to have $46$ possible memory choices, even if only one concrete function exists for each executable function, the solution space $\Omega$ will contain $9.47$ billion different configurations, making any exhaustive enumeration and search computationally unfeasible. 
 
 Even if we had a way of generating all configurations, that is all columns of our problem, due to its complexity, any attempt to find the optimal solution rapidly will be an illusion. Moreover, it will be very likely that any computer runs out his memory.
 
-\section{Multi-dimensional Multi-choice Knapsack Problem Formulation}
+\section{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}
 
-To avoid the enumeration of all possible choreography configuration, we have decided to use another kind of formulation, which is base on the \textit{Multidimensional Multiple-choice Knapsack Problem} (MMKP), a variant of the previous one. 
+To avoid the enumeration of all possible choreography configurations, we have decided to use another kind of formulation, which is based on the \textit{Multidimensional Multiple-Choice Knapsack Problem} (MMKP), a variant of the previous one. 
 
-Let $n \in \N \setminus \left\{0\right\}$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\mathscr{F_E}(\mathcal{C})| = n$. For each $\phi_i \in \mathscr{F_E}(\mathcal{C})$ corresponds a \textit{group of item}, where each item corresponds to an executable configurations $\phi_i$; therefore, each $i$-th group contains exactly $|\left\{ \textbf{F}_{\phi_{i}} \times \N \right\}|$ items or executable function configurations.
+Let $n \in \N \setminus \left\{0\right\}$ and a choreography $\mathcal{C} = (\Phi,E)$ such that $|\mathscr{F_E}(\mathcal{C})| = n$. For each $\phi_i \in \mathscr{F_E}(\mathcal{C})$ corresponds a \textit{group of items}, where each item corresponds to an executable configurations $\phi_i$; therefore, the $i$-th group contains exactly $|\left\{ \textbf{F}_{\phi_{i}} \times \N \right\}|$ items or executable function configurations.
 
 To resolve our MMKP, we have to pick exactly one item from each group, that is exactly one configuration $x_{\phi_1}$ for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, in such a way to maximize the profit value of the selected items, respecting several resource constraints of the knapsack, which, in our case, are represented both by SLAs attributes values imposed by users and by the actual available capacity of all queuing system associated to each swarm to which all concrete functions, specified in the solution, belong.
 
-To properly describe our MMKP, since is not trivial to formulate in a LP problem the relationship between executable functions belonging to a same parallel structure, according to which their response times depend on the slower one, we need to introduce the concept which we have called of \textit{parallel path}.
+To properly describe our MMKP, since it is not trivial to formulate in a LP problem the relationship between executable functions belonging to a same parallel structure, according to which their response times depend on the slower one, we need to introduce the concept which we have called of \textit{parallel path}.
 
 From now, $\mathcal{\widetilde{P}} \mathDef \left\{\mathcal{\widetilde{P}}_1,\ldots,\mathcal{\widetilde{P}}_z \right\}$ represents the set containing all parallel structures of $\mathcal{C}$, while $\mathscr{F_E}(\mathcal{\widetilde{P}})$ represents the set containing all executable functions such that:
 
@@ -2155,7 +2155,7 @@ From now, $\mathcal{\widetilde{P}} \mathDef \left\{\mathcal{\widetilde{P}}_1,\ld
 
 Let $z \in \N \SetMinusZero$ and $\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))$ the set containing all possible paths from the start point to the end point of $\mathcal{C}$ such that $|\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))| = z$. 
 
-Formally, being $\pi_i$ the $i$-th path belong to $\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))$, the $i$-th \textit{parallel path} $\delta_{\mathcal{C}_i}$ is defined as follows:
+Formally, being $\pi_i$ the $i$-th path belonging to $\Pi(\alpha(\mathcal{C}),\omega(\mathcal{C}))$, the $i$-th \textit{parallel path} $\delta_{\mathcal{C}_i}$ is defined as follows:
 
 \begin{equation}
 	\delta_{\mathcal{C}_i} \mathDef \left\{ \phi \in \mathscr{F_E}(\mathcal{\widetilde{P}}) : \phi \in \pi_i \right\}
@@ -2167,7 +2167,7 @@ Clearly, the set containing all parallel paths of $\mathcal{C}$ is denoted by $\
 	\Delta_{\mathcal{C}} \mathDef \bigcup_{i=1}^z \delta_{\mathcal{C}_i}
 \end{equation}
 
-Finally, wa are able to formulate our MMKP instance problem which, supposing to have a choreography $\mathcal{C} = (\Phi,E)$ and the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$, can be expressed as follows:
+Finally, wa are able to formulate our MMKP problem which, supposing to have a choreography $\mathcal{C} = (\Phi,E)$ and the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$, can be expressed as follows:
 
 \begin{align}
 	\displaystyle max \quad & \displaystyle \sum_{i = 1}^{|\mathscr{F_E}(\mathcal{C})|}  \sum_{j = 1}^{|\textbf{F}_{\phi_{i}} \times \N|} y_{\phi_{i_{j}}} \cdot p_{\phi_{i_{j}}}(t) & \label{MMPKObjective}\\	
@@ -2189,9 +2189,9 @@ where:
 \begin{itemize}
 	\item All coefficients, or profits, associated to each executable function configuration, that appear inside the objective function \ref{MMPKObjective}, are computed using the formula \ref{profit}.
 	
-	\item Expression \ref{MMPKCost} represents the max billed cost requirement, whose coefficients are computed using the formula \ref{cost}. 
+	\item Constraint \ref{MMPKCost} represents the max billed cost requirement, whose coefficients are computed using the formula \ref{cost}. 
 	
-    \item The \ref{MMPKDelay} represents the max response time requirements. According to our formulation, there are exactly $|\Delta_{\mathcal{C}}|$ constraints regarding the response time, that is one of each parallel path. Since we don't know a priori the slowest executable function inside a parallel structure, the main idea is to assure us that any path executed in parallel respect response time's constraint. Coefficients associated to each variable are computed using the formula \ref{responseTime}.
+    \item The \ref{MMPKDelay} represents the max response time requirements. According to our formulation, there are exactly $|\Delta_{\mathcal{C}}|$ constraints regarding the response time, that is one of each parallel path. Since we don't know a priori the slowest executable function inside a parallel structure, the main idea is to assure us that any path executed in parallel respects response time constraint. Coefficients associated to each variable are computed using the formula \ref{responseTime}.
     
     \item The \ref{MMPKCapacity} represents the capacity requirement, used to check if there are enough function instances on each system $\textbf{Q}_{\omega_{P}^{(l)}}$ corresponding to each swarm of the choreography. The coefficient $a_{(\phi_{i_{j}},\omega_{P}^{(l)})}$ is computed as follows:
     
@@ -2215,31 +2215,31 @@ To simplify our notations, from now, we will use the notation $o_{i_j}$ to repre
 
 A solution for our MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldots o_{n} \right\}$ representing, obliviously, a choreography configuration.
 
-\section{The heuristic approach based on ACO}
+\section{The Heuristic Approach Based on ACO}
 
-According to our experiments, the MMKP formulation performs notably better than MKP one, producing the exact solution quicker and using less memory; this is due both to the lack of need of choreography's configurations enumeration, which require a lot of memory and time, and to a minor number of columns, despite the MMKP's formulation has more constraints respect to the MKP one.
+According to our experiments, the MMKP formulation performs notably better than MKP one, producing the exact solution quicker and using less memory; this is due both to the lack of an exhaustive choreography configurations enumeration, which requires a lot of memory and time, and to a smaller number of columns, despite the MMKP formulation has more constraints compared to the MKP one.
 
-However, since the MMKP is an NP-hard problem, we expect that is not always possible to find a feasible solution in a reasonable computing time especially for big instances, therefore we have look for an heuristic approach for solving it quicker providing good quality solutions.
+However, since the MMKP is an NP-hard problem, we expect that is not always possible to find a feasible solution in a reasonable computing time especially for big instances, therefore we look for a heuristic approach for solving it quicker providing good quality solutions.
 
 We have decided to built a \textit{custom} algorithm based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics that have been applied to solve many combinatorial optimization problems such as traveling salesman problems, quadratic assignment problems, or vehicle routing problems.
 
 Aforementioned class of meta-heuristics imitate the behavior shown by real ants when searching for food, where many simple interactions between single ants result in a very complex behavior of the whole ant colony.
 
-Any ACO algorithm is based on a set of computational agent, called \textit{artificial ants}, which iteratively constructs a so-called  \textit{partial solution} for the instance to solve. At each iteration, each artificial ant moves from a partial solution to another, applying a series of stochastic local decisions whose policy is based on following parameters:
+Any ACO algorithm is based on a set of computational agents, called \textit{artificial ants}, which iteratively construct a so-called  \textit{partial solution} for the instance to solve. At each iteration, each artificial ant moves from a partial solution to another, applying a series of stochastic local decisions whose policy is based on following parameters:
 
 \begin{description}
-	\item[Attractiveness] which is a value computed using an heuristic approach indicating the a \textit{priori} desirability of a given partial solution.
+	\item[Attractiveness] which is a value computed using a heuristic approach indicating the a \textit{priori} desirability of a given partial solution.
 	
 	\item[Pheromone Trail] which represents a value indicating how proficient it has been in the past to select a particular partial solution, representing, therefore, an a \textit{posteriori} indication of its desirability.
 \end{description} 
 
-In very simple terms, each ant incrementally constructs the partial solution to the problem and, after evaluating the find solution, it modifies the pheromone trail on the components used in its solution; that pheromone information will be use by future ants to find a better solutions to the problem instance. In fact, by increasing or decreasing the level of pheromone trails, ants distinguish "\textit{good}" from "\textit{bad}" solutions. In other words, pheromone trails represent the way according to which each ants communicate in order to find the best solution.
+In very simple terms, each ant incrementally constructs the partial solution to the problem and, after evaluating the found solution, it modifies the pheromone trail on the components used in its solution; that pheromone information will be use by future ants to find a better solutions to the problem instance. Indeed, by increasing or decreasing the level of pheromone trails, ants distinguish "\textit{good}" from "\textit{bad}" solutions. In other words, pheromone trails represent the way according to which ants communicate in order to find the best solution.
  
-\subsection{Solution components graph}
+\subsection{Solution Components Graph}
 
 To solve MMKPs with ACO, we have to define how pheromone trails are laid by artificial ants, explaining how they follow them when constructing new partial solutions. In other words we need to decide which components of the constructed solutions should be rewarded, and how to exploit these rewards when constructing new solutions.
 
-In order to correctly explain how we have decided to lay pheromone, we have to define the concept of \textit{solution's components graph}.
+In order to correctly explain how we have decided to lay pheromone, we have to define the concept of \textit{solution components graph}.
 
 Formally, let the MMKP formulation reported in \ref{MMPKObjective}, any weighted directed graph $G=(O,E)$ such that:
 
@@ -2257,13 +2257,13 @@ is called solution components graph, where:
 	
 	\item Each vertex $o_{i_j}$ is adjacent only to all other vertices which belong to any group other than $i$; in other words, vertices belonging to the same group are not adjacent each others.
 	
-	\item The weight associated to each edge $(o_{i_j}, o_{k_m}) \in E$ is a positive real number representing the \textit{pheromone trail} laid by our artificial ants and it can change during algorithm's iterations. 
+	\item The weight associated to each edge $(o_{i_j}, o_{k_m}) \in E$ is a positive real number representing the \textit{pheromone trail} laid by our artificial ants and it can change during algorithm iterations. 
 	
 	The value of pheromone trail associated to each edge $(o_{i_j}, o_{k_m})$ during the $k$-th iteration of the algorithm is denoted by $\tau_k(o_{i_j}, o_{k_m})$.
 	
 	Intuitively, the pheromone value associated to the edge $(o_{i_j}, o_{k_m}) \in E$ represents the desirability to select the object $o_{k_m}$ when $o_{i_j}$ was been previously selected as part of the solution. 
 	
-	We have adopted the so-called $\mathcal{MAX} - \mathcal{MIN}$ Ant System, according to which following constrain must be hold:
+	We have adopted the so-called $\mathcal{MAX} - \mathcal{MIN}$ Ant System, according to which following constraint must hold:
 	
 	\begin{equation}
 		w_{\textbf{min}} \leq \tau_k(o_{i_j}, o_{k_m}) \leq w_{\textbf{max}} 
@@ -2277,9 +2277,9 @@ is called solution components graph, where:
 	trails while pheromone trails are set to $w_{\textbf{max}}$ at the beginning of the search.
 \end{itemize}
 
-\subsection{Algorithm description}
+\subsection{Algorithm Description}
 
-ACO algorithms are conceptually very simple and they follow a specific scheme outlined in algorithm \ref{ACO}.
+ACO algorithms are conceptually very simple and they follow a specific scheme outlined in Algorithm \ref{ACO}.
 
 In general, after the initialization of the pheromone trails and some parameters, a main loop is repeated until a termination condition is met. The ants construct feasible solutions, which are subsequently improved by applying a local search algorithm. Finally the pheromone trails are updated.
 
@@ -2295,7 +2295,7 @@ In general, after the initialization of the pheromone trails and some parameters
 
 \subsection{Transition Probabilities}
 
-Although firstly each ants selects randomly a object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depend on several parameters:
+Although firstly each ants selects randomly an object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depends on several parameters:
 
 \begin{itemize}
 	\item the attractiveness of the objects.
@@ -2319,13 +2319,13 @@ where:
 	g(o_s) \neq g(o_r)   &\qquad \forall s,r \in \SetFromOneTo{z} : s \neq r
 \end{eqnarray}
 
-The last property state that each selected object belonging to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
+The last property states that each pair of selected objects belong to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
 
 Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represents the partial solution built so far by the $l$-th ant after the $z$-th object selection; therefore, $|\textbf{S}_{k_l}^{(z)}| = z + 1$.  
 
 Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in O$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
 
-\subsection{Ant's solution construction algorithm}
+\subsection{Ant's Solution Construction Algorithm}
 
 A complete description of the algorithm performed by ants to build partial solutions is reported in algorithm \ref{antsolutiongen}
 
@@ -2422,7 +2422,7 @@ The following ratio:
 	h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) \mathDef \displaystyle \sum_{y=0}^{Y} \frac{c_{y_j} + 1}{\displaystyle  \Big( b_y - \sum_{o_s \in \textbf{S}_{k_l}^{(z)}} c_y(o_z)\Big) + 1}
 \end{equation}
 
-represents the tightness of the object $o_{i_j}$ on the problem's constraints relatively to the constructed solution $\textbf{S}_{k_l}^{(z)}$; thus, the lower this ratio is, the
+represents the tightness of the object $o_{i_j}$ on the problem constraints relatively to the constructed solution $\textbf{S}_{k_l}^{(z)}$; thus, the lower this ratio is, the
 more the object is profitable.
 
 We can now define the heuristic factor formula as follows:
@@ -2436,7 +2436,7 @@ We can now define the heuristic factor formula as follows:
 
 According to \cite{}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current best solution.
 
-To be precise, we have adopted a \textit{random local search} algorithm, which represents an exhaustive search within a group to improve the solution. It replaces current selected object of a group with every other object that do not violate resource constraints and checks if it is a better solution. The total procedure is repeated a number of times, each time for a random group. The pseudo-code of that procedure is reported in algorithm \ref{localserach}.
+To be precise, we have adopted a \textit{random local search} algorithm, which represents an exhaustive search within a group to improve the solution. It replaces current selected object of a group with every other object that does not violate resource constraints and checks if it is a better solution. The total procedure is repeated a number of times, each time for a random group. The pseudo-code of that procedure is reported in algorithm \ref{localserach}.
 	
 
 \begin{algorithm}\label{localserach}
@@ -2461,7 +2461,7 @@ To be precise, we have adopted a \textit{random local search} algorithm, which r
 			\BlankLine
 			\BlankLine
 			
-			\If{$\textbf{S}_k^{(temp)}$ not violate MMKP constraints}{
+			\If{$\textbf{S}_k^{(temp)}$ do not violate MMKP constraints}{
 				
 				\BlankLine
 				\BlankLine
@@ -2492,7 +2492,7 @@ where:
 	
 	\item $\rho \in \mathbb{R} \cap \left[0,1\right]$ represents the so called \textit{evaporation coefficient}. 
 	
-	That coefficient is involved into the performing of a a mechanism called \textit{evaporation} according to which, lowering the pheromone trails by a constant factor, is possible to avoid unlimited accumulation of pheromone trail over components, decreasing their desirability during future algorithm's iterations.
+	That coefficient is involved into a mechanism called \textit{evaporation} according to which, lowering the pheromone trails by a constant factor, it is possible to avoid unlimited accumulation of pheromone trail over components, decreasing their desirability during future algorithm iterations.
 	
 	\item $\Delta \tau(o_{i_a}, o_{j_b})_{k}$ is the amount of pheromones laid on edge $(o_{i_a}, o_{j_b})$ by all ants who have traversed that edge for their solution construction. It can be computed as follows:
 	
@@ -2524,7 +2524,7 @@ Then, our algorithm stops when:
 
 \begin{itemize}
 	\item an ant has found an optimal solution.
-	\item a maximum number of cycles has been performed.
+	\item a maximum number of iterations have been performed.
 	\item the improvement in the objective function in an iteration is less than a threshold; by default, if the improvement of the solution is less than the $10\%$ respect to the previous one, our algorithm will terminate.
 \end{itemize}
 
