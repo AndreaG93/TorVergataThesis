@@ -14,7 +14,7 @@
 
 \lstset{
 	language=Java,
-	basicstyle=\small\ttfamily,			
+	basicstyle=\scriptsize\ttfamily,			
 	keywordstyle=\color{blue},
 	commentstyle=\color{black},			
 	stringstyle=\color{black},			
@@ -30,6 +30,11 @@
 \SetKw{KwBy}{by}
 
 \usepackage[numbers]{natbib} 
+
+\usepackage{footnote}
+\makesavenoteenv{tabular}
+\makesavenoteenv{table}
+
 
 
 \setcounter{secnumdepth}{3}
@@ -237,7 +242,7 @@ To be precise, the aforementioned model is needed to select a configuration for 
 
 Unfortunately configuring such parameters correctly, meeting cost and response time constraints, is not trivial. In fact, several studies have already shown that aforementioned configuration parameters significantly affect the cost and response time of serverless functions; for instance, \citet{COSE} have shown that function response time decreases when the memory size allocated to the function is increased; however, due to pricing models adopted by the vast majority of FaaS providers, according to which cost depends proportionally on the amount of memory allocated to a serverless function, a too large value for memory can result in higher costs. Conversely, a small value of memory size can lead to higher costs too, due to a longer execution time of the functions. Moreover, a decrease of the marginal improvement in response time as the memory increases is observed.
 
-Despite solutions to that problem already exist in scientific literature, we believe that they suffer from a major limitation, as they limit their focus only on serverless function configurations parameters; in fact, none of existing performance models and frameworks, when they have to select a suitable configuration to fulfill QoS requirements, considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Sometimes, depending on QoS requirements, can be useful to select a particular implementation with respect to another. In this dissertation, we will use the term \textit{concrete serverless function}, or simply \textit{concrete function}, to refer to semantically and logically equivalent function implementations, which may eventually expose different performance or cost behavior.
+Despite solutions to that problem already exist in scientific literature, we believe that they suffer from a major limitation, as they limit their focus only on serverless function configurations parameters; in fact, none of existing performance models and frameworks, when they have to select a suitable configuration to fulfill QoS requirements, considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Sometimes, depending on QoS requirements, can be useful to select a particular implementation with respect to another. In this dissertation, we will use the term \textit{concrete serverless function}, or simply \textit{concrete function}, to refer to semantically and logically equivalent function implementations, accepting the same set of input data and returning the same type of output data. However, they may expose different performance or cost behavior since they may be implemented with different programming languages or algorithms and they may be hosted on different FaaS platforms having different performance capabilities.
 
 Similarly, no existing solution is able to manage serverless application whose functions are hosted on multiple FaaS platforms. Proposed solutions are generally unaware of the current status of FaaS platforms and they cannot adapt themselves in response to changes in their execution environments. Therefore, they are incapable to prevent cold starts or the unavoidable delays which usually occur when a FaaS platform is too overloaded or to select the provider having the best cost/performance ratio in order to better meet customer's expectations.
 
@@ -335,16 +340,11 @@ Our system was designed and implemented according to simple \textit{client-serve
 
 Since our system is made up of a centralized component, capable to handle all communications between users and all supported FaaS platform providers, our system acts as a \textit{broker}.
 
-Clearly, for the purposes of our work, our application has to have all required knowledge about the interfaces adopted by all supported providers regarding serverless functions management; therefore, from an architectural point of view, our system requires a set of \textit{adapters}\cite{SDCC}, that is software components having aforementioned knowledge. At the current state of this work, only the adapters for following public serverless cloud platforms are provided:
-
-\begin{itemize}
-	\item AWS Lambda \cite{AWSLambda};
-	\item Apache OpenWhisk \cite{OpenWhisk};
-\end{itemize}
+Clearly, for the purposes of our work, our application has to have all required knowledge about the interfaces adopted by all supported providers regarding serverless functions management; therefore, from an architectural point of view, our system requires a set of \textit{adapters}\cite{SDCC}, that is software components having aforementioned knowledge. 
 
 As trivial as it sounds, a very important advantage of this design choice is the \textit{access transparency} provided to final users, because they can manage their applications using identical operations forwarded to our system without interacting directly with FaaS providers \cite{SDCC}.
 
-Despite being very easy to implement, the adopted centralized approach also has, obviously, several shortcomings: it is not scalable, it potentially suffers from serious traffic congestion problems and, lastly, it represents a single point of failure \cite{SDCC}. 
+Despite being very easy to implement, the adopted centralized approach also has several shortcomings: it is not scalable, it potentially suffers from serious traffic congestion problems and, lastly, it represents a single point of failure \cite{SDCC}. 
 
 We want to emphasize that, since they are out from our goal, most issues and pitfalls regarding the design of our system, like transparency, processes decoupling, message delivery reliability issues, scalability, traffic congestion, fault-tolerance or replication management, were out of the scope our this work.
 
@@ -377,9 +377,9 @@ After the invocation of any serverless function, the corresponding FaaS platform
 	\item The occurrence, or not, of a cold start.
 \end{itemize}
 
-After every serverless function execution completion, FaaS produced logs are parsed and stored by the logging subsystem into an instance of InfluxDB, an open-source \textit{time series database} (TSDB) \cite{influx}. Believing that our domain requires the capability to handle thousands of parallel inputs streams, to manage time-indexed data, horizontal scaling and a fast access to stored data, the use of a TSDB was been preferred respect to conventional \textit{Relational DataBase Management System} (RDBMS).  
+After every serverless function execution completion, FaaS produced logs are parsed and stored by the logging subsystem into an \textit{time series database} (TSDB). Believing that our domain requires the capability to handle thousands of parallel inputs streams, to manage time-indexed data, horizontal scaling and a fast access to stored data, the use of a TSDB was been preferred respect to conventional \textit{Relational DataBase Management System} (RDBMS) \cite{IOTTSDB}.  
 
-The data contained in FaaS platforms logs \textit{can}\footnote{Strictly speaking they aren't. FaaS platforms use an activation ID to index their logs since two or more serverless functions can start or terminate at the same time. However, according to our design, it is meaningless.} be considered as time series data, that is data points indexed in time order. Using InfluxDB terminology, each point is uniquely identified by four components:
+The data contained in FaaS platforms logs \textit{can}\footnote{Strictly speaking they aren't. FaaS platforms use an activation ID to index their logs since two or more serverless functions can start or terminate at the same time. However, according to our design, it is meaningless.} be considered as time series data, that is data points indexed in time order. According to our design, each point is uniquely identified by four components:
 
 \begin{itemize}
 	\item A timestamp.
@@ -392,13 +392,13 @@ The data contained in FaaS platforms logs \textit{can}\footnote{Strictly speakin
 	
 \end{itemize}
 
-According to the InfluxDB's design, the main difference between tags and fields is that the former are indexed, therefore searching by tag is quicker than searching by field; in fact, when a search by field is performed, a scan of entire value list - point after point - is required, making that operation slower on large datasets \cite{influx}.
+According to several TSDB design, the main difference between tags and fields is that the former are indexed, therefore searching by tag is quicker than searching by field; in fact, when a search by field is performed, a scan of entire value list - point after point - is required, making that operation slower on large datasets \cite{IOTTSDB}.
 
-To group together all points related to all serverless functions owned by an resource owner we exploit the InfluxDB's concept called \textit{bucket}. A bucket is equivalent to a directory where time series data can be stored. Moreover, differently form a directory, a bucket has a retention period according to which InfluxDB drops all points with timestamps older than the bucket retention period; however, our prototype does not exploit this feature, therefore buckets retention periods are disabled by default.
+All data points, produced by a common FaaS platform provider, are grouped in a measurement, whose name is the same of the corresponding FaaS platform. 
 
-According to our design, there is a bucket for each resource owner and they share the same name.
+To group together all points related to all serverless functions owned by an resource owner, they are stored inside directory whose name is shared with correlated user one.
 
-All data points, produced by a common FaaS platform provider, are grouped in a measurement, whose name is the same of the corresponding FaaS platform. Then following tags are used: 
+Then following tags are used: 
 
 \begin{description}
 	\item[\texttt{FunctionName}] to group together all point related to a unique serveless function. 
@@ -406,7 +406,7 @@ All data points, produced by a common FaaS platform provider, are grouped in a m
 	\item[\texttt{StartType}] to distinguish if data was collected after a warm or a cold start.
 \end{description}
 
-Actually, data points are stored into our InfluxDB instance using a simple first-come-first-served approach, therefore data point's index coincides with the actual time on our system framework. 
+Actually, data points are stored into our TSDB instance using a simple first-come-first-served approach, therefore data point's index coincides with the actual time on our system framework. 
 
 With very few exceptions, all iterations involving our logging subsystem are done asynchronously, without blocking current tasks possibly performed by our system.  
 
@@ -448,11 +448,11 @@ According to our design, it is mandatory that the profiling phase for a given se
 
 Synchronously interacting with the logging subsystem, it retrieves all needed performance metrics referring to each implementation and configuration regarding all serverless functions inside the invoked application. Aforementioned metrics include observed average response times and charged cost when both cold and warm starts occurred. Once data are obtained, they are processed according to our performance model, which we will explain in next chapter.
 
-However, performing aforementioned tasks is generally expensive due to several reasons like the huge amount of data, expensive computation and network delay during data transmission between system components. In general, in a real situation, thousands data point must be collected and analyzed. It may happen that the InfluxDB instance, from which the data is obtained, can be connected to our framework through a lower-bandwidth and multi-hop connection. 
+However, performing aforementioned tasks is generally expensive due to several reasons like the huge amount of data, expensive computation and network delay during data transmission between system components. In general, in a real situation, thousands data point must be collected and analyzed. It may happen that the TSDB instance, from which the data is obtained, can be connected to our framework through a lower-bandwidth and multi-hop connection. 
 
-Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from InfluxDB, then it stores locally processed data. Data synchronization is performed periodically \footnote{By default every 15 minutes}.
+Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from the TSDB, then it stores locally processed data. Data synchronization is performed periodically \footnote{By default every 15 minutes}.
 
-Since according to our performance model processed data must used for future invocations, they are stored inside a Apache Cassandra instance for future use.
+Since according to our performance model processed data must used for future invocations, they are stored inside a NoSQL distributed database instance for future use.
 	
 \subsection{QoS-aware model-based optimizer}
 	
@@ -484,21 +484,88 @@ As already said in previous chapter, instead of requiring a separate implementat
 
 Aforementioned representation scheme is based on an existing language called \textit{Abstract Function Choreography Language} (AFCL), which is a feature-rich markup language developed to facilitate the creation of serverless workflows encoded in \texttt{YAML} or \texttt{JSON}. AFCL supports event-based, synchronous and asynchronous invocation of functions and it includes several control-flow constructs in order to construct iterations, branch, sequence or parallel executions inside a serverless workflow \cite{AFCL}.
 
-In order to integrate the use of aforementioned language in our framework, we have developed our own AFCL parser, which is invoked whenever a serverless application needs to be instantiated from its AFCL representation. However, only a subset of AFCL features are really needed to achieve our goals and, at the same time, AFCL lacks some features which are indispensable to us. Therefore, more concretely, our serverless application representation scheme is based on a custom version of AFCL having following characteristics:
+More precisely, in order to create a serverless workflow, all its functions, as well as all control- and data-flow connections among them, must be specified. According to AFCL terminology, a function can be either \textit{base functions} or \textit{compound} functions. The former refers to a single computational task, while the latter encloses some base functions or even nested compound functions.
+
+For example, Listing \ref{AFCL1} show the definition of a base function in AFCL using a meta-syntax which extends \texttt{YAML}, such that \texttt{YAML} elements can be contained in \texttt{\{ \}} and appended with wildcards \QuoteIntro\texttt{?}" ($0$ or $1$), and \QuoteIntro\texttt{+}"’ ($1$ or more).
+
+\begin{lstlisting}[frame=lines, caption={Definition of a base function in AFCL}, label={AFCL1}]
+function: {
+	name: "name",
+	type: "type",
+	dataIns: [
+		{
+			name: "name", type: "type",
+			source: "source"?, value: "value"?,
+			properties: [{name: "name", value: "value"}+]?
+			constraints: [{name: "name", value: "value"}+]?
+		}+
+	]?,
+	properties: [{name: "name", value: "value"}+]?
+	constraints: [{name: "name", value: "value"}+]?
+	dataOuts: [
+		{
+			name: "name", type: "type",
+			source: "source"?, value: "value"?,
+			properties: [{name: "name", value: "value"}+]?
+			constraints: [{name: "name", value: "value"}+]?
+		}+
+	]?,
+}
+\end{lstlisting}
+
+As you can see from Listing \ref{AFCL1}, base function definition supports both the \texttt{dataIns} AFCL object, which is a \texttt{YAML}/\texttt{JSON} object used to specify input data, and the \texttt{dataOuts} AFCL object, used, obviously, to specify output data\cite{AFCL}. Optionally developers can specify properties and constraints for functions. 
+
+The number of the objects belonging to both \texttt{dataIns} and \texttt{dataOuts} depend on the chosen serverless function. These objects have to specify a name and a type while, optionally, they can include a constant value or the data source, which can be specified using the name of another base or compound function within the same workflow. 
+
+To build realistic serverless workflow, AFCL support following functions: \texttt{sequence}, \texttt{if-then-else}, \texttt{switch}, \texttt{for}, \texttt{while}, \texttt{parallel}, and \texttt{parallelFor}. The specifications for the \texttt{name} attribute, \texttt{dataIns} and \texttt{dataOuts} ports are similar as for a base function. Anyway, a detailed description of AFCL is available in \cite{AFCL}.
+
+Despite quite refined, only a subset of AFCL features are really needed to achieve our goals and, at the same time, AFCL lacks some features which are indispensable to us. Therefore, more concretely, our serverless application representation scheme is based on a custom version of AFCL and to integrate its use in our framework, we have developed our own custom AFCL parser, invoked whenever a serverless application needs to be instantiated from its AFCL representation. 
+
+\begin{lstlisting}[frame=lines, caption={Definition of a serverless function according to our custom AFCL.}, label={AFCL2}]
+	function: {
+		name: "name",
+		"implementations":[
+			{
+				providerName: "providerName", 
+				concreteFunctionName: "concreteFunctionName"
+				host: "host"?
+			}+
+		],
+		"profilingPayloads": [
+			{...}+
+		]
+		dataIns: [
+			{
+				name: "name", type: "type",
+				source: "source"
+			}+
+		],
+		dataOuts: [
+			{
+				name: "name", type: "type",
+				source: "source"
+			}+
+		]?,
+	}
+\end{lstlisting}
+
+Listing \ref{AFCL2} shows the definition of a serverless function according to our custom AFCL, which has follows characteristics and differences respect to the original one:
 
 \begin{itemize}
-	\item Unlike the original one, only synchronous invocation are supported.
+	\item Only synchronous invocation are supported.
 	
 	\item Neither \texttt{parallelFor} or \texttt{sequence} statements are supported and recognized by our parser since they are redundant because their effects on the workflow are achievable using existing control-flow statements.
 	
-	\item According to our custom AFCL language, in order to allow our users to exploit different implementations of a serverless function, which can be eventually hosted on multiple hosts, any \texttt{function} \texttt{JSON} object literal must have the \texttt{implementations} field.
+	\item So-called AFCL event-based invocations, according to which a user can trigger the execution of one o more serverless workflow based on a specified event, is not supported \cite{AFCL}.   
 	
-	As the name suggests, the \texttt{implementations} field is used to specify so-called concrete functions, that is the actual implementations of a serverless function. Concrete functions must be semantically and logically equivalent which means that they have to accept the same set of input data returning the same type of output data; however, they may expose different performance or cost behavior since they may be implemented with different programming languages or algorithms and they may be hosted on different FaaS platforms.
+	\item Properties and constraints are not supported
+	
+	\item According to our custom AFCL language, in order to allow our users to exploit different implementations of a serverless function, which can be eventually hosted on multiple hosts, any \texttt{function} \texttt{JSON} object literal must have the \texttt{implementations} field, which is used to specify concrete functions.
 	
 	Technically, the \texttt{implementations} field is an \texttt{JSON} array containing one or more \texttt{JSON} object having following fields:
 	
 	\begin{description}
-		\item[\texttt{providerName}] which, clearly, represents the FaaS provider name. Currently, only \texttt{openwhisk} and \texttt{aws} values are allowed and recognized by our software.
+		\item[\texttt{providerName}] which, clearly, represents the FaaS provider name. 
 		
 		\item[\texttt{concreteFunctionName}] which represents the name of the serverless function hosted on the specified FaaS platform.
 		
@@ -575,7 +642,7 @@ According to our design, following operations are supported:
 	
 	Similarly to the previous example, a \texttt{PUT} on \QuoteIntro\texttt{/genericOwner}", is used to register a resource owner whose name is \QuoteIntro\texttt{genericOwner}". Returned status codes are similar to those used in the previous example. 
 	
-	All data about created objects are stored inside our Cassandra instance.
+	All data about created objects are stored inside our NoSQL distributed database instance.
 	
 	\item[\texttt{GET}]  which is used both to execute serverless applications and to retrieve the state of both a resource owner and the system.
 	
@@ -672,42 +739,78 @@ Clearly, the value of \texttt{Credential} field is raw bytes of the \texttt{CSV}
 
 The value of \texttt{Credential} fields inside all objects included into \texttt{Credential} array must be encrypted using the public key of our framework. 
 
-All encrypted credential data sent to our framework are then stored inside our Cassandra instance. When our orchestrator need to invoke a serverless function on a given FaaS, it decrypts credentials using its private key.
+All encrypted credential data sent to our framework are then stored inside our NoSQL distributed database instance. When our orchestrator need to invoke a serverless function on a given FaaS, it decrypts credentials using its private key.
 
 Unfortunately, since data signing is not currently supported, data integrity, message authentication, and non-repudiation are not provided.
 
-\section{Implementation}
+\section{Implementation details}
 
-We developed our system from scratch using Go programming language\cite{Go} and the external libraries reported in table \ref{tab:libraries}. 
+We developed our system from scratch using Go\cite{Go}, a compiled programming syntactically similar to C, but with memory safety, garbage collection and structural typing \cite{go2}.
+
+We choose to use Go rather than any objected oriented language, like Java or C\#, in order to maximize framework performance and to develop applications efficiently and faster. In fact, according to \citet{JAVAVSGO}'s research, Go has quite better result than Java regarding concurrency performance too. Moreover, its compile time  is about three times faster than Java and its model, which doesn't allow cyclic import, makes dependency analysis and management very easy \cite{JAVAVSGO}. Moreover, the use of goroutine and channel mechanisms hide the complexity of concurrent processes, simplifying our develop.
+
+All external libraries used to build our system are reported in table \ref{tab:libraries}. 
+
+\begin{table}
+	\caption{Libraries used in our implementation}
+	\label{tab:libraries}
+	\begin{tabular}{l|l}
+		\toprule
+		Name & Description \\
+		\midrule
+		\texttt{influxdata/influxdb-client-go}\footnote{\url{https://github.com/influxdata/influxdb-client-go}} & Native Go InfluxDB Client Library  \\
+		\texttt{gocql/gocql}\footnote{\url{https://github.com/gocql/gocql}} & Go Cassandra Client Library \\
+		\texttt{aws/aws-sdk-go-v2}\footnote{\url{https://github.com/aws/aws-sdk-go-v2}} & AWS SDK for the Go programming language \\
+		\texttt{apache/openwhisk-client-go}\footnote{\url{https://github.com/apache/openwhisk-client-go/}} & Openwhisk Go Client library \\
+		\texttt{rs/zerolog}\footnote{\url{https://github.com/rs/zerolog}} & A simple JSON Logger. \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{The technical Debt Management}
 
 During development process our aim was to produce a software having high quality standards, despite limitations on time which naturally imposed to us the trad-off
 between delivery and quality. 
 
 Precisely, in order to reach our software quality aims, during all development process time, we try to reduce the number of \textit{code smells} as much as possible. 
 
-Code smells are neither bug nor technically incorrect events and do not prevent the program from its expected behavior, however scientific literature shows that a correlation between code smells and the risk of bugs exists; in fact, the greater the number of code smells, the greater the risk of bugs within the code. 
+Code smells are neither bug nor technically incorrect events and do not prevent the program from its expected behavior, however scientific literature shows that a correlation between code smells and the risk of bugs exists; in fact, the greater the number of code smells, the greater the risk of bugs within the code \cite{CodeSmell}. 
 
-Moreover, code smells can be an indicator of factors that contribute to so-called \textit{technical debt}. We call technical debt the result of past decisions from software development point of view that negatively affect the project future. Steve McConnell defined technical debt as  \QuoteIntro \textit{A design or construction approach that's expedient in the short-term but that creates a technical context in which the same work will cost more to do later than it would cost to do now}". In other words, technical debt regards any quality problem in the source code like duplication, excessive complexity and design problems.
+Moreover, code smells can be an indicator of factors that contribute to so-called \textit{technical debt} \cite{CodeSmell}. We call technical debt the result of past decisions from software development point of view that negatively affect the project future. Steve McConnell defined technical debt as  \QuoteIntro \textit{A design or construction approach that's expedient in the short-term but that creates a technical context in which the same work will cost more to do later than it would cost to do now}". In other words, technical debt regards any quality problem in the source code like duplication, excessive complexity and design problems \cite{TechnicalDebt}\cite{TechnicalDebtFalessi}.
 
-When technical debt grows at an uncontrollable rate, you can be rapidly reach a point making the software evolution unfeasible, requiring a complete software refactoring. To overcome such situation, it is important that the technical debt is properly managed and kept under control during software development.
+When technical debt grows at an uncontrollable rate, you can be rapidly reach a point making the software evolution unfeasible, requiring a complete software refactoring. To overcome such situation, it is important that the technical debt is properly managed and kept under control during software development\cite{TechnicalDebt}.
 
 To manage technical debt of our system we used SonarQube\cite{SonarQube}, a tool able to report the technical debt as the amount of effort required to fix all code smells in a project; however, it does not just report the technical debt, it computes the number of duplicated code blocks, vulnerabilities, test coverage percentage and many other software metrics.
 
 At the end of our software development process, which ends with a software made up of $8405$ lines of code, SonarQube reports $0$ code smells, $0$ duplicated code blocks and $0$ security vulnerabilities. This result should ensure an high software maintainability, simplifying the development of future release.
 
-\begin{table}
-	\caption{Libraries used in our implementation}
-	\label{tab:libraries}
-	\begin{tabular}{l|l|l}
-		\toprule
-		Name & Description & Link \\
-		\midrule
-		\texttt{go-zookeeper/go} & Native Go Zookeeper Client Library & \url{https://github.com/samuel/go-zookeeper} \\
-		\texttt{logrus} & A structured logger for Go & \url{https://github.com/Sirupsen/logrus} \\
-		\texttt{aws-sdk-go} & AWS SDK for the Go programming language. & \url{https://github.com/aws/aws-sdk-go} \\
-		\bottomrule
-	\end{tabular}
-\end{table}
+\section{FaaS provider support}
+
+At the current state of this work, our system supports serverless functions invocation hosted on following FaaS platform providers:
+
+\begin{itemize}
+	\item AWS Lambda \cite{AWSLambda};
+	\item Apache OpenWhisk \cite{OpenWhisk};
+\end{itemize}
+
+Therefore, only \texttt{openwhisk} and \texttt{aws} values are allowed and recognized by our software to specify where a concrete function is hosted inside a serverless workflow definition based on our custom AFCL.
+
+Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers. Our framework limits itself to invoke serverless function already deployed on FaaS platforms; conversely, CRUD operations regarding serverless application are fully implemented.
+
+\section{Databases}
+
+
+As TSDB, we have 
+
+open source TSDB
+\cite{influx}
+
+
+To group together all points related to all serverless functions owned by an resource owner we exploit the InfluxDB's concept called \textit{bucket}. A bucket is equivalent to a directory where time series data can be stored. Moreover, differently form a directory, a bucket has a retention period according to which InfluxDB drops all points with timestamps older than the bucket retention period; however, our prototype does not exploit this feature, therefore buckets retention periods are disabled by default.
+
+
+
+
 
 
 
@@ -960,9 +1063,7 @@ Any abstract function $\phi$ is uniquely identified by an ordered pair $(a, b)$,
 
 \subsubsection{Executability condition}
 
-Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers.
-
-Therefore, let $\mathcal{C} = (\Phi,E)$ a choreography, we assume always that all concrete functions $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, are already deployed on one or more FaaS platform by customers. Then, in order to effectively start the execution of $\mathcal{C}$, is required that, for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, \textit{at least one} implementation exists.
+Let $\mathcal{C} = (\Phi,E)$ a choreography, we always assume that all concrete functions $f_{\phi} \in \textbf{F}_{\phi}$, for all $\phi \in \mathscr{F_E}(\mathcal{C})$, are already deployed on one or more FaaS platform by customers. Then, in order to effectively start the execution of $\mathcal{C}$, is required that, for each executable function $\phi \in \mathscr{F_E}(\mathcal{C})$, \textit{at least one} implementation exists.
 
 Formally, we said that a choreography is \textit{executable} when: 
 
