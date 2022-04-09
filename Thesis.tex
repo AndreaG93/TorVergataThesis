@@ -927,7 +927,7 @@ where:
 		
 		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ when the execution of $\phi_i$ is terminated;
 		
-		\item $P : \Phi \times \Phi \times \Rplus \to \Rplus \cap \left[ 0, 1 \right]$, called \textit{transition probability function}, is such that $P\left(\phi_i, \phi_j, t \right) = p_{ij}$, where $t$ is the time. Obviously, $P\left(\phi_i, \phi_j, t \right) = 0$ implies that $\phi_i$ cannot invoke $\phi_j$ but it does not imply that the directed edge $\left( \phi_i, \phi_j \right) \notin E$; directed edges having null weight can belong to $E$.
+		\item $P : \Phi \times \Phi \times \Rplus \to \Rplus \cap \left[ 0, 1 \right]$, called \textit{transition probability function}, is such that $P\left(\phi_i, \phi_j, t \right) = p_{ij}$, where $t$ is the time. Obviously, when $P\left(\phi_i, \phi_j, t \right) = 0$ or, similarly, when $\left( \phi_i, \phi_j \right) \notin E$, $\phi_i$ cannot invoke $\phi_j$.
 		
 		\item For any path $\pi = \phi_1 e_1 \ldots e_{n-1} \phi_n$ of $\mathcal{C}_R$, we define \textit{transition probability of the path $\pi$} the following quantity:
 		
@@ -1078,6 +1078,8 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted direc
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
+Referring to sub-choreographies, we will use $P_{exit}(\mathcal{C}^*,t)$ to denote the so-called \textit{sub-choreographies exit probability}, that is the probability to ends the execution of $\mathcal{C}$ when $\mathcal{C}^*$ is executed; later, we will explain how to compute it.
+
 \subsubsection{Serverless Pipeline Choreography}\label{PipelineDefinitionSection}
 
 Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
@@ -1197,6 +1199,8 @@ where $\phi_{fake} \in \mathscr{F_O}(\mathcal{C}^*)$ is such that:
 	C_{\phi_{fake}}(\textbf{x}_{\mathcal{C}}, t) & = & C(\mathcal{C}^*,\textbf{x}_{\mathcal{C}}, t) \\
 	P_{exit}(\phi_{fake}, t) & = & P_{exit}(\mathcal{C}^*, t)
 \end{eqnarray}
+
+Form now, we will use $E[I_{\theta}]$ for $\theta \in \Theta_{\mathcal{C}^*}$ to denotes the expected value of the number of invocation of the choreography $\theta$.
 
 
 \subsection{Parallel}
@@ -1431,7 +1435,7 @@ Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
 	P(\phi_{x}, \alpha(\theta), t) = x & \\
 	P(\phi_{x}, \phi_{y},t) = 1 - x & \\
 	P(\omega(\theta), \phi_{x},t) = 1 & \qquad \theta \in \Theta \\
-	P(\phi_x, \alpha(\theta),t) + P(\phi_{x}, \phi_{y},t) = 1 & \qquad \theta \in \Theta \\
+	P(\phi_x, \alpha(\theta),t) + P(\phi_{x}, \phi_{y},t) = 1 & \qquad \theta \in \Theta
 \end{eqnarray}
 
 is called \textit{conditional loop structure} and $\tau$ denotes a \textit{conditional loop} type; it is used to model a \texttt{while} and \texttt{for} programming structures inside a serverless application. 
@@ -1501,15 +1505,15 @@ In order to compute performance data of a loop structure, $E[I_{\theta}(t)]$, th
 To compute aforementioned information, we can model our problem using geometric distribution, which gives the probability according to which the first occurrence of success requires $k \in \N$ independent trials, each with success probability $p$ and failure probability $q = 1 - p$. In our case, if the our success corresponds to event ``\textit{we will not execute the loop body}", we know that success probability $p$ is given by:
 
 \begin{eqnarray}
-	p = P(\phi_x,\phi_y,t) = 1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \\
+	p = P(\phi_x,\phi_y,t) = 1 - P\Big(\phi_{x}, \alpha(\theta),t\Big)
 \end{eqnarray}
 
 Then:
 
 \begin{eqnarray}
-	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \\
-	& = & pq^{k-1} \\
-	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta),t\Big) \bigg] ^{k-1} \\
+	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \nonumber \\
+	& = & pq^{k-1} \nonumber \\
+	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta),t\Big) \bigg] ^{k-1}
 \end{eqnarray}
 
 At any time $t$, the expected value regarding the number of iterations of $\mathcal{L}$, involving the execution of the sub-choreography $\theta$, can be computed as follows:
@@ -1535,7 +1539,7 @@ At any time $t$, the response time and the cost of the conditional loop structur
 The exit probability of a conditional loop structure was been modeled, once again, exploiting the geometric distribution with success probability equal to $P_{exit}(\theta, t)$. To be precise, exit probability is modeled as the probability that the termination of the execution of the choreography to which $\mathcal{L}$ belongs requires $\lfloor E[I_{\theta}(t)] \rfloor$  executions of $\mathcal{L}$. Formally:
 
 \begin{eqnarray}
-	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)\\
+	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)
 \end{eqnarray}
 
 \subsection{Exit}
@@ -1545,7 +1549,7 @@ Any structure $\mathcal{E} = (\Phi',E',\Theta)$ such that:
 \begin{eqnarray}
 	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
 	|\Theta| = 0  & \\
-	P(\phi_{x}, \phi_{y},t) = 0 & \qquad \forall t \\
+	P(\phi_{x}, \phi_{y},t) = 0 & \qquad \forall t
 \end{eqnarray}
 
 is called \textit{exit structure} and $\tau$ denotes a \textit{exit} type. That structure is used to model a \texttt{return} or \texttt{exit} statement inside a serverless application. 
@@ -1594,6 +1598,20 @@ At any time $t$, following is true that:
 \begin{equation}
 	P_{exit}(\mathcal{E}, t) = 1
 \end{equation}
+
+Moreover, it is possible to compute the exit probability $P_{exit}(\theta,t)$ of the sub-choreography $\theta$ of $\mathcal{C}$, using following formula:
+
+
+\begin{equation}
+	P_{exit}(\theta,t) \mathDef \sum_{i = 1}^n TPP(\pi_i) \cdot P_{exit}(\mathcal{E}_i, t)
+\end{equation}
+
+where:
+
+\begin{itemize}
+	\item $n$ is the number of exit structures contained inside $\theta$.
+	\item $\pi_i$ is the path starting from the entry point of $\theta$ to the $i$-th exit structure, for $i \in \SetFromOneTo{n}$.
+\end{itemize}
 
 
 
@@ -1785,7 +1803,7 @@ Conversely, if a function instance has not  received any request during the last
 
 Finally, at any time $t$, the \textit{cold start probability} $\textbf{P}_{\omega_{P_R}^{(l)}}(t)$ referring to the invocations of any function belonging to the swarm $\omega_{P_R}^{(l)}$, can be formally defined as the probability that an arrival request of invocation finds all function instances of the warm pool busy; using Erlang-B formula, that probability can be calculated as follows:
 
-\begin{equation}
+\begin{equation}\label{er}
 	\displaystyle \textbf{P}_{\omega_{P_R}^{(l)}}(t) = \dfrac{\rho(t)^{K(t)}}{K(t)!} \cdot \Bigg( \displaystyle\sum_{j=0}^{K(t)} \dfrac{\rho(t)^j}{j!}\Bigg)^{-1}
 \end{equation}
 
@@ -1817,6 +1835,19 @@ where:
 	\end{itemize}
 	
 \end{itemize}
+
+Finally, in order to simplify the calculation of the expression \ref{er}, according to \cite{ERLANG}, it can be expressed  recursively as follows:
+
+\begin{eqnarray}
+	\dfrac{1}{B(\rho(t),0)} & = & 1 \\
+	\dfrac{1}{B(\rho(t),i)} & = & 1 + \dfrac{i}{\rho(t)} \cdot \dfrac{1}{B(\rho(t),i-1)} \qquad \forall j \in \SetFromOneTo{K(t)} \\
+\end{eqnarray}
+
+where:
+
+\begin{equation}
+	B(\rho(t),i) \mathDef \dfrac{\rho(t)^{i}}{i!} \cdot \Bigg( \displaystyle\sum_{j=0}^{i} \dfrac{\rho(t)^j}{j!}\Bigg)^{-1}
+\end{equation}
 
 \subsubsection{Choreography Swarm}
 
