@@ -2223,9 +2223,9 @@ However, since the MMKP is an NP-hard problem, we expect that is not always poss
 
 We have decided to built a \textit{custom} algorithm based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics that have been applied to solve many combinatorial optimization problems such as traveling salesman problems, quadratic assignment problems, or vehicle routing problems.
 
-Aforementioned class of meta-heuristics imitate the behavior shown by real ants when searching for food, where many simple interactions between single ants result in a very complex behavior of the whole ant colony.
+Aforementioned class of meta-heuristics imitate the behavior shown by real ants when searching for food, where many simple interactions between single ants result in a very complex behavior of the whole ant colony \citet{acogrosso}\cite{MAXMIN}.
 
-Any ACO algorithm is based on a set of computational agents, called \textit{artificial ants}, which iteratively construct a so-called  \textit{partial solution} for the instance to solve. At each iteration, each artificial ant moves from a partial solution to another, applying a series of stochastic local decisions whose policy is based on following parameters:
+Any ACO algorithm is based on a set of computational agents, called \textit{artificial ants}, which iteratively construct a so-called  \textit{partial solution} for the instance to solve\citet{acogrosso}\cite{MAXMIN}. At each iteration, each artificial ant moves from a partial solution to another, applying a series of stochastic local decisions whose policy is based on following parameters:
 
 \begin{description}
 	\item[Attractiveness] which is a value computed using a heuristic approach indicating the a \textit{priori} desirability of a given partial solution.
@@ -2233,7 +2233,7 @@ Any ACO algorithm is based on a set of computational agents, called \textit{arti
 	\item[Pheromone Trail] which represents a value indicating how proficient it has been in the past to select a particular partial solution, representing, therefore, an a \textit{posteriori} indication of its desirability.
 \end{description} 
 
-In very simple terms, each ant incrementally constructs the partial solution to the problem and, after evaluating the found solution, it modifies the pheromone trail on the components used in its solution; that pheromone information will be use by future ants to find a better solutions to the problem instance. Indeed, by increasing or decreasing the level of pheromone trails, ants distinguish "\textit{good}" from "\textit{bad}" solutions. In other words, pheromone trails represent the way according to which ants communicate in order to find the best solution.
+In very simple terms, each ant incrementally constructs the partial solution to the problem and, after evaluating the found solution, it modifies the pheromone trail on the components used in its solution; that pheromone information will be use by future ants to find a better solutions to the problem instance. Indeed, by increasing or decreasing the level of pheromone trails, ants distinguish "\textit{good}" from "\textit{bad}" solutions. In other words, pheromone trails represent the way according to which ants communicate in order to find the best solution \citet{acogrosso}\cite{MAXMIN}.
  
 \subsection{Solution Components Graph}
 
@@ -2263,7 +2263,7 @@ is called solution components graph, where:
 	
 	Intuitively, the pheromone value associated to the edge $(o_{i_j}, o_{k_m}) \in E$ represents the desirability to select the object $o_{k_m}$ when $o_{i_j}$ was been previously selected as part of the solution. 
 	
-	We have adopted the so-called $\mathcal{MAX} - \mathcal{MIN}$ Ant System, according to which following constraint must hold:
+	We have adopted the so-called $\mathcal{MAX} - \mathcal{MIN}$ Ant System \cite{MAXMIN}, according to which following constraint must hold:
 	
 	\begin{equation}
 		w_{\textbf{min}} \leq \tau_k(o_{i_j}, o_{k_m}) \leq w_{\textbf{max}} 
@@ -2277,11 +2277,9 @@ is called solution components graph, where:
 	trails while pheromone trails are set to $w_{\textbf{max}}$ at the beginning of the search.
 \end{itemize}
 
-\subsection{Algorithm Description}
+\subsection{The Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}
 
-ACO algorithms are conceptually very simple and they follow a specific scheme outlined in Algorithm \ref{ACO}.
-
-In general, after the initialization of the pheromone trails and some parameters, a main loop is repeated until a termination condition is met. The ants construct feasible solutions, which are subsequently improved by applying a local search algorithm. Finally the pheromone trails are updated.
+ACO algorithms are conceptually very simple and they follow a specific scheme outlined in Algorithm \ref{ACO}. In general, after the initialization of the pheromone trails and some parameters, a main loop is repeated until a termination condition is met. The ants construct feasible solutions, which are subsequently improved by applying a local search algorithm. Finally the pheromone trails are updated.
 
 \begin{algorithm}\label{ACO}
 	Initialization pheromone trails\;
@@ -2290,8 +2288,18 @@ In general, after the initialization of the pheromone trails and some parameters
 		ApplyLocalSearch\;
 		UpdatePheromoneTrails\;
 	}
-	\caption{Algorithmic skeleton for ACO algorithms}
+	\caption{Generic algorithmic skeleton for ACO algorithms}
 \end{algorithm}
+
+However, we adopted a slightly different version of the ACO based algorithm described in Algorithm \ref{ACO}, calling it \textit{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}.
+
+As our algorithm name suggests, we adopt a lazy approach for pheromone trails update. In fact, we believe that it is not very useful to update pheromone trails associated to the edges belonging to the solution component graph which, for some reasons, are never traversed by ants. Therefore, to update all edges can be not efficient from a computational point of view, especially when aforementioned graph is very big.
+
+Therefore we delay pheromone trails update until the first time it is needed by an ants, allowing our algorithm to perform faster. 
+
+Moreover our approach allows a parallel pheromone trails update too; as we will see shortly, since each ants start its journey inside the solution components graph in different randomly selected nodes, because every of which update different edges, it is possible to update pheromone trails with a very low risk to pay performance cost due to synchronization needs.
+
+Finally, since can be quite expensive to allocate at run-time the solution components graph, increasing system response latency, we decided to exploit a pre-provisioning tactic\cite{Tactics} to anticipates data needs; despite this solution is not very efficient due to high memory consumption, it can assure lower latency.
 
 \subsection{Transition Probabilities}
 
@@ -2434,7 +2442,7 @@ We can now define the heuristic factor formula as follows:
 
 \subsection{Local Search}
 
-According to \cite{}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current best solution.
+According to \citet{acogrosso}, to make ACO algorithm competitive with  state-of-the-art algorithm for combinatorial optimization problems, several local search procedures must be used. These algorithms are invoked when solution construction phase is complete and $\textbf{S}_k$, that is the best solution built by ants, is obtained. The aim of that algorithms is to improve current best solution.
 
 To be precise, we have adopted a \textit{random local search} algorithm, which represents an exhaustive search within a group to improve the solution. It replaces current selected object of a group with every other object that does not violate resource constraints and checks if it is a better solution. The total procedure is repeated a number of times, each time for a random group. The pseudo-code of that procedure is reported in algorithm \ref{localserach}.
 	
