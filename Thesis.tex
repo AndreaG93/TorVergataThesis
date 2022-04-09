@@ -98,39 +98,29 @@ Finally, we have built a prototype implementation to obtain experimental results
 \end{abstract}
 	
 \tableofcontents	
+\listoffigures
+\listoftables
 
 \chapter{Introduction}
 \pagenumbering{arabic}
-
-\section{The serverless computing paradigm}
 
 In recent years, thanks to an increased popularity of several lightweight virtualization solutions, specifically containers and container-orchestration systems, many public cloud providers have launched a new set of cloud computing services belonging to new service type category called \textit{Function-as-a-Service} (\textit{FaaS}), where almost every aspect of the system administration tasks, needed to deploy a workload on the cloud, like provisioning, monitoring, resource management and scaling, are directly managed by the provider with a minimum involvement of the user.
 
 With the development of FaaS platforms, the \textit{serverless computing paradigm}, a new applications service model according to which cloud application are abstracted as a group of so-called \textit{serverless functions}, hosted and orchestrated by FaaS platforms, has emerged. 
 
-\subsection{Background}
+A very important advantage of serverless computing is a new simplified programming model, according to which developers can focus on logic and business aspects of their applications only, without worrying about the server management, which can lead to a development cost reduction, decreasing go-to-market time of the software products.
+
+Moreover, since many FaaS provider have adopted a very small-granularity billing pricing model, usually called \ItalicQuotMark{pay-as-you-go} model, by charging for serverless function execution time rather than for allocated resources, users can save costs. In simple terms, since serverless users pay only while their code executes and, included in the price, FaaS providers take care for several tasks that need to be provided separately in a serverful context, like  provisioning, redundancy, availability, monitoring, logging, and automated scaling, some studies claim that, in practice, customers see cost savings of $4\times$-$10\times$ when moving applications to serverless \cite{NextPhase}.
+
+The application of serverless computing is an active area of development and, as its scope and popularity expands, especially due to the fast emerging IoT applications for which serverless computing has proved to be a very good fit \cite{IoTFaaS}, we believe that is very important to develop both a valid analytical model and methodology to determine serverless application performance; therefore, detailing them is the goal of our work.
+
+\section{Serverless Functions}
 
 A serverless function represents a stateless, event-driven, self-contained unit of computation implementing a business functionality.
 
 Although a serverless function generally corresponds to a unit of executable code submitted to FaaS platforms by developers using one or a combination of the programming languages supported by FaaS providers, it can represent any cloud services eventually necessary to business logic, like cloud storage, message queue services, pub/sub messaging service etc.
 
-A serverless function can be triggered through events or \texttt{HTTP} requests following which the FaaS provider takes care of its execution inside a containerized environment called \textit{function instance}, like container, virtual machine or even processes, using a user specified \textit{serverless function configuration}, which include several parameters, like timeout, memory size or CPU power \cite{COSE}. Function instances act as tiny servers completely managed by the serverless computing platform. 
-
-A very important advantage of serverless computing is a new simplified programming model, according to which developers can focus on logic and business aspects of their applications only, without worrying about the server management, which can lead to a development cost reduction, decreasing go-to-market time of the software products.
-
-Moreover, since many FaaS provider have adopted a very small-granularity billing pricing model, usually called \ItalicQuotMark{pay-as-you-go} model, by charging for serverless function execution time rather than for allocated resources, users can save costs. In simple terms, since serverless users pay only while their code executes and, included in the price, FaaS providers take care for several tasks that need to be provided separately in a serverful context, like  provisioning, redundancy, availability, monitoring, logging, and automated scaling, some studies claim that, in practice, customers see cost savings of $4\times$-$10\times$ when moving applications to serverless \cite{NextPhase}.
-
-Despite the most basic scenario is represented by the invocation of a single function, when a more complex application is needed, serverless functions can be connected and appropriately orchestrated in a \textit{workflow}, obtaining a so-called \textit{serverless application}.
-
-We define a serverless application as a stateless and event-driven software system made up of a serverless functions set hosted on one or more FaaS platforms and combined together by a so-called \textit{coordinator} (or \textit{orchestrator}). The latter is usually represented by a broker, needed to implement the business logic of any application; it chains together serverless function, handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
-
-Nowadays, there are many public cloud platforms which provide serverless computing services to deploy and execute serverless functions, including AWS Lambda \cite{AWSLambda}, IBM Cloud Function \cite{IBMCloudFunctions}, Microsoft Azure Functions \cite{AzureFunctions} and Google Cloud Functions \cite{GoogleCloud}. Moreover, some providers have even introduced FaaS platforms acting as coordinator to build serverless application; AWS Step Functions is an example which allows to combine multiple Lambda functions, including other serverless services offered by AWS, like the storage service Amazon S3, into an application. 
-
-\section{Function instances states}
-
-According to serverless computing paradigm, computation is done inside isolated environments, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes, called \textit{function instances}.
-
-As known, these instances can be considered as lightweight servers which management, provisioning and the fulfillment of any other infrastructure issues are the responsibilities of serverless computing platform provider.
+A serverless function can be triggered through events or \texttt{HTTP} requests following which the FaaS provider takes care of its execution inside a containerized environment called \textit{function instance}. Latter are isolated environments acting as tiny servers completely managed by the serverless computing platform, provided by virtualization solutions such as virtual machines, containers, unikernels or even processes. To invoke a function on any public FaaS platform, cloud users have to specify so-called \textit{serverless function configuration}, which include several parameters, like timeout, memory size or CPU power \cite{COSE}.
 
 We can identify three states for each function instance:
 
@@ -156,13 +146,21 @@ We can identify three states for each function instance:
 
 In order to be clear, we will use the expression \textit{warm pool} when referring to the set of all function instances whose state is either idle or running state.
 
-\section{FaaS auto-scaling technique}
+Despite the most basic scenario is represented by the invocation of a single function, when a more complex application is needed, serverless functions can be connected and appropriately orchestrated in a \textit{workflow}, obtaining a so-called \textit{serverless application}.
 
-According to serverless computing paradigm, the FaaS platform provider has the responsibility to manage the amount of function instances required to allow users to perform their computation.
+We define a serverless application as a stateless and event-driven software system made up of a serverless functions set hosted on one or more FaaS platforms and combined together by a so-called \textit{coordinator} (or \textit{orchestrator}). The latter is usually represented by a broker, needed to implement the business logic of any application; it chains together serverless function, handles events among functions and triggers them in the correct order according to the business logic defined by developers. 
 
-In this dissertation, we assume that all FaaS providers adopt an auto-scaling technique called \textit{scale-per-request}.
+Nowadays, there are many public cloud platforms which provide serverless computing services to deploy and execute serverless functions, including AWS Lambda \cite{AWSLambda}, IBM Cloud Function \cite{IBMCloudFunctions}, Microsoft Azure Functions \cite{AzureFunctions} and Google Cloud Functions \cite{GoogleCloud}. Moreover, some providers have even introduced FaaS platforms acting as coordinator to build serverless application; AWS Step Functions is an example which allows to combine multiple Lambda functions, including other serverless services offered by AWS, like the storage service Amazon S3, into an application. 
 
-If such technique is adopted, when a request comes in, only one of the following events can occur:
+Finally, in contrast to common cloud architectures that expect long-running applications, another very important feature of serverless functions is that they run typically for very short time. For example, in $2022$, the maximum execution time for an AWS Lambda function is $15$ minutes \cite{AWSTimeout}. 
+
+\subsection{FaaS Auto-Scaling Technique}
+
+As already said previously, according to serverless computing paradigm, the FaaS platform provider has the responsibility to manage the amount of function instances required to allow users to perform their computation.
+
+To be more precise, to match the rate of function invocations, the platform automatically scales the number of function instances available to execute developers functions in parallel; we call this activity \textit{auto-scaling}.
+
+Despite many auto-scaling techniques exist in literature \cite{PMSCP}, in this dissertation, we assume that all FaaS providers adopt an auto-scaling technique called \textit{scale-per-request}. If such technique is adopted, when a request comes in, only one of the following events can occur:
 
 \begin{description}
 	
@@ -179,16 +177,18 @@ As long as, for a given instance, requests are received within an interval time 
 
 At the same time, for each instance, at any moment in time, if a request has not been received in the last \textit{expiration threshold} units of time, it will be expired and thus terminated by the platform, and the consumed resources will be released. 
 
-This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions. 
+This technique is currently adopted by the vast majority of well-known public serverless computing platforms, like AWS Lambda, Google Cloud Functions, IBM Cloud Functions, Apache OpenWhisk and Azure Functions \cite{PMSCP}. 
 
-\section{FaaS request routing}
+However, despite in most cases function instances are actually terminated when the timeout expires, in case of need, the provider could terminate some instances in advance to free up resources; therefore, there are no guarantees about function instance permanence in the warm pool within expiration threshold units of time.
+
+\subsection{FaaS Request Routing}
 
 In this dissertation, we assume that, in order to minimize the number of
 function instances that are kept warm and thus to free up system resources, the FaaS routes requests giving priority to instances which they have been idle for less time.
 
 In other words the FaaS request routing gives low priority to function instances being in idle state for long time, increasing thus the chances of resource deallocation referring aforementioned instances.
 
-\section{Concurrency limit}
+\subsection{Concurrency Limit}
 
 Any FaaS platform imposes a limitation on the number of serverless function instance runnable at the same time; this limit is generally known as \textit{concurrency level} or \textit{concurrency limits}. 
 
@@ -207,6 +207,8 @@ Informally speaking, there are two type of concurrency limit models:
 	
 \end{description}
 
+\section{Limitations of Today’s FaaS Platforms}
+
 Although serverless computing paradigm makes cloud application developing easier guaranteeing a cost-effective solution, there are several obstacles that prevent FaaS platforms to support more general workloads, especially those that must meet strict guarantees.
 
 Scientific literature have already reported a huge amount of limitations preventing its worldwide adoption, some of which are:
@@ -215,20 +217,37 @@ Scientific literature have already reported a huge amount of limitations prevent
 	
 	\item the lack of support for those applications having fine-grained state sharing needs, which is primarily due to stateless nature of serverless platforms \cite{BerkeleyView}.
 	
-	\item too simple scheduling policies which, being mainly based on first-come-first-served algorithms, limit how serverless function have to be managed in scenarios such as when incoming demands cannot
-	be satisfied by currently available resources \cite{Sequoia}.
+	\item too simple scheduling policies which, being mainly based on first-come-first-served algorithms, limit how serverless function have to be managed in scenarios such as when incoming demands cannot be satisfied by currently available resources \cite{Sequoia}.
 	
-	\item very unpredictable performance due to multiple factors, including function placement, \textit{cold starts}, namely the delay incurred to get a function instance up and running when it is invoked for the first time within a defined period, I/O and network conditions, type of VMs/containers, variability in the hardware and co-location with other functions \cite{COSE}\cite{BerkeleyView}.
+	\item very unpredictable performance due to multiple factors, including function placement, \textit{cold starts}, namely the delay incurred to get a function instance up and running when it is invoked for the first time within a defined period, I/O and network conditions, type of VMs/containers, variability in the hardware and co-location with other functions \cite{COSE}\cite{BerkeleyView}. 
 	
 	\item security concerns due to fine-grained resource sharing of serverless function which increases the exposure to \textit{side-channel} attacks \cite{NextPhase}
 	
+	\item Since serverless functions are short-lived, FaaS Providers must rely on the fine-grained interleaving of many short functions to achieve high throughput. 
+	
+	According to \citet{PredittoriPaperFaaS}, this situation causes temporal locality-exploiting structures, like branch predictors, to underperform, raising questions about present-day computer architectures’ ability to execute FaaS efficiently. For instance, \citet{PredittoriPaperFaaS} observed a $20\times$ increase in branch mispredictions per kilo-instruction (MPKI) when comparing shortest to longer functions executions.
+	
 \end{itemize}
+
+However, one of the most important obstacles concerns the \textit{quality of service} (\textit{QoS}) levels, quantitatively measured considering charged cost and response time, that should be guaranteed when a serverless application is executed.
+
+The main difficulty relating to QoS constraints fulfillment depend mostly on the lack of an adequate performance model, which is crucial to analyze and predict response times and billed costs for any generic workload serverless application. 
+
+To be precise, the aforementioned model is needed to select a configuration for each serverless function belonging to a given application. In fact, as we said previously, when cloud application developers want to run a serverless function, is necessary to specify several configuration parameters regarding its execution environment, like memory size, time limits or CPU power.
+
+Unfortunately configuring such parameters correctly, meeting cost and response time constraints, is not trivial. In fact, several studies have already shown that aforementioned configuration parameters significantly affect the cost and response time of serverless functions; for instance, \citet{COSE} have shown that function response time decreases when the memory size allocated to the function is increased; however, due to pricing models adopted by the vast majority of FaaS providers, according to which cost depends proportionally on the amount of memory allocated to a serverless function, a too large value for memory can result in higher costs. Conversely, a small value of memory size can lead to higher costs too, due to a longer execution time of the functions. Moreover, a decrease of the marginal improvement in response time as the memory increases is observed.
+
+Despite solutions to that problem already exist in scientific literature, we believe that they suffer from a major limitation, as they limit their focus only on serverless function configurations parameters; in fact, none of existing performance models and frameworks, when they have to select a suitable configuration to fulfill QoS requirements, considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Sometimes, depending on QoS requirements, can be useful to select a particular implementation with respect to another. In this dissertation, we will use the term \textit{concrete serverless function}, or simply \textit{concrete function}, to refer to semantically and logically equivalent function implementations, which may eventually expose different performance or cost behavior.
+
+Similarly, no existing solution is able to manage serverless application whose functions are hosted on multiple FaaS platforms. Proposed solutions are generally unaware of the current status of FaaS platforms and they cannot adapt themselves in response to changes in their execution environments. Therefore, they are incapable to prevent cold starts or the unavoidable delays which usually occur when a FaaS platform is too overloaded or to select the provider having the best cost/performance ratio in order to better meet customer's expectations.
+
+However, exploiting multiple FaaS platform in order to meet QoS levels is not trivial. Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions, using a variety of conventions for creating, executing, logging and monitoring serverless applications and its functions, exacerbating the so-called vendor lock-in issue, a very common problem in distributed systems. There is no even agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution.
+
+Therefore, the aim of our work is to overcome aforementioned limitations building a QoS-aware framework for the orchestration of serverless functions belonging to generic serverless workflow, supporting multiple FaaS providers and functions implementations.
 
 \section{Contributions}
 
-The aim of our work is to overcome aforementioned limitations regarding existing performance models, building a QoS-aware framework for the orchestration of serverless functions, belonging to generic workflow serverless application, which supports multiple FaaS providers and functions implementations.
-
-To be more precise, our contributions can be summarized as follows:
+Our contributions can be summarized as follows:
 
 \begin{itemize}
 	\item We developed a formal definition of a serverless application, abstracting sequences of serverless functions, including parallel, branch and conditional loop structures.
@@ -264,48 +283,40 @@ The remainder of this dissertation is organized as follows. In Chapter \ref{chap
 
 \chapter{Related works}\label{chapterRelated}
 
-The serverless computing paradigm has attracted a great deal of interest from both academia and industry [8], [19],
-[40]. However, few research studies have been directed at
-the modeling and optimization of performance and cost of
-serverless applications. Therefore, we provide an extensive
-review of the literature in three fields, which are inherently
-related to our topic, namely the performance modeling
-of cloud applications, workflow scheduling in the cloud
-environment, and serverless architecture.
-
-
-One of the most important obstacles concerns the \textit{quality of service} (\textit{QoS}) levels, quantitatively measured considering charged cost and response time, that should be guaranteed when a serverless application is executed.
-
-The main difficulty relating to QoS constraints fulfillment depend mostly on the lack of an adequate performance model, which is crucial to analyze and predict response times and billed costs for any generic workload serverless application. 
-
-To be precise, the aforementioned model is needed to select a configuration for each serverless function belonging to a given application. In fact, as we said previously, when cloud application developers want to run a serverless function, is necessary to specify several configuration parameters regarding its execution environment, like memory size, time limits or CPU power.
-
-Unfortunately configuring such parameters correctly, meeting cost and response time constraints, is not trivial. In fact, several studies have already shown that aforementioned configuration parameters significantly affect the cost and response time of serverless functions; for instance, \citet{COSE} have shown that function response time decreases when the memory size allocated to the function is increased; however, due to pricing models adopted by the vast majority of FaaS providers, according to which cost depends proportionally on the amount of memory allocated to a serverless function, a too large value for memory can result in higher costs. Conversely, a small value of memory size can lead to higher costs too, due to a longer execution time of the functions. Moreover, a decrease of the marginal improvement in response time as the memory increases is observed.
+The serverless computing paradigm has attracted a great deal of interest from both academia and industry, therefore in this chapter we provide a shortly preview of the literature inherently related to our topic, namely the performance modeling
+of serverless applications.
 
 Obviously, several researchers have already proposed some  performance and cost models which can be useful to address the aforementioned issue. For instance: 
 
 \begin{itemize}
-	\item \citet{PMSCP} proposed a very interesting analytical model to determine both the delay and charged cost for a generic serverless workflow, including a methodology to obtain a configuration for each serverless function belonging to the application, computed exploiting a heuristic approach based on critical path method, in order to respect either delay or cost constraints imposed by a user.
+	\item \citet{PMSCP} proposed a very interesting analytical model to determine both the delay and charged cost for a generic serverless workflow, including a methodology to obtain a configuration for each serverless function belonging to the application in order to respect either delay or cost constraints imposed by a user.
 	
-	\item \citet{COSE} proposed a framework that, using bayesian optimization to statistically learn the relationship between cost/run-time, selects a serverless function configuration in order to respect either delay or cost constraints imposed by a user, minimizing the cost.
+	Their methodology is based on solving two different optimization problems, namely the best performance under the budget constraint and the best cost under the performance constraint. Moreover, researchers proposed a heuristic algorithm named \textit{Probability Refined Critical Path} algorithm with four greedy
+	strategies in order to rapidly solve aforementioned optimization problems. 
 	
-	\item \citet{Modelling} presented, according to our opinion, one of the best analytical performance model available today, which is suitable for analyzing and predict performance, utilization and cost of current FaaS platforms. 
+	\item \citet{COSE} proposed a statistical learning based configuration finder for serverless functions. 
 	
-	\item \citet{NUOVODOCUMENTO}
+	More precisely, their framework, using bayesian optimization to statistically learn the relationship between cost/run-time, selects a serverless function configuration in order to respect either delay or cost constraints imposed by a user, minimizing the cost.
 	
+	\item \citet{Modelling} presented, according to our opinion, one of the best analytical performance model available today, which is suitable for analyzing and predict performance of current FaaS platforms. 
+	
+	More precisely, they built an analytical model to compute response time, blocking probability and utilization of a FaaS platform exploiting a semi-Markov $M/G/m/m$ queue system.
+
+	\item \citet{NUOVODOCUMENTO} provided a very refined solution called \textit{Function Delivery Network} (FDN) which represents a network of distributed heterogeneous target platforms enabling automatic scheduling of functions to target platforms based on their computational and data requirements. 
+	
+	This solution supports adaptive data management, enabling data migration between target platforms to exploit data affinity exploiting several data staging tactics.
+	
+	Their scheduling algorithm considers both performance capabilities and resource-usage of the target FaaS platform. Moreover, \citet{NUOVODOCUMENTO}'s solution supports function invocations on multiple target platforms to achieve the respect of QoS level constraints.
+
 \end{itemize}
 
 Despite the high quality of aforementioned solutions, they still have some problems which can sometimes hinder the fulfillment of QoS requirements. 
 
-For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP} do not consider the current state of the FaaS platform when a serverless function configuration has to be selected, totally ignoring the problem of cold starts and their impact on application performance. Conversely, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequence, or chain, of serverless functions, therefore useless for generic workload. 
+For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP} do not consider the current state of the FaaS platform when a serverless function configuration has to be selected, totally ignoring the problem of cold starts and their impact on application performance. Conversely, \citet{NUOVODOCUMENTO}'s solution takes into account the occurrence of cold starts, while their scheduler try to reduce them by exploiting their serverless application behavioral model.
 
-We believe that existing solutions suffer from a major limitation, as they limit their focus only on serverless function configurations parameters; in fact, none of existing performance models and frameworks, when they have to select a suitable configuration to fulfill QoS requirements, considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Sometimes, depending on QoS requirements, can be useful to select a particular implementation with respect to another. 
+At the same time, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequence, or chain, of serverless functions, therefore useless for generic workload. 
 
-Similarly, no existing solution is able to manage serverless application whose functions are hosted on multiple FaaS platforms. Proposed solutions are generally unaware of the current status of FaaS platforms and they cannot adapt themselves in response to changes in their execution environments. Therefore, they are incapable to prevent cold starts or the unavoidable delays which usually occur when a FaaS platform is too overloaded or to select the provider having the best cost/performance ratio in order to better meet customer's expectations.
-
-However, exploiting multiple FaaS platform in order to meet QoS levels is not trivial. Unfortunately, despite FaaS platforms continuously advance the support for serverless applications, existing solutions are dominated by a few large-scale public providers resulting in mostly non-portable FaaS solutions, using a variety of conventions for creating, executing, logging and monitoring serverless applications and its functions, exacerbating the so-called vendor lock-in issue, a very common problem in distributed systems. There is no even agreement on how a serverless application is to be represented among different FaaS providers, therefore shift to another vendor's platform can be difficult and costly, making customers more dependent on a single FaaS solution.
-
-
+Any solution considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Currently, only \citet{NUOVODOCUMENTO}'s solution supports serverless functions invocations on multiple FaaS provider platforms which is exploited to guarantee the respect of user specified QoS constraints.
 
 \chapter{System Architecture and Implementation}\label{chapterArch}
 
@@ -1617,7 +1628,7 @@ According to our model point of view, at any time $t$, any FaaS platform provide
 		
 		
 	\end{tikzpicture}
-	\caption{Parallel structure in the serverless workflow.}
+	\caption{An overview of the proposed system model using $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queening systems.}
 \end{figure}
 
 \subsection{Concrete function's swarm}

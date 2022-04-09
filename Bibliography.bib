@@ -245,3 +245,46 @@
 	doi = {10.1002/spe.2966}
 }
 
+@misc{AWSTimeout,
+	title = {AWS Lambda Timeout},
+	year = "2022",
+	howpublished = "\url{https://aws.amazon.com/about-aws/whats-new/2018/10/aws-lambda-supports-functions-that-can-run-up-to-15-minutes/}",
+	note = "[Online; accessed 09-April-2022]"
+}
+
+@inproceedings{PredittoriPaperFaaS,
+	author = {Shahrad, Mohammad and Balkind, Jonathan and Wentzlaff, David},
+	title = {Architectural Implications of Function-as-a-Service Computing},
+	year = {2019},
+	isbn = {9781450369381},
+	publisher = {Association for Computing Machinery},
+	address = {New York, NY, USA},
+	url = {https://doi.org/10.1145/3352460.3358296},
+	doi = {10.1145/3352460.3358296},
+	abstract = {Serverless computing is a rapidly growing cloud application model, popularized by Amazon's Lambda platform. Serverless cloud services provide fine-grained provisioning of resources, which scale automatically with user demand. Function-as-a-Service (FaaS) applications follow this serverless model, with the developer providing their application as a set of functions which are executed in response to a user- or system-generated event. Functions are designed to be short-lived and execute inside containers or virtual machines, introducing a range of system-level overheads. This paper studies the architectural implications of this emerging paradigm. Using the commercial-grade Apache OpenWhisk FaaS platform on real servers, this work investigates and identifies the architectural implications of FaaS serverless computing. The workloads, along with the way that FaaS inherently interleaves short functions from many tenants frustrates many of the locality-preserving architectural structures common in modern processors. In particular, we find that: FaaS containerization brings up to 20x slowdown compared to native execution, cold-start can be over 10x a short function's execution time, branch mispredictions per kilo-instruction are 20x higher for short functions, memory bandwidth increases by 6x due to the invocation pattern, and IPC decreases by as much as 35% due to inter-function interference. We open-source FaaSProfiler, the FaaS testing and profiling platform that we developed for this work.},
+	booktitle = {Proceedings of the 52nd Annual IEEE/ACM International Symposium on Microarchitecture},
+	pages = {1063–1075},
+	numpages = {13},
+	keywords = {architecture, faas, cloud, function-as-a-service, serverless, OpenWhisk},
+	location = {Columbus, OH, USA},
+	series = {MICRO '52}
+}
+
+@INPROCEEDINGS{IoTFaaS,
+	
+	author={McGrath, Garrett and Brenner, Paul R.},
+	
+	booktitle={2017 IEEE 37th International Conference on Distributed Computing Systems Workshops (ICDCSW)}, 
+	
+	title={Serverless Computing: Design, Implementation, and Performance}, 
+	
+	year={2017},
+	
+	volume={},
+	
+	number={},
+	
+	pages={405-410},
+	
+	doi={10.1109/ICDCSW.2017.36}}
+
