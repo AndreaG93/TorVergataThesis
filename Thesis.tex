@@ -106,7 +106,7 @@ Finally, we have built a prototype implementation to obtain experimental results
 \listoffigures
 \listoftables
 
-\chapter{Introduction}
+\chapter{Introduction}\label{chapterIntro}
 \pagenumbering{arabic}
 
 In recent years, thanks to an increased popularity of several lightweight virtualization solutions, specifically containers and container-orchestration systems, many public cloud providers have launched a new set of cloud computing services belonging to new service type category called \textit{Function-as-a-Service} (\textit{FaaS}), where almost every aspect of the system administration tasks, needed to deploy a workload on the cloud, like provisioning, monitoring, resource management and scaling, are directly managed by the provider with a minimum involvement of the user.
@@ -783,7 +783,7 @@ When technical debt grows at an uncontrollable rate, you can be rapidly reach a 
 
 To manage technical debt of our system we used SonarQube\cite{SonarQube}, a tool able to report the technical debt as the amount of effort required to fix all code smells in a project; however, it does not just report the technical debt, it computes the number of duplicated code blocks, vulnerabilities, test coverage percentage and many other software metrics.
 
-At the end of our software development process, which ends with a software made up of $8405$ lines of code, SonarQube reports $0$ code smells, $0$ duplicated code blocks and $0$ security vulnerabilities. This result should ensure an high software maintainability, simplifying the development of future release.
+At the end of our software development process, which ends with a software made up of $8405$ lines of code, SonarQube reports $0$ code smells, $0$ duplicated code blocks and $0$ security vulnerabilities. This result should ensure a high software maintainability, simplifying the development of future releases.
 
 \subsection{FaaS Provider Support}
 
@@ -800,7 +800,7 @@ Unfortunately, our system software has been not designed to manage serverless co
 
 \subsection{Final Considerations}
 
-As TSDB, that is for the storage and the retrieval of time series data regarding serverless function performance, we adopted InfluxDB\cite{influx}, an open-source time series database written in the Go programming language.
+As TSDB, that is for the storage and the retrieval of time series data regarding serverless function performance, we adopted InfluxDB\cite{influx}, an open-source time series database written in Go programming language.
 
 To implement the directory where to store all points related to a specified resource owner, we exploit the InfluxDB's concept called \textit{bucket}. A bucket is equivalent to a directory where time series data can be stored. Moreover, differently form a directory, a bucket has a retention period according to which InfluxDB drops all points with timestamps older than the bucket retention period; however, our prototype does not exploit this feature, therefore buckets retention periods are disabled by default.
 
@@ -2576,7 +2576,46 @@ Then, our algorithm stops when:
 
 \chapter{Conclusion}\label{chapterConclusion}
 
-????????????????????????
+In this work we tried to address the problem to provide QoS guarantees during serverless application execution which, as we said in chapter \ref{chapterIntro}, represents a very important obstacle to a more spread adoption of serverless computing paradigm.
+
+To achieve that goal, we presented an analytical model to compute average cost and execution time for generic serverless workflows having multiple concrete functions hosted on multiple FaaS providers. Then, we defined two different optimization problems formulation to address the problem of finding a suitable serverless application configuration in order to meet user defined QoS constraints; moreover, we developed a heuristic algorithm named \QuoteIntro Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update" to rapidly solve one of them. 
+
+Again, we verified the validity of both the proposed algorithms and the analytical model through experimental evaluations developing a prototype supporting AWS and OpenWhisk FaaS platforms.
+
+However, this work is still in its early stages and many problems have to be addressed and both some analytical model characteristics and the prototype must be improved or restructured.
+
+Some hints, regarding what a possibly future work should focus on, are summarized as follows:
+
+\begin{itemize}
+	\item A support for a 
+	
+	A general advantage of proactive protocols is that
+	they can give QoS guarantees related to connection set-up, latency or other real-
+	time requirements. 
+	
+	\item Techniques to achieve fault tolerance should be developed.
+	
+	\item Estimation technique for Average cost and response time regaring 
+	
+	Average cost and response time estimation technique must be investigated and
+	
+	Moving Window Average
+	(MWA), Exponential Weight Moving Average(EWMA), Lin-
+	ear Regression (Linear R.), and Logistic Regression (Logisitic
+	R.). 
+	
+	\item Our implementation,
+	
+	demonstrating the advantage of data localization opportunity 
+	
+	\item Network delay Physical proximity affects end-to-­
+	end latency, must be be considered
+	
+	\item 
+	
+\end{itemize}
+
+
 
 
 \bibliographystyle{plainnat}
