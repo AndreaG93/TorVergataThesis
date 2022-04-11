@@ -900,7 +900,7 @@ Then, we will adopt following notations:
 
 According to serverless paradigm, the execution of an application always starts with a particular function, usually triggered through events or \texttt{HTTP} requests, acting as ``\textit{entry point}" of the serverless workflow; any other functions, belonging to the application, will be invoked subsequently according to the business logic specified by customer. Conversely, the execution of an application ends when the execution of its last function ends, which acts as the ``\textit{end point}" of the serverless workflow. 
 
-Assuming that any serverless application has only one function acting as entry point, let $n \in \N \SetMinusZero$ and $R$ a resource owner, then a choreography, owned by $R$, is a weakly connected\footnote{A directed graph is called \textit{weakly connected} if replacing all of its directed edges with undirected edges produces a connected undirected graph.} weighted directed graph denoted as follows:
+Assuming that any serverless application has only one function acting as entry point, let $n \in \N \SetMinusZero$ and $R$ a resource owner, then a choreography, owned by $R$, is a weakly connected\footnote{A directed graph is called \textit{weakly connected} if replacing all of its directed edges with undirected edges produces a connected undirected graph \cite{GraphTheory}.} weighted directed graph denoted as follows:
 
 \begin{equation}
 	\mathcal{C}_R \mathDef (\Phi,E)
@@ -910,7 +910,7 @@ where:
 
 \begin{itemize}
 				
-	\item Each vertex $\phi \in \Phi$, where $|\Phi| = n$, is called \textit{abstract serverless function}, or simply \textit{abstract  function}, and it represents a generic computational unit. :
+	\item Each vertex $\phi \in \Phi$, where $|\Phi| = n$, is called \textit{abstract serverless function}, or simply \textit{abstract  function}, and it represents a generic computational unit:
 	
 	\begin{itemize}
 				
@@ -953,10 +953,10 @@ where:
 	
 	\begin{eqnarray}
 		\exists !  \phi \in \Phi &\mid & in(\phi) = \emptyset \label{cond1} \\
-		\exists !  \phi \in \Phi & \mid & out(\phi) = \emptyset \label{cond2}
+		\exists  \phi \in \Phi & \mid & out(\phi) = \emptyset \label{cond2}
 	\end{eqnarray}
 	
-	that is, $\Phi$ has to contain only one abstract function acting as entry point and only one other acting as end point.	In other terms, we can state that:
+	that is, $\Phi$ has to contain only one abstract function acting as entry point and at least one acting as end point.	In other terms, we can state that:
 	
 	\begin{equation}
 		\begin{array}{lcll}
@@ -965,9 +965,8 @@ where:
 		\end{array}
 	\end{equation}
 	
-	Finally, we will use the notation $\alpha(\mathcal{C}_R)$ to denote the vertex $\phi \in \Phi$ acting as entry point of the choreography $\mathcal{C}_R$; conversely, we will adopt the notation $\omega(\mathcal{C}_R)$ to denote the end point.
-	
-	
+	Finally, we will use the notation $\alpha(\mathcal{C}_R)$ to denote the vertex $\phi \in \Phi$ acting as entry point of the choreography $\mathcal{C}_R$; conversely, we will adopt the notation $\Omega(\mathcal{C}_R)$ to denote the set of end points of $\mathcal{C}_R$. 
+		
 	\item Following condition must hold:
 	
 	\begin{equation}\label{cond3}
@@ -975,6 +974,22 @@ where:
 	\end{equation}
 
 	in other words, at least one path starting from the entry point of $\mathcal{C}_R$ to each abstract function $\phi \in \Phi$ must  exist. 
+	
+	\item Sometimes, we will use $P_{exit}(\mathcal{C}_R,t)$ notation to denote the so-called \textit{exit probability} of $\mathcal{C}_R$ at time $t$, that is the probability to terminate its execution after its invocation; it can be computed using following formula:
+	
+	\begin{equation}
+		P_{exit}(\mathcal{C}_R,t) \mathDef \sum_{\phi \in \Omega(\mathcal{C}_R)} \sum_{\pi \in \Pi(\alpha(\mathcal{C}_R), \phi)} TPP(\pi,t)
+	\end{equation}
+	
+	where:
+	
+	\begin{itemize}
+		\item for each $\phi \in \Omega(\mathcal{C}_R)$, any $\pi \in \Pi(\alpha(\mathcal{C}_R)$ represent the path starting from the entry point of $\mathcal{C}_R$ to one of its end node.
+	\end{itemize}
+	
+	We always assume that $P_{exit}(\mathcal{C}_R,t) = 1$; that condition guarantees that any execution of $\mathcal{C}_R$ will terminate. 
+	
+	\item We will use $E[I_{\mathcal{C}_R}]$ notation to denote the expected value of the number of executions of the choreography $\mathcal{C}_R$.
 	
 \end{itemize} 
 
@@ -1078,19 +1093,18 @@ Let $\mathcal{C} = (\Phi,E)$ a choreography, the weakly connected weighted direc
 
 is called \textit{serverless sub-choreography} of $\mathcal{C}$, or simply \textit{sub-choreography} of $\mathcal{C}$, when the conditions \ref{cond1}, \ref{cond2} and \ref{cond3} are hold.
 
-Referring to sub-choreographies, we will use $P_{exit}(\mathcal{C}^*,t)$ to denote the so-called \textit{sub-choreographies exit probability}, that is the probability to ends the execution of $\mathcal{C}$ when $\mathcal{C}^*$ is executed; later, we will explain how to compute it.
-
 \subsubsection{Serverless Pipeline Choreography}\label{PipelineDefinitionSection}
 
 Suppose to have a choreography $\mathcal{C} = (\Phi,E)$ satisfying following conditions:
 
 \begin{eqnarray}
+	|\Omega(\mathcal{C})| & = & 1 \label{pipeline0} \\
 	|in(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \left\{ \alpha(\mathcal{C}) \right\} \label{pipeline1} \\
-	|out(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \left\{ \omega(\mathcal{C}) \right\} \label{pipeline2} \\
+	|out(\phi)| & = & 1 \qquad \forall \phi \in \Phi \setminus \Omega(\mathcal{C}) \label{pipeline2} \\
 	P(\phi_x, \phi_y, t) & = & 1 \qquad \forall x,y \in \SetFromOneTo{|\Phi|}, \forall t \label{pipeline3}
 \end{eqnarray}
 
-Any choreography $\mathcal{C}$ satisfying \ref{pipeline1}, \ref{pipeline2} and \ref{pipeline3} will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
+Then $\mathcal{C}$ will be called \textit{serverless pipeline choreography}, or simply a \textit{pipeline choreography}.
 
 \section{Serverless Workflow Configuration}
 
@@ -1153,14 +1167,22 @@ From now, we will use $RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ and $C(\math
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
 
-Informally, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*,\Theta_{\mathcal{C}^*})$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ and the end point $\omega(\mathcal{C}^*)$ are, respectively, opening and closing orchestration functions having same type $\tau$ possibly coinciding. Formally:
+Informally, a \textit{structure} is defined as any sub-choreography $\mathcal{C}^*= (\Phi^*,E^*,\Theta_{\mathcal{C}^*})$ of $\mathcal{C}$ whose entry point $\alpha(\mathcal{C}^*)$ has multiple outgoing edges or, equivalently, has more than one successors.
+
+Sometimes, structures have a special end point having multiple ingoing edges and the same type $\tau$ of $\alpha(\mathcal{C}^*)$; if it exists, we will use $\omega(\mathcal{C}^*)$ to denote it.
+
+When $\omega(\mathcal{C}^*)$ exists, $\alpha(\mathcal{C}^*)$ and $\omega(\mathcal{C}^*)$ are, respectively, the opening and closing orchestration functions of the structure $\mathcal{C}^*$. 
+
+Formally:
 
 \begin{equation}
-	\mathcal{C}^* \text{ is a structure } \Leftrightarrow \left\{ \begin{array}{l}
-		\alpha(\mathcal{C}^*), \omega(\mathcal{C}^*) \in \mathscr{F_O}(\mathcal{C}^*) \\
-		
-		\mathscr{T}(\alpha(\mathcal{C}^*)) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{C}^*)) = \tau_{\omega}
-	\end{array} \right.
+	\mathcal{C}^* \text{ is a structure } \Leftrightarrow |out(\alpha(\mathcal{C}^*))| > 1
+\end{equation}
+
+or, equivalently:
+
+\begin{equation}
+	\mathcal{C}^* \text{ is a structure } \Leftrightarrow |succ(\alpha(\mathcal{C}^*))| > 1
 \end{equation}
 
 For the aim of our work, the most important aspect is that every structure can be viewed as a \ItalicQuotMark{set} of sub-choreographies. Formally, let $c \in \N \setminus \left\{0\right\}$ and $\mathcal{C}^{**} = (\Phi^{**},E^{**})$ a sub-choreography of $\mathcal{C}^*$ such that:
@@ -1172,7 +1194,7 @@ For the aim of our work, the most important aspect is that every structure can b
 	\end{array}
 \end{equation}
 
-that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end point of $\mathcal{C}^{*}$, including any edges starting/ending from/to them. Then, $\Theta_{\mathcal{C}^*}$, such that $|\Theta_{\mathcal{C}^*}| = c$ denotes the set containing all connected components of $\mathcal{C}^{**}$ satisfying \ref{cond1}, \ref{cond2} and \ref{cond3} conditions; in other words, each connected component of $\mathcal{C}^{**}$ represents a sub-choreography of $\mathcal{C}$. Formally:
+that is, $\mathcal{C}^{**}$ is obtained removing both the entry point and end point $\omega(\mathcal{C}^*)$ of $\mathcal{C}^{*}$, including any edges starting/ending from/to them. Then, $\Theta_{\mathcal{C}^*}$, such that $|\Theta_{\mathcal{C}^*}| = c$ denotes the set containing all connected components of $\mathcal{C}^{**}$ satisfying \ref{cond1}, \ref{cond2} and \ref{cond3} conditions; in other words, each connected component of $\mathcal{C}^{**}$ represents a sub-choreography of $\mathcal{C}$. Formally:
 
 \begin{eqnarray}
 	\Theta_{\mathcal{C}^*} & \mathDef & \left\lbrace \theta_1, \ldots ,\theta_c \right\rbrace \\ & = & \bigcup_{i = 1}^c \left\{ \begin{array}{l}
@@ -1200,20 +1222,18 @@ where $\phi_{fake} \in \mathscr{F_O}(\mathcal{C}^*)$ is such that:
 	P_{exit}(\phi_{fake}, t) & = & P_{exit}(\mathcal{C}^*, t)
 \end{eqnarray}
 
-Form now, we will use $E[I_{\theta}]$ for $\theta \in \Theta_{\mathcal{C}^*}$ to denotes the expected value of the number of invocation of the choreography $\theta$.
-
-
 \subsection{Parallel}
 
 Any structure $\mathcal{P} = (\Phi',E',\Theta)$ such that:
 
 \begin{eqnarray}
+	\omega(\mathcal{P}) \in \Omega(\mathcal{P}) \\
 	\mathscr{T}(\alpha(\mathcal{P})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{P})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
 	TPP(\pi, t) = 1 & \qquad \forall \pi \in \Pi(\phi_{x}, \phi_{y}), \forall t \\
 	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
 	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
 	P_{exit}(\theta, t) = 0 & \qquad \forall \theta \in \Theta \\
-	|succ(\alpha(\mathcal{P}))| = |prev(\omega(\mathcal{P}))|
+	|succ(\alpha(\mathcal{P}))| = |prev(\omega(\mathcal{P}))| > 1
 \end{eqnarray}
 
 is called \textit{parallel structure} and $\tau$ denotes a \textit{parallel} type.
@@ -1308,129 +1328,17 @@ Since, by definition, we imposed that all sub-choreography of $\mathcal{P}$ have
 	P_{exit}(\mathcal{P}, t) = 0
 \end{equation}
 
-\subsection{Branch}
-
-Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
-
-\begin{eqnarray}
-	\mathscr{T}(\alpha(\mathcal{B})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{B})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
-	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
-	P(\phi_x, \alpha(\theta_i),t) \leq 1 & \qquad \forall i \in \SetFromOneTo{n} \\
-	\sum_{i = 1}^n P(\phi_x, \alpha(\theta_i),t) = 1 & \\
-	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
-	|succ(\alpha(\mathcal{B}))| = |prev(\omega(\mathcal{B}))|
-\end{eqnarray}
-
-is called \textit{branch structure} and $\tau$ denotes a \textit{branch} type. More precisely, if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{if-else-branch structure}; if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{switch-branch structure}. When $|\Theta| = 1$ and $(\phi_x,\phi_y) \in E$, $\mathcal{B}$ is called \textit{if-branch structure}. Clearly, it is used to model \texttt{if}, \texttt{if-else} and \texttt{switch} programming structures inside a serverless application. 
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start) at (-2,0) {};
-		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(end) at (12,0) {};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(branchStartNode) at (0,0) {$\phi_x$};
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(branchEndNode) at (10,0) {$\phi_y$};
-		
-		
-		\node[circle, draw, minimum width = 1cm]        					   
-		(Node1) at (3.8,2) {$\phi_a$};
-		
-		\node[circle, minimum width = 0.3cm]       					   
-		(Node2) at (5,2) {...};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node3) at (6.2,2) {$\phi_b$};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node4) at (3.8,-2) {$\phi_c$};
-		
-		\node[circle, minimum width = 0.3cm]       					   
-		(Node5) at (5,-2) {...};
-		
-		\node[circle, draw, minimum width = 1cm]       					   
-		(Node6) at (6.2,-2) {$\phi_d$};
-		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = x$} (Node1);
-		
-		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1-x$} (Node4);
-		
-		\draw[ultra thick,->] (Node3) edge (branchEndNode);
-		
-		\draw[ultra thick,->] (Node6) edge (branchEndNode);
-		
-		% Dashed lines
-		
-		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
-		
-		\draw[ultra thick, ->] (branchEndNode) -- (end);
-		
-		\draw[ultra thick, ->] (Node1) -- (Node2);
-		
-		\draw[ultra thick, ->] (Node2) -- (Node3);
-		
-		\draw[ultra thick, ->] (Node4) -- (Node5);
-		
-		\draw[ultra thick, ->] (Node5) -- (Node6);
-		
-		% Frames
-		
-		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
-		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
-		
-		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
-		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
-		
-		legend
-		
-		\matrix [below left] at (current bounding box.north east) {
-			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
-		};
-		
-		
-	\end{tikzpicture}
-	\caption{An if-else-branch structure in a serverless workflow}
-\end{figure}
-
-Since any branch have the same possibility of be traversed during different execution of $\mathcal{B}$, we have adopted naive probability to model transition probabilities. Formally:
-
-\begin{equation}\label{naiveProbability}
-	P(\phi_x, \alpha(\theta),t) = \dfrac{|I_{\theta}(t)|}{|I_{\mathcal{B}}(t)|} \qquad \forall \theta \in \Theta
-\end{equation}
-
-where $|I_{\theta}|$ ($|I_{\mathcal{B}}|$) denotes how many times the sub-choreography $\theta$ (structure $\mathcal{B}$) was been executed in the past at time $t$.
-
-Let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{B}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of the branch structure $\mathcal{B}$ can be computed as follows:
-
-\begin{equation}
-	RT(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot  RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-\begin{equation}
-	C(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
-\end{equation}
-
-The exit probability of a branch structure can be computed as follows:
-
-\begin{equation}
-	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
-\end{equation}
-
 \subsection{Conditional Loop}
 
 Any structure $\mathcal{L} = (\Phi',E',\Theta)$ such that:
 
 \begin{eqnarray}
+	\omega(\mathcal{L}) \in \Omega(\mathcal{L}) \\
 	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
 	|\Theta| = 1  & \\
+	|succ(\alpha(\mathcal{P}))| = 2 \\
+	|prev(\alpha(\mathcal{P}))| \leq 2 \\
+	|prev(\omega(\mathcal{P}))| = 1 \\
 	E[I_{\theta}] \geq 0 & \qquad \theta \in \Theta \\
 	P(\phi_{x}, \alpha(\theta), t) = x & \\
 	P(\phi_{x}, \phi_{y},t) = 1 - x & \\
@@ -1542,78 +1450,122 @@ The exit probability of a conditional loop structure was been modeled, once agai
 	P_{exit}(\mathcal{L}, t) & \mathDef & \Big(1 -P_{exit}(\theta, t)  \Big)^{\lfloor E[I_{\theta}(t)] \rfloor - 1} \cdot P_{exit}(\theta, t)
 \end{eqnarray}
 
-\subsection{Exit}
+\subsection{Branch}
 
-Any structure $\mathcal{E} = (\Phi',E',\Theta)$ such that:
+Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
 
 \begin{eqnarray}
-	\mathscr{T}(\alpha(\mathcal{L})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{L})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
-	|\Theta| = 0  & \\
-	P(\phi_{x}, \phi_{y},t) = 0 & \qquad \forall t
+	\mathscr{T}(\alpha(\mathcal{B})) = \mathscr{T}(\phi_x) = \tau_{\alpha} \\ \mathscr{T}(\omega(\mathcal{B})) = \mathscr{T}(\phi_y) = \tau_{\omega} \\
+	|succ(\alpha(\mathcal{P}))| \geq 2 \\
+	|prev(\omega(\mathcal{P}))| \leq |succ(\alpha(\mathcal{P}))| \\
+	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
+	P(\phi_x, \alpha(\theta_i),t) \leq 1 & \qquad \forall i \in \SetFromOneTo{n} \\
+	\sum_{i = 1}^n P(\phi_x, \alpha(\theta_i),t) = 1 & \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
 \end{eqnarray}
 
-is called \textit{exit structure} and $\tau$ denotes a \textit{exit} type. That structure is used to model a \texttt{return} or \texttt{exit} statement inside a serverless application. 
+is called \textit{branch structure} and $\tau$ denotes a \textit{branch} type. More precisely, if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{if-else-branch structure}; if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{switch-branch structure}. When $|\Theta| = 1$ and $(\phi_x,\phi_y) \in E$, $\mathcal{B}$ is called \textit{if-branch structure}. Clearly, it is used to model \texttt{if}, \texttt{if-else} and \texttt{switch} programming structures inside a serverless application. It is not necessary that $\omega(\mathcal{B})$ exists.
 
-\begin{figure}[h!]
+\begin{figure}
 	\centering
 	\begin{tikzpicture}
 		
-		\node[circle,draw=white,minimum width = 1cm] 
-		(start2) at (-4,0) {};
-		
-		\node[circle,draw,minimum width = 1cm] 
-		(start) at (-2,0) {$\phi_x$};
-		
-		\node[circle,draw,minimum width = 1cm] 
-		(end) at (2,0) {$\phi_y$};
 		
 		\node[circle,draw=white,minimum width = 1cm] 
-		(end2) at (4,0) {};
+		(start) at (-2,0) {};
+		
+		\node[circle,draw=white,minimum width = 1cm] 
+		(end) at (12,0) {};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchStartNode) at (0,0) {$\phi_x$};
+		
+		\node[circle, draw, minimum width = 1cm]        					   
+		(branchEndNode) at (10,0) {$\phi_y$};
 		
 		
-		\draw[ultra thick,->] (start) edge node[yshift=20]{$P(\phi_x,\phi_y, t) = 0$} (end);
+		\node[circle, draw, minimum width = 1cm]        					   
+		(Node1) at (3.8,2) {$\phi_a$};
 		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node2) at (5,2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node3) at (6.2,2) {$\phi_b$};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node4) at (3.8,-2) {$\phi_c$};
+		
+		\node[circle, minimum width = 0.3cm]       					   
+		(Node5) at (5,-2) {...};
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Node6) at (6.2,-2) {$\phi_d$};
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=20]{$P(\phi_x,\phi_a, t) = x$} (Node1);
+		
+		\draw[ultra thick,->] (branchStartNode) edge node[xshift=-30 ,yshift=-20]{$P(\phi_x,\phi_c, t) = 1-x$} (Node4);
+		
+		\draw[ultra thick,->] (Node3) edge (branchEndNode);
+		
+		\draw[ultra thick,->] (Node6) edge (branchEndNode);
 		
 		% Dashed lines
 		
-		\draw[dashed,ultra thick, ->] (start2) -- (start);
+		\draw[dashed,ultra thick, ->] (start) -- (branchStartNode);
 		
-		\draw[dashed,ultra thick, ->] (end) -- (end2);
+		\draw[ultra thick, ->] (branchEndNode) -- (end);
+		
+		\draw[ultra thick, ->] (Node1) -- (Node2);
+		
+		\draw[ultra thick, ->] (Node2) -- (Node3);
+		
+		\draw[ultra thick, ->] (Node4) -- (Node5);
+		
+		\draw[ultra thick, ->] (Node5) -- (Node6);
+		
+		% Frames
+		
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub1) at (5,2) {};
+		\node[circle,above of=sub1, yshift=10] (label1) {$\theta_1$};
+		
+		\node[rectangle, draw, dashed, minimum width =3.7cm, minimum height=1.8cm] (sub2) at (5,-2) {};
+		\node[circle,below of=sub2, yshift=-10] (label2) {$\theta_2$};
+		
+		legend
+		
+		\matrix [below left] at (current bounding box.north east) {
+			\node [] {$x \in \mathbb{R} : 0 \leq x \leq 1$}; \\
+		};
+		
 		
 	\end{tikzpicture}
-	\caption{An exit structure in a serverless workflow.}
+	\caption{An if-else-branch structure in a serverless workflow}
 \end{figure}
 
+Since any branch have the same possibility of be traversed during different execution of $\mathcal{B}$, we have adopted naive probability to model transition probabilities. Formally:
 
-At any time $t$, following is true that:
+\begin{equation}\label{naiveProbability}
+	P(\phi_x, \alpha(\theta),t) = \dfrac{|I_{\theta}(t)|}{|I_{\mathcal{B}}(t)|} \qquad \forall \theta \in \Theta
+\end{equation}
+
+where $|I_{\theta}|$ ($|I_{\mathcal{B}}|$) denotes how many times the sub-choreography $\theta$ (structure $\mathcal{B}$) was been executed in the past at time $t$.
+
+Let $\theta_i \in \Theta$ the $i$-th sub-choreography of $\mathcal{B}$, where $i \in \N \cap \left[1,n\right]$. At any time $t$, the response time and the cost of the branch structure $\mathcal{B}$ can be computed as follows:
 
 \begin{equation}
-	RT(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
+	RT(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot  RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
 
 \begin{equation}
-	C(\mathcal{E},\textbf{x}_{\mathcal{C}}, t) = 0
+	C(\mathcal{B},\textbf{x}_{\mathcal{C}}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
 \end{equation}
+
+The exit probability of a branch structure can be computed as follows:
 
 \begin{equation}
-	P_{exit}(\mathcal{E}, t) = 1
+	P_{exit}(\mathcal{B}, t) \mathDef \sum_{i = 1}^n P(\phi_{x}, \alpha(\theta_i),t) \cdot P_{exit}(\theta_i, t)
 \end{equation}
-
-Moreover, it is possible to compute the exit probability $P_{exit}(\theta,t)$ of the sub-choreography $\theta$ of $\mathcal{C}$, using following formula:
-
-
-\begin{equation}
-	P_{exit}(\theta,t) \mathDef \sum_{i = 1}^n TPP(\pi_i) \cdot P_{exit}(\mathcal{E}_i, t)
-\end{equation}
-
-where:
-
-\begin{itemize}
-	\item $n$ is the number of exit structures contained inside $\theta$.
-	\item $\pi_i$ is the path starting from the entry point of $\theta$ to the $i$-th exit structure, for $i \in \SetFromOneTo{n}$.
-\end{itemize}
-
-
 
 \section{Performance Evaluation of Concrete Functions}
 
@@ -1729,16 +1681,6 @@ According to our model point of view, at any time $t$, any FaaS platform provide
 		\node[text width=5.5cm, blue] at (-7,-3) {\textbf{Blocking due to lack of idle function instances}};
 		
 		\node[text width=6.3cm, red] at (-7.5,-6.5) {\textbf{Request dropped if maximum concurrency limit is reached}};
-		
-		
-		%legend
-		
-		%\matrix [below left] at (current bounding box.north east) {
-		%	\node [] {$\phi_1 = p_{\alpha} \in \mathscr{F_O}$}; \\
-		%	\node [] {$\phi_3 = p_{\omega} \in \mathscr{F_O}$}; \\
-		%	\node [] {$\phi_2, \phi_3 \in \mathscr{F_E}$}; \\
-		%};
-		
 		
 	\end{tikzpicture}
 	\caption{An overview of the proposed system model using $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queening systems.}
@@ -2100,23 +2042,13 @@ However, exploiting what was said before regarding choreography structures, it i
 		\For{$\mathcal{L}$ in \texttt{loopList}}{
 			$\mathcal{C}^* \leftarrow$ \texttt{process}($\mathcal{L}$)\; 
 		}
-
-		\BlankLine
-		
-		\texttt{exitList} $\leftarrow$ \texttt{find\_exits}($\mathcal{C}^*$)\; 
-		
-		\For{$\mathcal{E}$ in \texttt{exitList}}{
-			$\mathcal{C}^* \leftarrow$ \texttt{process}($\mathcal{E}$)\; 
-		}
 	}
 	\Return $\mathcal{C}^*$
 \end{algorithm}
 
-Finally, in order to select the better one, to each choreography configuration is associated a score, like for executable function configurations.
+Finally, in order to select the better one, to each choreography configuration is associated a score, like for executable function configurations. 
 
-Formally, let $\mathcal{C} = (\Phi,E)$ a serverless choreography, $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration and $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ the SLA.
-
-At any time $t$, the \textit{score} $S(\textbf{x}_{\mathcal{C}},t)$, or \textit{profit}, of the choreography configuration $\textbf{x}_{\mathcal{C}}$ can be computed as follows:
+Formally, let $\mathcal{C} = (\Phi,E)$ a serverless choreography, $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration and $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ the SLA. At any time $t$, the \textit{score} $S(\textbf{x}_{\mathcal{C}},t)$, or \textit{profit}, of the choreography configuration $\textbf{x}_{\mathcal{C}}$ can be computed as follows:
 
 \begin{equation}
 	S(\textbf{x}_{\mathcal{C}},t) \mathDef w_{RT} \cdot \dfrac{RT_{\textbf{max}}(t) - RT(\textbf{X},t)}{RT_{\textbf{max}}(t) - RT_{\textbf{min}}(t)} + w_{C} \cdot \dfrac{C_{\textbf{max}}(t) - C(\textbf{X},t)}{C_{\textbf{max}}(t) - C_{\textbf{min}}(t)}
@@ -2587,29 +2519,36 @@ However, this work is still in its early stages and many problems have to be add
 Some hints, regarding what a possibly future work should focus on, are summarized as follows:
 
 \begin{itemize}
-	\item A support for a 
 	
-	A general advantage of proactive protocols is that
-	they can give QoS guarantees related to connection set-up, latency or other real-
-	time requirements. 
+	\item Our model does not consider data transfer delay between our broker and the FaaS platform where the serverless function will be executed. Naturally, the greater the size of the input data passed to the invoked serverless function, the larger the delay; that situation can lead to a violation of QoS expectations. The optimization problems used by our model should take into account data transfer delays.
 	
-	\item Techniques to achieve fault tolerance should be developed.
+	\item Unfortunately, our model do not take into account the data access behavior of scheduled serverless functions too; this can lead to longer execution times and a violation of the QoS constraints. 
 	
-	\item Estimation technique for Average cost and response time regaring 
+	For example, migrating data \QuoteIntro closer" to the FaaS platform can  reduce the access latency for I/O intensive functions. 
 	
-	Average cost and response time estimation technique must be investigated and
+	Moreover, to further reduce network delay and latency, the model should physically co-locate function and data to assure faster data access and smaller network traffic.
 	
-	Moving Window Average
-	(MWA), Exponential Weight Moving Average(EWMA), Lin-
-	ear Regression (Linear R.), and Logistic Regression (Logisitic
-	R.). 
+	More in general, the development of a location-aware model should be considered.
+	 
+	\item Multiple techniques to achieve fault tolerance should be investigated and developed. 
 	
-	\item Our implementation,
+	For instance, when a selected concrete function is not available, instead of aborting the entire application, the model should invoke another one without violating QoS constraints.
 	
-	demonstrating the advantage of data localization opportunity 
+	Transparency, scalability, replication management, process decoupling and traffic congestion issues must be addressed abandoning the centralized design adopted in our prototype, solving the single point of failure problem.
 	
-	\item Network delay Physical proximity affects end-to-­
-	end latency, must be be considered
+	\item Based on the historical workload traces stored inside our TSDB, in some use cases it should be convenient to develop a protocol which, proactively, pre-warms selected function instances to further reduce latency and response time. 
+	
+	In addition, the adoption of machine learning techniques, like those based on deep learning, should be considered to analyze collected time series data and predict behavior or load pattern of serverless functions for function instance pre-warming or data migration.
+		
+	\item Unfortunately, our model provides no information about the reliability about estimations of the average value for cost and response time exhibited by serverless functions. In other words, we said nothing about how close the estimated values (regarding average cost and response time) might be to the true values. 
+	
+	A properly evaluation of adopted estimator should be done. Moreover, other estimation techniques must be investigated, evaluated and compared preferring, for example, the one which has lower mean squared error. 
+
+	\item To avoid delays due to scheduling policies adopted by FaaS platforms under certain conditions (see \cite{Sequoia}), incurring into QoS violation, we adopt capacity requirement to check if enough function instance are available on target FaaS before to start an application execution. This choice assures us that no serverless function invocations will be enqueued on FaaS platforms incurring in unavoidable delays capable to violate user specified constraints.
+	
+	However, our choice is sub-optimal since we cannot maximize the utilization of function instances available on the FaaS platform.
+	
+	The development of a proper scheduler should be considered.
 	
 \end{itemize}
 
