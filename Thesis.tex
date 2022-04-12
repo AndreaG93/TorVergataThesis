@@ -2264,46 +2264,10 @@ Moreover our approach allows a parallel pheromone trails update too; as we will 
 
 Finally, since can be quite expensive to allocate at run-time the solution components graph, increasing system response latency, we decided to exploit a pre-provisioning tactic\cite{Tactics} to anticipates data needs; despite this solution is not very efficient due to high memory consumption, it can assure lower latency.
 
-\subsection{Transition Probabilities}
-
-Although firstly each ants selects randomly an object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability}, which depends on several parameters:
-
-\begin{itemize}
-	\item the attractiveness of the objects.
-	\item the path traveled so far by the ant.
-	\item the pheromone trail laid on the solution components graph $G$.
-\end{itemize}
-
-Let $n$ the number of the groups and $z \in \SetFromOneTo{n-1}$ the number of items selected by an ant. 
-
-Formally, during the $k$-th iteration of our algorithm, the path $\pi_{k_l}^{(z)}$, traversed by the $l$-th ant on the solution components graph $G(O,E)$ after the $z$-th object selection, can be defined as follows:
-
-\begin{equation}
-	\pi_{k_l}^{(z)} = o_1e_1o_2 \ldots o_{z-1}e_{z}o_{z+1}
-\end{equation} 
-
-where:
-
-\begin{eqnarray}
-	o_s \in O & \qquad \forall s \in \SetFromOneTo{z} \\
-	e_s = (o_s,o_{s+1}) \in E  & \qquad \forall s \in \SetFromOneTo{z} \\
-	g(o_s) \neq g(o_r)   &\qquad \forall s,r \in \SetFromOneTo{z} : s \neq r
-\end{eqnarray}
-
-The last property states that each pair of selected objects belong to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
-
-Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represents the partial solution built so far by the $l$-th ant after the $z$-th object selection; therefore, $|\textbf{S}_{k_l}^{(z)}| = z + 1$.  
-
-Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in O$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
-
-\subsection{Ant's Solution Construction Algorithm}
-
-A complete description of the algorithm performed by ants to build partial solutions is reported in algorithm \ref{antsolutiongen}
+A complete description of the algorithm performed by ants to build partial solutions is reported in Algorithm \ref{antsolutiongen}.
 
 
 \begin{algorithm}\label{antsolutiongen}
-	%\KwData{this text}
-	%\KwResult{Some solution}
 	
 	\For{$l\gets0$ \KwTo $m$ \KwBy $1$}{
 		
@@ -2362,6 +2326,40 @@ A complete description of the algorithm performed by ants to build partial solut
 	\caption{Pseudo-code regarding partial solution generation performed by ants.}
 \end{algorithm}
 
+\subsection{Transition Probabilities}
+
+Although firstly each ants selects randomly an object of his partial solution from a randomly chosen group, all subsequent objects are selected according to so-called \ItalicQuotMark{transition probability} \cite{MAXMIN}\cite{acosemplice}\cite{acostrano}, which depends on several parameters:
+
+\begin{itemize}
+	\item the attractiveness of the objects.
+	\item the path traveled so far by the ant.
+	\item the pheromone trail laid on the solution components graph $G$.
+\end{itemize}
+
+Let $n$ the number of the groups and $z \in \SetFromOneTo{n-1}$ the number of items selected by an ant. 
+
+Formally, during the $k$-th iteration of our algorithm, the path $\pi_{k_l}^{(z)}$, traversed by the $l$-th ant on the solution components graph $G(O,E)$ after the $z$-th object selection, can be defined as follows:
+
+\begin{equation}
+	\pi_{k_l}^{(z)} = o_1e_1o_2 \ldots o_{z-1}e_{z}o_{z+1}
+\end{equation} 
+
+where:
+
+\begin{eqnarray}
+	o_s \in O & \qquad \forall s \in \SetFromOneTo{z} \\
+	e_s = (o_s,o_{s+1}) \in E  & \qquad \forall s \in \SetFromOneTo{z} \\
+	g(o_s) \neq g(o_r)   &\qquad \forall s,r \in \SetFromOneTo{z} : s \neq r
+\end{eqnarray}
+
+The last property states that each pair of selected objects belong to distinct groups. We recall that the first object of $\pi_{k_l}^{(z)}$ is always picked randomly.
+
+Moreover, $\textbf{S}_{k_l}^{(z)} = \left\{o_1,\ldots,o_{z+1}\right\}$ represents the partial solution built so far by the $l$-th ant after the $z$-th object selection; therefore, $|\textbf{S}_{k_l}^{(z)}| = z + 1$.  
+
+Formally, after $z$ object selection, the transition probability associated to an object $o_{i_j} \in O$, given $\textbf{S}_{k_l}^{(z)}$ and $\pi_{k_l}^{(z)}$, can be computed as follows:
+
+
+
 
 \begin{equation}
 	P(o_{i_j}, \textbf{S}_{k_l}^{(z)}, \pi_{k_l}^{(z)}) \mathDef \frac{\left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}{\displaystyle \sum_{o_{i_j} \in \mathcal{C}(\textbf{G}_i, \textbf{S}_{k_l}^{(z)})} \left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}
@@ -2393,15 +2391,13 @@ The following ratio:
 	h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) \mathDef \displaystyle \sum_{y=0}^{Y} \frac{c_{y_j} + 1}{\displaystyle  \Big( b_y - \sum_{o_s \in \textbf{S}_{k_l}^{(z)}} c_y(o_z)\Big) + 1}
 \end{equation}
 
-represents the tightness of the object $o_{i_j}$ on the problem constraints relatively to the constructed solution $\textbf{S}_{k_l}^{(z)}$; thus, the lower this ratio is, the
-more the object is profitable.
+represents the tightness of the object $o_{i_j}$ on the problem constraints relatively to the constructed solution $\textbf{S}_{k_l}^{(z)}$; thus, the lower this ratio is, the more the object is profitable \cite{acosemplice}.
 
 We can now define the heuristic factor formula as follows:
 
 \begin{equation}
 	\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \mathDef \frac{p_{i_j}}{h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) + 1}
 \end{equation}
-
 
 \subsection{Local Search}
 
@@ -2544,7 +2540,7 @@ Some hints, regarding what a possibly future work should focus on, are summarize
 	
 	A properly evaluation of adopted estimator should be done. Moreover, other estimation techniques must be investigated, evaluated and compared preferring, for example, the one which has lower mean squared error. 
 
-	\item To avoid delays due to scheduling policies adopted by FaaS platforms under certain conditions (see \cite{Sequoia}), incurring into QoS violation, we adopt capacity requirement to check if enough function instance are available on target FaaS before to start an application execution. This choice assures us that no serverless function invocations will be enqueued on FaaS platforms incurring in unavoidable delays capable to violate user specified constraints.
+	\item To avoid delays due to scheduling policies adopted by FaaS platforms under certain conditions incurring into QoS violation, we adopt capacity requirement to check if enough function instance are available on target FaaS before to start an application execution. This choice assures us that no serverless function invocations will be enqueued on FaaS platforms incurring in unavoidable delays capable to violate user specified constraints.
 	
 	However, our choice is sub-optimal since we cannot maximize the utilization of function instances available on the FaaS platform.
 	
