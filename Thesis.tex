@@ -11,6 +11,9 @@
 \usepackage{frontespizio}
 \usepackage{booktabs} 
 \usepackage{listings}
+\usepackage{refcount}
+
+\providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
 
 \lstset{
 	language=Java,
@@ -69,9 +72,6 @@
 \pagenumbering{roman}
 \begin{document}
 
-
-	
-	
 \begin{frontespizio} 
 	\Universita{Roma ``Tor Vergata'' } 
 	\Logo[3cm]{./images/logo}
@@ -87,6 +87,12 @@
 	\Correlatore{Dott. Gabriele Russo Russo}
 \end{frontespizio} 
 	
+\vspace*{\stretch{1}}
+\begin{flushright}
+	\textit{????????????????????? dedica da fare}
+\end{flushright}
+\vspace{\stretch{2}}
+	
 \begin{abstract}
 	
 In recent years, due to their high scalability, ease of resource management, and pay-as-you-go pricing model, the \textit{Function-as-a-Service} (FaaS) service model has significantly increased its popularity, allowing cloud users to decompose their applications into state-less and standalone \textit{serverless functions}, which are executed on a FaaS platform.  
@@ -100,11 +106,17 @@ This work is focused on the developing of a formal definition of generic serverl
 Consequently, we propose a heuristic algorithm based on colony Optimization Algorithm (ACO) family in order to rapidly build the \ItalicQuotMark{best} configuration for running a generic serverless workflow.
 
 Finally, we have built a prototype implementation to obtain experimental results to show the effectiveness of the proposed approach.
+\vfill
+\keywords{Serverless Paradigm; Quality of Service (QoS); Cost and Performance Modeling; Cost and Performance Optimization; Multi-Dimensional Multi-Choice Knapsack Problem; Ant Colony Optimization; State-Aware, Multi-Provider and Multiple Serverless Function Implementation Orchestrator; REST Architecture}
+
 \end{abstract}
-	
+
 \tableofcontents	
 \listoffigures
 \listoftables
+
+\listofalgorithms
+\addtocontents{loa}{\def\string\figurename{Algorithm}}
 
 \chapter{Introduction}\label{chapterIntro}
 \pagenumbering{arabic}
@@ -255,36 +267,31 @@ Therefore, the aim of our work is to overcome aforementioned limitations buildin
 Our contributions can be summarized as follows:
 
 \begin{itemize}
-	\item We developed a formal definition of a serverless application, abstracting sequences of serverless functions, including parallel, branch and conditional loop structures.
+	\item We propose a formal definition of the serverless application workflow, abstracting sequences of serverless functions, including parallel, branch and conditional loop structures. 
 	
-	\item We formalized a FaaS platform-aware performance model in order to evaluate and predict serverless application performance, in term of economic cost and response time.
+	\item We present a FaaS platform-aware performance model in order to evaluate and predict serverless application performance under a certain configuration in term of economic cost and response time. 
 		
-	\item We propose a methodological way to guarantee customer's QoS requirements developing a software framework capable to find the \ItalicQuotMark{best configuration} for a given serverless application invocation forwarded by a customer.
+	\item We propose a methodological way and a software tool to find the \ItalicQuotMark{best} serverless application configuration in order to satisfy user specified QoS requirements. This is achieved by solving an optimization problem, that is a linear programming problem (LP), derived from our performance model.
 		
-	This can be done, providing a suitable configuration of each serverless function within an application, by solving an optimization problem, that is a linear programming problem (LP), derived from our performance model.
+	\item We develop a software tool capable to run serverless functions hosted on multiple FaaS platforms. In contrast to existing approaches, our framework can exploit the differences between the various FaaS providers (performance, billing methodology etc.) to better meet customers expectations. Moreover, our tool is able to exploit multiple serverless concrete functions to achieve its goal.
 	
-	\item We developed a software system compatible with a hybrid FaaS platform execution, in order to exploit different performance and billing methodology to better meet customers expectations.
+	\item Owing to the complexity of the problem, since can be very difficult to find an optimal configuration for a serverless applications that guarantees the fulfillment of customer's constraints for very big applications, hence discouraging the adoption of serverless paradigm, we present a heuristic approach based on a probabilistic technique belonging to \textit{Colony Optimization Algorithm} (ACO) family in order to provide a very rapid system response to our problem; that algorithm is called \ItalicQuotMark{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}.
 	
-
-	\item Owing to the complexity of the problem, since can be very difficult to find an optimal configuration for a serverless applications that guarantees the fulfillment of customer's constraints for very big applications, hence discouraging the adoption of serverless paradigm, we have built a heuristic approach based on a probabilistic technique belonging to \textit{Colony Optimization Algorithm} (ACO) family in order to provide a very rapid system response to our problem.
-	
-	Moreover, we have developed a custom ACO based algorithm, which we have called \textit{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}, in order to achieve a faster system response than existing ACO based solutions.
-	
-	\item In order to mitigate the impact of vendor lock-in issue, primarily related to the high migration costs paid by users when they wish to change FaaS provider to better meet their needs, we have developed our software providing an unique way to represent a serverless application, in such a way that very little changes to that representation code are needed to complete any switching process. 
+	\item In order to mitigate the impact of vendor lock-in issue, primarily related to the high migration costs paid by users when they wish to change FaaS provider to better meet their needs, an unique way to represent a serverless application, in such a way that very little changes to that representation code are needed to complete any switching process, is adopted. 
 	
 	Our serverless application representation scheme is primarily based on an existing solution called \textit{Abstract Function Choreography Language} (AFCL) \cite{AFCL}, which we have partially adopted and extended in order to make it compatible with our multi FaaS provider system. 
 	
-	\item To further reduce the vendor lock-in issue, we have built our own software system acting as orchestrator for serverless application management.
+	\item To further reduce the vendor lock-in issue, we develop our own software system acting as orchestrator for serverless application management without relying on existing commercial solution.
 	
 	\item To improve access transparency to FaaS platforms services, hiding any difference regarding how serverless application on different providers can be accessed, we have developed our software system following \textit{Representational State Transfer} (REST) architectural style, allowing our customers to create and access to serverless application, whose function are hosted on any supported provider, using identical operations based on standard \texttt{HTTP} methods.
 	
-	\item To partially address the problem of key exchange between our customers and our system broker, necessary to allow our system to access to the FaaS services paid by our users, we have relied on asymmetric encryption during the creation of a serverless application on our system. Moreover, some of the customer's data is encrypted by default.
+	\item We partially address the security problem regarding key exchange between our customers and our system broker, necessary to allow our system to access to the FaaS services paid by our users, adopting asymmetric encryption during the creation of a serverless application on our system. Moreover, some of the customer's data is encrypted by default.
 	
 \end{itemize}
 
 \section{Organization}
 
-The remainder of this dissertation is organized as follows. In Chapter \ref{chapterRelated} we will discuss related works. In Chapter \ref{chapterArch} we will present an overview of our framework, outlining its architecture and the main tasks of its components. In Chapter \ref{chapterModel} we will describe all mathematical details about our QoS-aware analytical model, included all equations and algorithms used by our framework to compute average end-to-end response time and cost of any serverless workflow. Based on aforementioned analytical model, in Chapter \ref{chapterOptimizationProble} we will present two different formulations of the optimization problem that must be solved to determine a suitable configuration in order to meet user specified constraints. Moreover we will present a heuristic algorithm to solve one of the aforementioned formulation. In Chapter \ref{chapterExperimental} we will present the experimental evaluation of the aforementioned models and algorithms.  Finally, Chapter \ref{chapterConclusion} discusses and concludes our work, presenting directions for future work.
+The remainder of this dissertation is organized as follows. In Chapter \ref{chapterRelated} we will discuss related works. In Chapter \ref{chapterArch} we will present an overview of our framework, outlining its architecture and the main tasks of its components. In Chapter \ref{chapterModel} we will describe all mathematical details about our QoS-aware analytical model, included all equations and algorithms used by our framework to compute average end-to-end response time and cost of any serverless workflow. Based on aforementioned analytical model, in Chapter \ref{chapterOptimizationProble} we will present two different formulations of the optimization problem that must be solved to determine a suitable configuration in order to meet user specified constraints. Moreover we will present a heuristic algorithm to solve one of the aforementioned formulation. In Chapter \ref{chapterExperimental} we will present the experimental evaluation of the aforementioned models and algorithms.  Finally, Chapter \ref{chapterConclusion} discusses and concludes our work, presenting directions for future works.
 
 \chapter{Related Works}\label{chapterRelated}
 
@@ -312,7 +319,12 @@ Obviously, several researchers have already proposed some  performance and cost 
 	This solution supports adaptive data management, enabling data migration between target platforms to exploit data affinity exploiting several data staging tactics.
 	
 	Their scheduling algorithm considers both performance capabilities and resource-usage of the target FaaS platform. Moreover, \citet{NUOVODOCUMENTO}'s solution supports function invocations on multiple target platforms to achieve the respect of QoS level constraints.
-
+	
+	\item \citet{xAFCL} developed a middleware which allow developers to build and run serverless applications on multiple FaaS systems, including a model which estimates functions response time by considering FaaS system limitations and submission delays too.
+	
+	Moreover, they proposed a region-ware scheduling algorithm, based on the earliest finish time approach, to select the region on which every serverless function will be scheduled in order to optimize applications executions.
+	
+	
 \end{itemize}
 
 Despite the high quality of aforementioned solutions, they still have some problems which can sometimes hinder the fulfillment of QoS requirements. 
@@ -321,7 +333,9 @@ For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP}
 
 At the same time, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequence, or chain, of serverless functions, therefore useless for generic workload. 
 
-Any solution considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. Currently, only \citet{NUOVODOCUMENTO}'s solution supports serverless functions invocations on multiple FaaS provider platforms which is exploited to guarantee the respect of user specified QoS constraints.
+There is no solution which considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. At the same time, only \citet{NUOVODOCUMENTO} and \citet{xAFCL} solutions support serverless functions scheduling on multiple FaaS provider platforms, which can be exploited to guarantee the respect of user specified QoS constraints.
+
+
 
 \chapter{System Architecture and Implementation}\label{chapterArch}
 
@@ -436,8 +450,14 @@ Today, all serverless functions orchestration services provided by main public F
 
 To overcome aforementioned limitation, our orchestrator is able to select a specific implementation of a functions inside any serverless workflow; for example, it can run a function that implements the Pollard's rho algorithm for integer factorization, written in Python, instead of a function implementing the trial division based algorithm, written in JAVA. Moreover, aforementioned implementation can be hosted on multiple FaaS platforms.
 
-However, only our QoS-aware model-based optimizer has the responsibility to determine which implementation, for each function belonging to an application, must be invoked in order to meet QoS level constraints. To be more precise, during function orchestration, the orchestrator limits itself to invoke function implementations according to the so-called \textit{choreography configuration}, or simply \textit{configuration}. The choreography configuration, produced by our optimizer, is a sort of table which tells the orchestrator which implementation and configuration must be used for each function in order to meet user specified QoS level constraints; we will talk more in detail about this shortly.
+However, only our QoS-aware model-based optimizer has the responsibility to determine which implementation, for each function belonging to an application, must be invoked in order to meet QoS level constraints. To be more precise, during function orchestration, the orchestrator limits itself to invoke function implementations according to the so-called \textit{choreography}\footnote{Generally, the terms \textit{orchestration} and \textit{choreography} describe two different designs according to which distribute systems are built. 
 	
+	An orchestration represents a design where a single centralized executable process, i.e. the orchestrator, coordinates the interaction among different services. A choreography employs a decentralized approach for service composition where their interaction is done by exchange of messages according to specified rules and agreements between two or more endpoints \cite{orchestration}. 
+	
+	However, in this dissertation, the term choreography is simply used as synonymous of serverless application; in other terms, a choreography has to be intended as composition of two or more serverless functions. At the same time, the term orchestrator has to be intended as a process which is responsible for invoking serverless functions belonging to a given choreography.} \textit{configuration}, or simply \textit{configuration}.
+
+The choreography configuration, produced by our optimizer, is a sort of table which tells the orchestrator which implementation and configuration must be used for each function in order to meet user specified QoS level constraints; we will talk more in detail about this shortly.
+
 \subsection{Profiler}
 
 When a serverless application is created for the first time, the QoS-aware optimizer has no performance metric data about serverless functions to perform its task since they do not exist yet. 
@@ -758,12 +778,12 @@ All external libraries used to build our system are reported in table \ref{tab:l
 		\toprule
 		Name & Description \\
 		\midrule
-		\texttt{influxdata/influxdb-client-go}\footnote{\url{https://github.com/influxdata/influxdb-client-go}} & Native Go InfluxDB Client Library  \\
-		\texttt{gocql/gocql}\footnote{\url{https://github.com/gocql/gocql}} & Go Cassandra Client Library \\
-		\texttt{aws/aws-sdk-go-v2}\footnote{\url{https://github.com/aws/aws-sdk-go-v2}} & AWS SDK for the Go programming language \\
-		\texttt{apache/openwhisk-client-go}\footnote{\url{https://github.com/apache/openwhisk-client-go/}} & Openwhisk Go Client library \\
+		\texttt{influxdata/influxdb-client-go}\footnote{\url{https://github.com/influxdata/influxdb-client-go}} & Native Go InfluxDB client library.  \\
+		\texttt{gocql/gocql}\footnote{\url{https://github.com/gocql/gocql}} & Go Cassandra client library. \\
+		\texttt{aws/aws-sdk-go-v2}\footnote{\url{https://github.com/aws/aws-sdk-go-v2}} & AWS SDK for Go. \\
+		\texttt{apache/openwhisk-client-go}\footnote{\url{https://github.com/apache/openwhisk-client-go/}} & Openwhisk Go client library. \\
 		\texttt{rs/zerolog}\footnote{\url{https://github.com/rs/zerolog}} & A simple JSON Logger. \\
-		\texttt{draffensperger/golp}\footnote{\url{https://github.com/draffensperger/golp}} & Golang wrapper for the LPSolve . \\
+		\texttt{draffensperger/golp}\footnote{\url{https://github.com/draffensperger/golp}} & Golang wrapper for the LPSolve. \\
 		\bottomrule
 	\end{tabular}
 \end{table}
@@ -927,7 +947,7 @@ where:
 		
 		\item The number $p_{ij}$ represents the so-called \textit{transition probability} from $\phi_i$ to $\phi_j$, that is the probability of invoking $\phi_j$ when the execution of $\phi_i$ is terminated;
 		
-		\item $P : \Phi \times \Phi \times \Rplus \to \Rplus \cap \left[ 0, 1 \right]$, called \textit{transition probability function}, is such that $P\left(\phi_i, \phi_j, t \right) = p_{ij}$, where $t$ is the time. Obviously, when $P\left(\phi_i, \phi_j, t \right) = 0$ or, similarly, when $\left( \phi_i, \phi_j \right) \notin E$, $\phi_i$ cannot invoke $\phi_j$.
+		\item $P : \Phi \times \Phi \times \Rplus \to \Rplus \cap \left[ 0, 1 \right]$, called \textit{transition probability function}, is such that $P\left(\phi_i, \phi_j, t \right) = p_{ij}$, where $t$ is the time. Obviously, when $\left( \phi_i, \phi_j \right) \notin E$, $\phi_i$ cannot invoke $\phi_j$. 
 		
 		\item For any path $\pi = \phi_1 e_1 \ldots e_{n-1} \phi_n$ of $\mathcal{C}_R$, we define \textit{transition probability of the path $\pi$} the following quantity:
 		
@@ -2526,16 +2546,24 @@ Some hints, regarding what a possibly future work should focus on, are summarize
 	
 	More in general, the development of a location-aware model should be considered.
 	 
-	\item Multiple techniques to achieve fault tolerance should be investigated and developed. 
+	\item Failures may be caused by various reasons, which may affect the entire serverless application execution. 
 	
-	For instance, when a selected concrete function is not available, instead of aborting the entire application, the model should invoke another one without violating QoS constraints.
+	For instance, some functions may not even start if the input JSON file exceeds the size limit imposed by the corresponding FaaS provider\footnote{For example, Amazon Lambda imposes a maximum payload size equal to $6$ MB for synchronous invocation and $256$ KB for asynchronous invocation \cite{Lambdaquotas}. At the same time, for Google Cloud Functions aforementioned limits are set to $32$ MB and $512$ KB respectively.\cite{Googlequotas}}. 
 	
-	Transparency, scalability, replication management, process decoupling and traffic congestion issues must be addressed abandoning the centralized design adopted in our prototype, solving the single point of failure problem.
+	Failures may be caused by network problems or authentication errors too; meanwhile arbitrary failures can lead to wrong results produced by the entire application.
+	
+	Therefore, techniques to achieve fault tolerance should be investigated and developed. 
+	
+	Instead of to abort the entire application execution, the framework should invoke alternative function implementations even on another providers when any concrete function reports some error; obviously, aforementioned alternative function hasn't to violate QoS constraints. 
+
+	\item As said in Chapter \ref{chapterArch}, the centralized approach adopted by our framework has several problems from various points of view.
+	
+	Transparency, scalability, replication management, process decoupling and traffic congestion issues must be addressed abandoning the centralized design, solving the single point of failure problem too.
 	
 	\item Based on the historical workload traces stored inside our TSDB, in some use cases it should be convenient to develop a protocol which, proactively, pre-warms selected function instances to further reduce latency and response time. 
 	
-	In addition, the adoption of machine learning techniques, like those based on deep learning, should be considered to analyze collected time series data and predict behavior or load pattern of serverless functions for function instance pre-warming or data migration.
-		
+	In addition, the adoption of machine learning techniques, like those based on deep learning, should be considered to analyze collected time series data to make better decisions about function instance pre-warming or proactive data migration.
+			
 	\item Unfortunately, our model provides no information about the reliability about estimations of the average value for cost and response time exhibited by serverless functions. In other words, we said nothing about how close the estimated values (regarding average cost and response time) might be to the true values. 
 	
 	A properly evaluation of adopted estimator should be done. Moreover, other estimation techniques must be investigated, evaluated and compared preferring, for example, the one which has lower mean squared error. 
