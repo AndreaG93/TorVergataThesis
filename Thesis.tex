@@ -295,7 +295,7 @@ The remainder of this dissertation is organized as follows. In Chapter \ref{chap
 
 \chapter{Related Works}\label{chapterRelated}
 
-The serverless computing paradigm has attracted a great deal of interest from both academia and industry, therefore in this chapter we provide a shortly preview of the literature inherently related to our topic, namely the performance modeling
+The serverless computing paradigm has attracted a great deal of interest from both academia and industry, therefore in this chapter we provide a short preview of the literature inherently related to our topic, namely performance modeling
 of serverless applications.
 
 Obviously, several researchers have already proposed some  performance and cost models which can be useful to address the aforementioned issue. For instance: 
@@ -312,13 +312,13 @@ Obviously, several researchers have already proposed some  performance and cost 
 	
 	\item \citet{Modelling} presented, according to our opinion, one of the best analytical performance model available today, which is suitable for analyzing and predict performance of current FaaS platforms. 
 	
-	More precisely, they built an analytical model to compute response time, blocking probability and utilization of a FaaS platform exploiting a semi-Markov $M/G/m/m$ queue system.
+	More precisely, they built an analytical model to compute response time, blocking probability and utilization of a FaaS platform exploiting a semi-Markov $M/G/m/m$ queueing system.
 
 	\item \citet{NUOVODOCUMENTO} provided a very refined solution called \textit{Function Delivery Network} (FDN) which represents a network of distributed heterogeneous target platforms enabling automatic scheduling of functions to target platforms based on their computational and data requirements. 
 	
 	This solution supports adaptive data management, enabling data migration between target platforms to exploit data affinity exploiting several data staging tactics.
 	
-	Their scheduling algorithm considers both performance capabilities and resource-usage of the target FaaS platform. Moreover, \citet{NUOVODOCUMENTO}'s solution supports function invocations on multiple target platforms to achieve the respect of QoS level constraints.
+	Their scheduling algorithm considers both performance capabilities and resource-usage of the target FaaS platform. Moreover, \citet{NUOVODOCUMENTO}'s solution supports function invocations on multiple target platforms to guarantee QoS level constraints.
 	
 	\item \citet{xAFCL} developed a middleware which allow developers to build and run serverless applications on multiple FaaS systems, including a model which estimates functions response time by considering FaaS system limitations and submission delays too.
 	
@@ -329,11 +329,11 @@ Obviously, several researchers have already proposed some  performance and cost 
 
 Despite the high quality of aforementioned solutions, they still have some problems which can sometimes hinder the fulfillment of QoS requirements. 
 
-For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP} do not consider the current state of the FaaS platform when a serverless function configuration has to be selected, totally ignoring the problem of cold starts and their impact on application performance. Conversely, \citet{NUOVODOCUMENTO}'s solution takes into account the occurrence of cold starts, while their scheduler try to reduce them by exploiting their serverless application behavioral model.
+For instance, both performance models proposed by \citet{COSE} and \citet{PMSCP} do not consider the current state of the FaaS platform when a serverless function configuration has to be selected, totally ignoring the problem of cold starts and their impact on application performance. Conversely, \citet{NUOVODOCUMENTO}'s solution takes into account the occurrence of cold starts, while their scheduler tries to reduce them by exploiting their serverless application model.
 
-At the same time, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequence, or chain, of serverless functions, therefore useless for generic workload. 
+At the same time, the model proposed by \citet{Modelling}, despite being quite good for analyzing and predicting the performance of FaaS platforms, is not suitable to predict the performance for generic workload applications. Similarly, the \citet{COSE} proposed solution is suitable only for sequences, or chains, of serverless functions, therefore useless for generic workloads. 
 
-There is no solution which considers the existence of multiple implementations, or versions, of a same serverless function, that usually exhibit different performances and cost. At the same time, only \citet{NUOVODOCUMENTO} and \citet{xAFCL} solutions support serverless functions scheduling on multiple FaaS provider platforms, which can be exploited to guarantee the respect of user specified QoS constraints.
+There is no solution which considers the existence of multiple implementations, or versions, of the same serverless function, that usually exhibit different performances and cost. At the same time, only \citet{NUOVODOCUMENTO} and \citet{xAFCL} solutions support serverless functions scheduling on multiple FaaS provider platforms, which can be exploited to guarantee the respect of user specified QoS constraints.
 
 
 
@@ -765,11 +765,11 @@ Unfortunately, since data signing is not currently supported, data integrity, me
 
 \section{Implementation Details}
 
-We developed our system from scratch using Go\cite{Go}, a compiled programming syntactically similar to C, but with memory safety, garbage collection and structural typing \cite{go2}.
+We developed our system from scratch using Go\cite{Go}, a compiled programming language syntactically similar to C, but with memory safety, garbage collection and structural typing \cite{go2}.
 
-We choose to use Go rather than any objected oriented language, like Java or C\#, in order to maximize framework performance and to develop applications efficiently and faster. In fact, according to \citet{JAVAVSGO}'s research, Go has quite better result than Java regarding concurrency performance too. Moreover, its compile time  is about three times faster than Java and its model, which doesn't allow cyclic import, makes dependency analysis and management very easy \cite{JAVAVSGO}. Moreover, the use of goroutine and channel mechanisms hide the complexity of concurrent processes, simplifying our develop.
+We choose to use Go rather than any objected oriented language, like Java or C\#, in order to maximize framework performance and to develop applications efficiently and faster. In fact, according to \citet{JAVAVSGO}'s research, Go has quite better result than Java regarding concurrency performance too. Moreover, its compile time  is about three times faster than Java and its model, which doesn't allow cyclic import, makes dependency analysis and management very easy \cite{JAVAVSGO}. Moreover, the use of goroutine and channel mechanisms hide the complexity of concurrent processes, simplifying development.
 
-All external libraries used to build our system are reported in table \ref{tab:libraries}; some of them require additional steps to be fully utilizable by our system. Anyway, please refer to guidelines produced by their respective authors.
+All external libraries used to build our system are reported in table \ref{tab:libraries}; some of them require additional steps to be fully utilizable by our system. 
 
 \begin{table}
 	\caption{Libraries used in our implementation}
@@ -788,7 +788,7 @@ All external libraries used to build our system are reported in table \ref{tab:l
 	\end{tabular}
 \end{table}
 
-\subsection{The technical Debt Management}
+\subsection{The Technical Debt Management}
 
 During development process our aim was to produce a software having high quality standards, despite limitations on time which naturally imposed to us the trad-off
 between delivery and quality. 
@@ -799,7 +799,7 @@ Code smells are neither bug nor technically incorrect events and do not prevent 
 
 Moreover, code smells can be an indicator of factors that contribute to so-called \textit{technical debt} \cite{CodeSmell}. We call technical debt the result of past decisions from software development point of view that negatively affect the project future. Steve McConnell defined technical debt as  \QuoteIntro \textit{A design or construction approach that's expedient in the short-term but that creates a technical context in which the same work will cost more to do later than it would cost to do now}". In other words, technical debt regards any quality problem in the source code like duplication, excessive complexity and design problems \cite{TechnicalDebt}\cite{TechnicalDebtFalessi}.
 
-When technical debt grows at an uncontrollable rate, you can be rapidly reach a point making the software evolution unfeasible, requiring a complete software refactoring. To overcome such situation, it is important that the technical debt is properly managed and kept under control during software development\cite{TechnicalDebt}.
+When technical debt grows at an uncontrollable rate, you can rapidly reach a point making the software evolution unfeasible, requiring a complete software refactoring. To overcome such situation, it is important that the technical debt is properly managed and kept under control during software development\cite{TechnicalDebt}.
 
 To manage technical debt of our system we used SonarQube\cite{SonarQube}, a tool able to report the technical debt as the amount of effort required to fix all code smells in a project; however, it does not just report the technical debt, it computes the number of duplicated code blocks, vulnerabilities, test coverage percentage and many other software metrics.
 
@@ -807,7 +807,7 @@ At the end of our software development process, which ends with a software made 
 
 \subsection{FaaS Provider Support}
 
-At the current state of this work, our system supports serverless functions invocation hosted on following FaaS platform providers:
+Our system supports serverless functions invocation hosted on following FaaS platform providers:
 
 \begin{itemize}
 	\item AWS Lambda \cite{AWSLambda};
@@ -816,7 +816,7 @@ At the current state of this work, our system supports serverless functions invo
 
 Therefore, only \texttt{openwhisk} and \texttt{aws} values are allowed and recognized by our software to specify where a concrete function is hosted inside a serverless workflow definition based on our custom AFCL.
 
-Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers. Our framework limits itself to invoke serverless function already deployed on FaaS platforms; conversely, CRUD operations regarding serverless application are fully implemented.
+Unfortunately, our system software has been not designed to manage serverless concrete functions hosted on FaaS platform providers. In other words, it is not actually possible to execute CRUD (\textit{Create}, \textit{Read}, \textit{Update}, and \textit{Delete}) operations regarding concrete functions on FaaS platform providers. Our framework limits itself to invoking serverless functions already deployed on FaaS platforms; conversely, CRUD operations regarding serverless applications are fully implemented.
 
 \subsection{Final Considerations}
 
@@ -2524,13 +2524,11 @@ Then, our algorithm stops when:
 
 \chapter{Conclusion}\label{chapterConclusion}
 
-In this work we tried to address the problem to provide QoS guarantees during serverless application execution which, as we said in chapter \ref{chapterIntro}, represents a very important obstacle to a more spread adoption of serverless computing paradigm.
+In this work we tried to address the problem to provide QoS guarantees during serverless application execution which represents a challenge towards widespread adoption of serverless computing paradigm.
 
 To achieve that goal, we presented an analytical model to compute average cost and execution time for generic serverless workflows having multiple concrete functions hosted on multiple FaaS providers. Then, we defined two different optimization problems formulation to address the problem of finding a suitable serverless application configuration in order to meet user defined QoS constraints; moreover, we developed a heuristic algorithm named \QuoteIntro Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update" to rapidly solve one of them. 
 
 Again, we verified the validity of both the proposed algorithms and the analytical model through experimental evaluations developing a prototype supporting AWS and OpenWhisk FaaS platforms.
-
-However, this work is still in its early stages and many problems have to be addressed and both some analytical model characteristics and the prototype must be improved or restructured.
 
 Some hints, regarding what a possibly future work should focus on, are summarized as follows:
 
@@ -2554,7 +2552,7 @@ Some hints, regarding what a possibly future work should focus on, are summarize
 	
 	Therefore, techniques to achieve fault tolerance should be investigated and developed. 
 	
-	Instead of to abort the entire application execution, the framework should invoke alternative function implementations even on another providers when any concrete function reports some error; obviously, aforementioned alternative function hasn't to violate QoS constraints. 
+	Instead of aborting the entire application execution, the framework should invoke alternative function implementations even on other providers when any concrete function reports some error; obviously, aforementioned alternative function hasn't to violate QoS constraints. 
 
 	\item As said in Chapter \ref{chapterArch}, the centralized approach adopted by our framework has several problems from various points of view.
 	
@@ -2572,7 +2570,7 @@ Some hints, regarding what a possibly future work should focus on, are summarize
 	
 	However, our choice is sub-optimal since we cannot maximize the utilization of function instances available on the FaaS platform.
 	
-	The development of a proper scheduler should be considered.
+	The development of a better scheduler should be considered.
 	
 \end{itemize}
 
