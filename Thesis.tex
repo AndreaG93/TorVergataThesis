@@ -12,6 +12,7 @@
 \usepackage{booktabs} 
 \usepackage{listings}
 \usepackage{refcount}
+\usepackage{booktabs} 
 
 \providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
 
@@ -1798,11 +1799,11 @@ where:
 	
 \end{itemize}
 
-Finally, in order to simplify the calculation of the expression \ref{er}, according to \cite{ERLANG}, it can be expressed  recursively as follows:
+Finally, in order to simplify the calculation of the expression \ref{er}, according to \cite{ERLANG}, it can be expressed recursively as follows:
 
 \begin{eqnarray}
-	\dfrac{1}{B(\rho(t),0)} & = & 1 \\
-	\dfrac{1}{B(\rho(t),i)} & = & 1 + \dfrac{i}{\rho(t)} \cdot \dfrac{1}{B(\rho(t),i-1)} \qquad \forall j \in \SetFromOneTo{K(t)} \\
+	B(\rho(t),0) & = & 1 \\
+	B(\rho(t),i) & = & \dfrac{\rho(t) \cdot B(\rho(t),i - 1)}{\rho(t) \cdot B(\rho(t),i - 1) + i} \qquad \forall j \in \SetFromOneTo{K(t)} \\
 \end{eqnarray}
 
 where:
@@ -1987,11 +1988,26 @@ Finally, we can compute response time $rt_{\phi_{i_{j}}}(t)$ and charged cost $c
 \end{array} \right.\label{responseTime}\\
 \end{eqnarray}
 
-Let $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ SLAs constraints specified by a customer, for any executable function configuration $x_{\phi_{i_j}}$, its \textit{score} $p_{\phi_{i_{j}}}(t)$ is determined as follows;
+Let $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ the SLAs constraints specified by a customer, for any executable function configuration $x_{\phi_{i_j}}$, its \textit{score} $p_{\phi_{i_{j}}}(t)$ is determined as follows:
 
 \begin{equation}\label{profit}
-	p_{\phi_{i_{j}}}(t) \mathDef w_{RT} \cdot \dfrac{t_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{j}}}(t)}{t_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{\textbf{MIN}}}}(t)} + w_{C} \cdot \dfrac{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{j}}}(t)}{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{\textbf{MIN}}}}(t)}
+	p_{\phi_{i_{j}}}(t) \mathDef w_{RT} \cdot p_{\phi_{i_{j}}}(t)^{(rt)} + w_{C} \cdot p_{\phi_{i_{j}}}(t)^{(c)}
 \end{equation}
+
+where $p_{\phi_{i_{j}}}(t)^{(rt)}$ and $p_{\phi_{i_{j}}}(t)^{(c)}$ represent, respectively, the \textit{response time score} and \textit{cost score} which can be computed as follows:
+
+\begin{eqnarray}
+	p_{\phi_{i_{j}}}(t)^{(rt)} & \mathDef & \left\{ 
+	\begin{array}{lcc}
+		1 & \text{\textbf{if}} & rt_{\phi_{i_{\textbf{MAX}}}}(t) = rt_{\phi_{i_{\textbf{MIN}}}}(t) \\ 
+		\dfrac{rt_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{j}}}(t)}{rt_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{\textbf{MIN}}}}(t)} & & otherwise \\ 
+	\end{array} \right.\\\nonumber\\
+	p_{\phi_{i_{j}}}(t)^{(c)} & \mathDef & \left\{ 
+	\begin{array}{lcc}
+		1 & \text{\textbf{if}} & c_{\phi_{i_{\textbf{MAX}}}}(t) = c_{\phi_{i_{\textbf{MIN}}}}(t) \\ 
+		\dfrac{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{j}}}(t)}{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{\textbf{MIN}}}}(t)} &&otherwise \\ 
+	\end{array} \right.
+\end{eqnarray}
 
 where:
 
@@ -2071,8 +2087,26 @@ Finally, in order to select the better one, to each choreography configuration i
 Formally, let $\mathcal{C} = (\Phi,E)$ a serverless choreography, $\textbf{x}_{\mathcal{C}} \in \textbf{X}_{\mathcal{C}}$ a choreography configuration and $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ the SLA. At any time $t$, the \textit{score} $S(\textbf{x}_{\mathcal{C}},t)$, or \textit{profit}, of the choreography configuration $\textbf{x}_{\mathcal{C}}$ can be computed as follows:
 
 \begin{equation}
-	S(\textbf{x}_{\mathcal{C}},t) \mathDef w_{RT} \cdot \dfrac{RT_{\textbf{max}}(t) - RT(\textbf{X},t)}{RT_{\textbf{max}}(t) - RT_{\textbf{min}}(t)} + w_{C} \cdot \dfrac{C_{\textbf{max}}(t) - C(\textbf{X},t)}{C_{\textbf{max}}(t) - C_{\textbf{min}}(t)}
+	S(\textbf{x}_{\mathcal{C}},t) \mathDef w_{RT} \cdot S(\textbf{x}_{\mathcal{C}},t)^{(RT)} + w_{C} \cdot S(\textbf{x}_{\mathcal{C}},t)^{(C)}
 \end{equation}
+
+
+where $S(\textbf{x}_{\mathcal{C}},t)^{(RT)}$ and $S(\textbf{x}_{\mathcal{C}},t)^{(C)}$ represent, respectively, the \textit{response time score} and \textit{cost score} which can be computed as follows:
+
+\begin{eqnarray}
+	S(\textbf{x}_{\mathcal{C}},t)^{(RT)} & \mathDef & \left\{ 
+	\begin{array}{lc}
+		1 & RT_{\textbf{max}}(t) = RT_{\textbf{min}}(t) \\ 
+		\dfrac{RT_{\textbf{max}}(t) - RT(\textbf{x}_{\mathcal{C}},t)}{RT_{\textbf{max}}(t) - RT_{\textbf{min}}(t)} & otherwise \\ 
+	\end{array} \right. \\\nonumber\\
+	S(\textbf{x}_{\mathcal{C}},t)^{(C)} & \mathDef & \left\{ 
+	\begin{array}{lc}
+		1 & C_{\textbf{max}}(t) = C_{\textbf{min}}(t) \\ 
+		\dfrac{C_{\textbf{max}}(t) - C(\textbf{x}_{\mathcal{C}},t)}{C_{\textbf{max}}(t) - C_{\textbf{min}}(t)} & otherwise \\ 
+	\end{array} \right.
+\end{eqnarray}
+
+
 
 where:
 
@@ -2120,7 +2154,7 @@ For example, let's suppose to have a serverless choreography $\mathcal{C}$ made 
 
 Even if we had a way of generating all configurations, that is all columns of our problem, due to its complexity, any attempt to find the optimal solution rapidly will be an illusion. Moreover, it will be very likely that any computer runs out his memory.
 
-\section{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}
+\section{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}\label{MMKKSection}
 
 To avoid the enumeration of all possible choreography configurations, we have decided to use another kind of formulation, which is based on the \textit{Multidimensional Multiple-Choice Knapsack Problem} (MMKP), a variant of the previous one. 
 
@@ -2198,7 +2232,7 @@ To simplify our notations, from now, we will use the notation $o_{i_j}$ to repre
 
 A solution for our MMKP is a set of selected objects $S \mathDef \left\{o_{1}, \ldots o_{n} \right\}$ representing, obliviously, a choreography configuration.
 
-\section{The Heuristic Approach Based on ACO}
+\section{The Heuristic Approach Based on ACO}\label{heuristicAlg}
 
 According to our experiments, the MMKP formulation performs notably better than MKP one, producing the exact solution quicker and using less memory; this is due both to the lack of an exhaustive choreography configurations enumeration, which requires a lot of memory and time, and to a smaller number of columns, despite the MMKP formulation has more constraints compared to the MKP one.
 
@@ -2301,7 +2335,7 @@ A complete description of the algorithm performed by ants to build partial solut
 		\BlankLine
 		
 		$\textbf{G}_i \leftarrow$ Randomly select a group from $\textbf{G}$\;
-		$o_{i_j} \leftarrow$ Randomly select an object from $\textbf{G}_i$\;
+		$o_{i_j} \leftarrow$ Randomly select an object from $\textbf{G}_i$ which does not viotale resource constraints\;
 		
 		\BlankLine
 		\BlankLine
@@ -2513,6 +2547,7 @@ Then, our algorithm stops when:
 	\item an ant has found an optimal solution.
 	\item a maximum number of iterations have been performed.
 	\item the improvement in the objective function in an iteration is less than a threshold; by default, if the improvement of the solution is less than the $10\%$ respect to the previous one, our algorithm will terminate.
+	\item No solution is found during last $2$ iterations.
 \end{itemize}
 
 
@@ -2520,7 +2555,559 @@ Then, our algorithm stops when:
 
 \chapter{Experimental evaluations}\label{chapterExperimental}
 
-????????????????????????
+In this chapter, we assess both our performance model and prototype implementation conducting two sets of experiments:
+
+\begin{itemize}
+	\item During the first one we validate the respect of user specified QoS constraints by conducting some experiments on a serverless application, whose concrete functions are deployed on two different provider, executeing it under different conditions.
+
+	\item In the last one we assess accuracy, performance and the overhead of our ACO based heuristic algorithm presented in Chapter \ref{heuristicAlg} comparing it with those of exact algorithm.
+\end{itemize}
+
+During all subsequent experiments, the parameters of our ACO based heuristic algorithm are set as follows:
+
+\begin{itemize}
+	\item $\alpha$, that is the parameter that determine the relative importance of pheromone factor, is set to $2$.
+	\item $\beta$, which, conversely, represents the relative importance of heuristic factor, is set to $2$.
+	\item $\rho$, that is the evaporation coefficient, is set to $0.02$.
+	\item $w_{\text{\textbf{min}}}$ and $w_{\text{\textbf{max}}}$, that is the lower and the upper bounds on pheromone trails, are set to $0.01$ and $6.00$ respectively.
+\end{itemize}
+
+According to \citet{acosemplice} research, selected parameters allow our algorithm to quickly find good solutions even though it may fail to find the optimal (or best) solution. The number of ants is set to $4$, which is the double of the number of physical cores in our CPU. Finally, we limited the number of iteration of our algorithm to $1000$.
+
+Before the execution of any experiment, we performed the profiling of our concrete functions in order to obtain their average end-to-end response time and cost by invoking each of them $50$ times under all available memory configuration.
+
+All experiments were done on a PC with an Intel\textsuperscript{\textregistered} Core\textsuperscript{\texttrademark} \texttt{i3-1115G4} with $3.00$ Ghz and $15.4$ GiB of RAM running Kubuntu \texttt{22.04}.
+
+All concrete functions of the application involved in our experiments are hosted and executed either by AWS or by a local OpenWhisk deployment using the so-called "Standalone" OpenWhisk stack, that is a full-featured OpenWhisk stack running as a Java process, where serverless functions run within Docker containers. Finally, both InfluxDB and Cassandra servers run locally within Docker containers.
+
+Unless otherwise stated, all concrete function are deployed with an allocated memory varying from a maximum and a minimum in $32$ MB increments. To be more precise, the allocated memory of each AWS Lambda concrete function varies between $256$ MB and $10240$ MB in $32$ MB increments, resulting in $313$ possible choices. Conversely, the allocated memory of OpenWhisk functions varies between $256$ MB and $512$ MB with $32$ MB increments, resulting in $9$ possible choices. 
+
+Finally, we configured our local OpenWhisk instance to support a (global) concurrency limit equal to $30$, therefore, only up to $30$ serverless functions can be executed at the same time.
+
+\section{Experiments about QoS constraints respect}
+
+To validate the respect of the QoS constraints by our prototype, we design a simple image-processing serverless application whose control-flow graph is reported in Figure \ref{imageProcessingApp}. This serverless application is made up of $11$ executable functions every of which has $2$ different concrete function implementing them and hosted on two different FaaS provider, which, in this experiment, are both based on OpenWhisk deployed locally. According to user input, these functions perform several activities like face recognition, thumbnail generation, reverse colored or grayscale image version generation and apply a sepia tone on input image.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw,minimum width = 1cm] 
+		(Func1) at (-2,0) {$\phi_1$};
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (0,0) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(PAR-Enter) at (0,0) {};
+		
+		\draw[ultra thick,->] (Func1) -- (PAR-Enter);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (2,2) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(IF-Enter) at (2,2) {};
+		
+		\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=10]{$1$} (IF-Enter);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func2) at (4,3) {$\phi_2$};
+		
+		\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=10]{$\frac{1}{2}$} (Func2);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func3) at (4,1) {$\phi_3$};
+		
+		\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=-10]{$\frac{1}{2}$} (Func3);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (6,2) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(IF-Exit) at (6,2) {};
+		
+		\draw[ultra thick,->] (Func2) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+		\draw[ultra thick,->] (Func3) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func4) at (8,2) {$\phi_4$};
+		
+		\draw[ultra thick,->] (IF-Exit) edge node[xshift=-10,yshift=-10]{} (Func4);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (2,-4) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(SWITCH-Enter) at (2,-4) {};
+		
+		\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=5]{$1$} (SWITCH-Enter);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func5) at (4,-2) {$\phi_5$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=5]{$\frac{1}{3}$} (Func5);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func6) at (4,-4) {$\phi_6$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=5,yshift=10]{$\frac{1}{3}$} (Func6);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func7) at (4,-6) {$\phi_7$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=0]{$\frac{1}{3}$} (Func7);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func8) at (6,-2) {$\phi_8$};
+		
+		\draw[ultra thick,->] (Func5) edge node[xshift=-10,yshift=0]{} (Func8);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func9) at (6,-4) {$\phi_9$};
+		
+		\draw[ultra thick,->] (Func6) edge node[xshift=-10,yshift=0]{} (Func9);
+		
+		\node[circle, draw, minimum width = 1cm]       					   
+		(Func10) at (6,-6) {$\phi_{10}$};
+		
+		\draw[ultra thick,->] (Func7) edge node[xshift=-10,yshift=0]{} (Func10);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (8,-4) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(SWITCH-Exit) at (8,-4) {};
+		
+		\draw[ultra thick,->] (Func8) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		\draw[ultra thick,->] (Func9) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		\draw[ultra thick,->] (Func10) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (10,0) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(PAR-Exit) at (10,0) {};
+		
+		\draw[ultra thick,->] (SWITCH-Exit) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+		\draw[ultra thick,->] (Func4) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+		
+		\node[circle,draw,minimum width = 1cm] 
+		(Func11) at (12,0) {$\phi_{11}$};
+		
+		\draw[ultra thick,->] (PAR-Exit) edge node[xshift=-10,yshift=0]{} (Func11);
+		
+	\end{tikzpicture}
+	\caption{An image-processing serverless choreography used for our experiments.}
+	\label{imageProcessingApp}
+\end{figure}
+
+Firstly, we conduct some experiments to test the respect of user specified QoS constraints. In Table \ref{tableTestQoS} we report the result of several application invocations under different QoS constraints. Each invocation is done sequentially, one after another. In this table, paid cost and experienced response time due to the invocation of the application was been determined using the choreography configuration produced by the heuristic algorithm.
+
+\begin{table}
+	\centering
+	\begin{tabular}{l | c | c} 
+		\toprule
+		$\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ & Experienced Response Time & Paid Cost \\
+		\midrule	
+		$\left\langle (12000,0.5),(10000,0.5) \right\rangle$ & $3171.88$ & $250$ \\ 
+		\hline
+		$\left\langle (12000,1),(10000,0) \right\rangle$ & $3061.88$ & $667.80$ \\ 
+		\hline
+		$\left\langle (12000,0),(10000,1) \right\rangle$ & $5587.39$ & $0$ \\
+		\hline
+		$\left\langle (8500,0.8),(8000,0.2) \right\rangle$ & $3061.88$ & $250$ \\
+		\hline
+		$\left\langle (8500,0.2),(8000,0.8) \right\rangle$ & $3061.88$ & $0$ \\
+		\hline
+		$\left\langle (7000,0),(0,1) \right\rangle$ & $3835.20$ & $0$ \\
+		\hline
+		$\left\langle (7000,1),(0,0) \right\rangle$ & $3061.88$ & $0$ \\
+		\hline
+		$\left\langle (1000,0.5),(0,0.5) \right\rangle$ & \textit{No Solution} & \textit{No Solution} \\
+		\bottomrule	
+	\end{tabular}
+	\caption{An image-processing serverless choreography used for our experiments.}
+	\label{tableTestQoS}
+\end{table}
+
+Afterwards, we conduct the same experiment as before but with several serverless application executed in parallel in a such way to run out any available function instances on one FaaS provider to force our prototype to schedule concrete function on the other.
+
+To do that, we design and deploy another dummy serverless application consisting of a single executable function with only one concrete function hosted exclusively on a FaaS provider, which we will call \ItalicQuotMark{OpenWhisk 1}. The concrete function of the dummy application does nothing other than wait $1$ second.
+
+To saturate the FaaS provider  \ItalicQuotMark{OpenWhisk 1} forcing our prototype to schedule the concrete functions of our image-processing application on the other, which we will call \ItalicQuotMark{OpenWhisk 2}, we executed, in parallel, aforementioned dummy serverless applications $50$ times while, at the same time, we request the invocation of our image-processing application $10$ times.
+
+After very few moments after the start of our experiment, our prototype produces a choreography configuration for the image processing application which still use some concrete functions on the \ItalicQuotMark{OpenWhisk 1} provider, since there are some function instance still available. That configuration is showed in Figure \ref{imageProcessingAppStep1}. 
+
+\begin{figure}[!ht]
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=blue,minimum width = 1cm] 
+		(Func1) at (-2,0) {$480$};
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (0,0) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(PAR-Enter) at (0,0) {};
+		
+		\draw[ultra thick,->] (Func1) -- (PAR-Enter);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (2,2) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(IF-Enter) at (2,2) {};
+		
+		\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=10]{$1$} (IF-Enter);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func2) at (4,3) {$480$};
+		
+		\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=10]{$\frac{1}{2}$} (Func2);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func3) at (4,1) {$480$};
+		
+		\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=-10]{$\frac{1}{2}$} (Func3);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (6,2) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(IF-Exit) at (6,2) {};
+		
+		\draw[ultra thick,->] (Func2) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+		\draw[ultra thick,->] (Func3) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+		
+		\node[circle, draw=blue, minimum width = 1cm]       					   
+		(Func4) at (8,2) {$352$};
+		
+		\draw[ultra thick,->] (IF-Exit) edge node[xshift=-10,yshift=-10]{} (Func4);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (2,-4) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(SWITCH-Enter) at (2,-4) {};
+		
+		\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=5]{$1$} (SWITCH-Enter);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func5) at (4,-2) {$416$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=5]{$\frac{1}{3}$} (Func5);
+		
+		\node[circle, draw=blue, minimum width = 1cm]       					   
+		(Func6) at (4,-4) {$288$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=5,yshift=10]{$\frac{1}{3}$} (Func6);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func7) at (4,-6) {$480$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=0]{$\frac{1}{3}$} (Func7);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func8) at (6,-2) {$480$};
+		
+		\draw[ultra thick,->] (Func5) edge node[xshift=-10,yshift=0]{} (Func8);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func9) at (6,-4) {$480$};
+		
+		\draw[ultra thick,->] (Func6) edge node[xshift=-10,yshift=0]{} (Func9);
+		
+		\node[circle, draw=blue, minimum width = 1cm]       					   
+		(Func10) at (6,-6) {$480$};
+		
+		\draw[ultra thick,->] (Func7) edge node[xshift=-10,yshift=0]{} (Func10);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (8,-4) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(SWITCH-Exit) at (8,-4) {};
+		
+		\draw[ultra thick,->] (Func8) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		\draw[ultra thick,->] (Func9) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		\draw[ultra thick,->] (Func10) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (10,0) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(PAR-Exit) at (10,0) {};
+		
+		\draw[ultra thick,->] (SWITCH-Exit) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+		\draw[ultra thick,->] (Func4) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+		
+		\node[circle,draw=red,minimum width = 1cm] 
+		(Func11) at (12,0) {$512$};
+		
+		\draw[ultra thick,->] (PAR-Exit) edge node[xshift=-10,yshift=0]{} (Func11);
+		
+		\matrix [xshift=-1.5cm] at (current bounding box.south east) {
+			\node[circle,draw=blue,minimum width=0.2cm] (a) {}; 
+			\node[circle,minimum width=0.2cm, right of=a, xshift=0.65cm, yshift=-0.05cm] (a1) {\ItalicQuotMark{OpenWhisk 1}}; 
+			\node[circle,draw=red,minimum width=0.2cm, below of=a] (b) {}; 
+			\node[circle,minimum width=0.2cm, right of=b, xshift=0.65cm, yshift=-0.05cm] {\ItalicQuotMark{OpenWhisk 1}}; \\
+		};
+		
+	\end{tikzpicture}
+	\caption{Choreography configuration produced when \ItalicQuotMark{OpenWhisk 1} provider has still some function instances to host the execution of some concrete function of our image processing application. The number inside the node represent the amount of memory selected by the our prototype.}
+	\label{imageProcessingAppStep1}
+\end{figure}
+
+However, at some point, \ItalicQuotMark{OpenWhisk 1} provider runs out all available function instances because several dummy application executions are still processing and they do not free allocated function instances. Therefore, as showed in Figure \ref{imageProcessingAppStep2}, our prototype produces a choreography configuration whose concrete functions are executed only on \ItalicQuotMark{OpenWhisk 2} provider, guaranteeing the respect of QoS constraints.
+
+Unfortunately, according to our experiment results, some invocations of the image processing application fail because our prototype cannot produce a feasible choreography configuration capable to respect QoS constraints since there are not enough function instances on any provider. For the same reasons, several dummy application invocations fail too.
+
+\begin{figure}[!ht]
+	\centering
+	\begin{tikzpicture}
+		
+		
+		\node[circle,draw=red,minimum width = 1cm] 
+		(Func1) at (-2,0) {$288$};
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (0,0) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(PAR-Enter) at (0,0) {};
+		
+		\draw[ultra thick,->] (Func1) -- (PAR-Enter);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (2,2) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(IF-Enter) at (2,2) {};
+		
+		\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=10]{$1$} (IF-Enter);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func2) at (4,3) {$512$};
+		
+		\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=10]{$\frac{1}{2}$} (Func2);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func3) at (4,1) {$228$};
+		
+		\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=-10]{$\frac{1}{2}$} (Func3);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (6,2) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(IF-Exit) at (6,2) {};
+		
+		\draw[ultra thick,->] (Func2) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+		\draw[ultra thick,->] (Func3) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func4) at (8,2) {$480$};
+		
+		\draw[ultra thick,->] (IF-Exit) edge node[xshift=-10,yshift=-10]{} (Func4);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (2,-4) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(SWITCH-Enter) at (2,-4) {};
+		
+		\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=5]{$1$} (SWITCH-Enter);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func5) at (4,-2) {$384$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=5]{$\frac{1}{3}$} (Func5);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func6) at (4,-4) {$384$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=5,yshift=10]{$\frac{1}{3}$} (Func6);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func7) at (4,-6) {$416$};
+		
+		\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=0]{$\frac{1}{3}$} (Func7);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func8) at (6,-2) {$512$};
+		
+		\draw[ultra thick,->] (Func5) edge node[xshift=-10,yshift=0]{} (Func8);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func9) at (6,-4) {$512$};
+		
+		\draw[ultra thick,->] (Func6) edge node[xshift=-10,yshift=0]{} (Func9);
+		
+		\node[circle, draw=red, minimum width = 1cm]       					   
+		(Func10) at (6,-6) {$480$};
+		
+		\draw[ultra thick,->] (Func7) edge node[xshift=-10,yshift=0]{} (Func10);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (8,-4) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(SWITCH-Exit) at (8,-4) {};
+		
+		\draw[ultra thick,->] (Func8) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		\draw[ultra thick,->] (Func9) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		\draw[ultra thick,->] (Func10) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+		
+		\node[circle, draw, minimum width = 0.2cm]        					   
+		() at (10,0) {};
+		\node[circle, draw, minimum width = 0.6cm]        					   
+		(PAR-Exit) at (10,0) {};
+		
+		\draw[ultra thick,->] (SWITCH-Exit) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+		\draw[ultra thick,->] (Func4) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+		
+		\node[circle,draw=red,minimum width = 1cm] 
+		(Func11) at (12,0) {$416$};
+		
+		\draw[ultra thick,->] (PAR-Exit) edge node[xshift=-10,yshift=0]{} (Func11);
+		
+		\matrix [xshift=-1.5cm] at (current bounding box.south east) {
+			\node[circle,draw=blue,minimum width=0.2cm] (a) {}; 
+			\node[circle,minimum width=0.2cm, right of=a, xshift=0.65cm, yshift=-0.05cm] (a1) {\ItalicQuotMark{OpenWhisk 1}}; 
+			\node[circle,draw=red,minimum width=0.2cm, below of=a] (b) {}; 
+			\node[circle,minimum width=0.2cm, right of=b, xshift=0.65cm, yshift=-0.05cm] {\ItalicQuotMark{OpenWhisk 1}}; \\
+		};
+		
+	\end{tikzpicture}
+	\caption{Choreography configuration produced when \ItalicQuotMark{OpenWhisk 1} provider has not enough function instances to host the execution of any concrete function of our image processing application. The number inside the node represent the amount of memory selected by the our prototype.}
+	\label{imageProcessingAppStep2}
+\end{figure}
+
+
+
+\newpage
+\section{Heuristic Algorithm Evaluation}
+
+In this section, we compare the performance and accuracy of the our custom ACO based algorithm to optimal algorithm. 
+
+To perform our evaluation, we design three set of experiments in order to analyze our heuristic algorithm performance under several point of view.
+
+\subsection{First Set of Experiments}
+
+In this first set of evaluations, we design several serverless applications having a pipeline workflow composed of various number of executable functions whose concrete functions are deployed on both AWS Lambda and Apache OpenWhisk. 
+
+For each executable function there are exactly $2$ concrete functions which implement it.  By design, since, as said previously, we have adopted memory increments of $32$ MB, there are $322$ different configuration per executable function; therefore, the total amount of serverless choreography configurations is equal to $322^{x}$, where $x$ is the number of executable functions inside a serverless application.
+
+Finally, the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ is set to $\left\langle (10000,0.5),(10000,0.5) \right\rangle$ for all run. We executed each serverless applications $20$ times to collect data.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalIncreasingExecutable.png}
+	\caption{Mean elapsed time of both heuristic and optimal algorithm (1).}%
+	\label{ACOvsOptimalIncreasingExecutable}
+\end{figure}
+
+The Figure \ref{ACOvsOptimalIncreasingExecutable} shows the mean amount of time required to produce a feasible choreography configuration, that is capable to meet user specified QoS constraints, by both our custom ACO based algorithm and the optimal approach when the number of executable functions of an application increases. 
+
+Apparently, results show that the response time of the ACO based algorithm grows very slowly when the number of executable functions increases, performing quite better than the optimal approach whose performances progressively worse.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalAccuracyIncreasingExecutable.png}
+	\caption{Average accuracy of the heuristic algorithm (1).}%
+	\label{ACOvsOptimalIncreasingExecutable}
+\end{figure}
+
+The Figure \ref{ACOvsOptimalIncreasingExecutable} shows the average accuracy of the solution produced by our ACO algorithm when the number of executable functions of an application increases. 
+
+In order to measure the accuracy of a given solution we used following formula:
+
+\begin{equation}
+	accuracy \mathDef \dfrac{s_{\text{\textbf{opt}}} - s_{\text{\textbf{aco}}}}{s_{\text{\textbf{opt}}}} \cdot 100
+\end{equation}
+
+where $s_{\text{\textbf{opt}}}$ and $s_{\text{\textbf{aco}}}$ represent, respectively, the score of the solutions produced by the optimal and the ACO algorithm.
+
+In this case, results show that average accuracy is above the $98.5$\% despite it progressively decreases when the number of executable function increases. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACORamConsumptionIncreasingExecutable.png}
+	\caption{Average memory consumption of the heuristic algorithm (1).}%
+	\label{ACORamConsumptionIncreasingExecutable}
+\end{figure}
+
+Figure \ref{ACORamConsumptionIncreasingExecutable} shows the average amount of memory required by our ACO algorithm to resolve the optimization problem described in section \ref{MMKKSection}. Unfortunately, our solution performs very badly since greater the number of executable function, greater the amount of memory required by our algorithm. 
+
+That result suggests that this solution cannot be deployed on resource-constrained devices and limits the possibility to adapt it inside a edge based solution.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACO3DIncreasingExecutable.png}
+	\caption{Heuristic algorithm performance.}%
+	\label{ACO3DIncreasingExecutable}
+\end{figure}
+
+Finally, Figure \ref{ACO3DIncreasingExecutable} represent a summary of all above experiments, reporting the relationship between accuracy, memory consumption and response time when the number of executable functions are progressively increased.
+
+\newpage
+\subsection{Second Set of Experiments}
+
+The second set of experiment involves the use of several serverless applications having a pipeline workflow with exactly $5$ executable functions whose number of concrete functions implementing them is progressively increased. 
+
+Like previously, concrete function are deployed on both AWS Lambda and Apache OpenWhisk. Memory allocation values for each executable configuration, SLA attributes values and profiling approach  remain unchanged respect to the previous set of experiment. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalIncreasingConcrete.png}
+	\caption{Mean elapsed time of both heuristic and optimal algorithm (2).}%
+	\label{ACOvsOptimalIncreasingConcrete}
+\end{figure}
+
+The Figure \ref{ACOvsOptimalIncreasingConcrete} shows the mean amount of time required to produce a feasible choreography configuration by both the heuristic and the optimal algorithm when the number of concrete functions for each executable function increases. 
+
+Results show that the optimal algorithm performs quite worse than in the previous set of experiment, since its average response time increase faster when the number of concrete function increases than when executable functions are increased. In some run, the average response time of the optimal algorithm require more than $1$ second. 
+
+Conversely, the response time of the ACO based algorithm grows very slowly, performing quite better than the optimal approach.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalAccuracyIncreasingConcrete.png}
+	\caption{Average accuracy of the heuristic algorithm (2).}%
+	\label{ACOvsOptimalAccuracyIncreasingConcrete}
+\end{figure}
+
+The Figure \ref{ACOvsOptimalAccuracyIncreasingConcrete} shows the average accuracy of the solution produced by our heuristic algorithm when the number of concrete functions for each executable function is increased. Results show that average accuracy remains above the $99.8$\%.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACORamConsumptionIncreasingConcrete.png}
+	\caption{Average memory consumption of the heuristic algorithm (2).}%
+	\label{ACORamConsumptionIncreasingConcrete}
+\end{figure}
+
+Figure \ref{ACORamConsumptionIncreasingConcrete} shows the average amount of memory required by our heuristic algorithm to resolve one optimization problem when the number of concrete functions for executable function is progressively increased. Unfortunately, the amount of memory required by our algorithm grows very rapidly. To be more precise, results show that the average amount of memory increase faster when the number of concrete function increases than when executable functions are increased.
+
+\newpage
+\subsection{Third Set of Experiments}
+
+During the last set of experiments, we exploit the serverless application for image manipulation described previously.
+
+We evaluate heuristic performance changing the granularity of the amount of memory allocable to each concrete function; in simple terms, we changed the number of available configurations for each executable function. For instance, since the amount of memory of an OpenWhisk functions varies between $256$ MB and $512$, with an increment equal to $256$ MB we have only $2$ possible configuration per concrete function while, with an increment of $8$ MB, we have $33$ different memory configuration.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalIncreasingMemoryIncrement.png}
+	\caption{Mean elapsed time of both heuristic and optimal algorithm (3).}%
+	\label{ACOvsOptimalIncreasingMemoryIncrement}
+\end{figure}
+
+The Figure \ref{ACOvsOptimalIncreasingMemoryIncrement} shows the average amount of time required by both the heuristic and the optimal algorithm for different memory increment values. As expected, required average time progressively decrease for both algorithms despite it seems that the heuristic approach performs worser than the optimal for smaller problem instances.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACORamConsumptionIncreasingMemoryIncrement.png}
+	\caption{Average memory consumption of the heuristic algorithm (3).}%
+	\label{ACORamConsumptionIncreasingMemoryIncrement}
+\end{figure}
+
+As expected, the Figure \ref{ACORamConsumptionIncreasingMemoryIncrement} shows that the amount of memory required by our heuristic algorithm decreases progressively when the size of the optimization problem decrease as well.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalAccuracyIncreasingMemoryIncrement.png}
+	\caption{Average accuracy of the heuristic algorithm (3).}%
+	\label{ACOvsOptimalAccuracyIncreasingMemoryIncrement}
+\end{figure}
+
+Finally, the Figure \ref{ACOvsOptimalAccuracyIncreasingMemoryIncrement} shows the average accuracy of the solution produced by our heuristic algorithm for different memory increment values.
 
 \chapter{Conclusion}\label{chapterConclusion}
 
