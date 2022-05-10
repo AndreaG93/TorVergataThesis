@@ -382,7 +382,14 @@ This section details all software components of our system, which consists of fo
 	\item A Custom AFCL Parser
 \end{itemize}
 
-We will give a very brief overview of how these entities work while all details about the model on which they are based will be given in next chapter.
+We will give a very brief overview of how these entities work while all details about the model on which they are based will be given in next chapter. The overview of our system is illustrated in Figure \ref{Overview}.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth, height=0.9\textheight]{./images/System.png}
+	\caption{A simplified overview of our system, including its components and their interactions.}%
+	\label{Overview}
+\end{figure}
 
 \subsection{Logging Subsystem}
 
@@ -2457,7 +2464,7 @@ represents the tightness of the object $o_{i_j}$ on the problem constraints rela
 We can now define the heuristic factor formula as follows:
 
 \begin{equation}
-	\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \mathDef \frac{p_{i_j}}{h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) + 1}
+	\eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \mathDef \frac{p_{i_j} + 1}{h_{\textbf{S}_{k_l}^{(z)}}(o_{i_j}) + 1}
 \end{equation}
 
 \subsection{Local Search}
