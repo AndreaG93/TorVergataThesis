@@ -65,11 +65,6 @@
     linkcolor=black,  %choose some color if you want links to stand out
 }
 
-\def\abstract{
-	\chapter*{\abstractname}
-}
-\def\endabstract{\clearpage}
-
 \pagenumbering{roman}
 \begin{document}
 
@@ -88,13 +83,7 @@
 	\Correlatore{Dott. Gabriele Russo Russo}
 \end{frontespizio} 
 	
-\vspace*{\stretch{1}}
-\begin{flushright}
-	\textit{????????????????????? dedica da fare}
-\end{flushright}
-\vspace{\stretch{2}}
-	
-\begin{abstract}
+\chapter*{Abstract}
 	
 In recent years, due to their high scalability, ease of resource management, and pay-as-you-go pricing model, the \textit{Function-as-a-Service} (FaaS) service model has significantly increased its popularity, allowing cloud users to decompose their applications into state-less and standalone computational units called \textit{serverless functions}.
 
@@ -117,7 +106,41 @@ Finally, to reduce the impact of vendor lock-in issues, we developed our prototy
 \vfill
 \keywords{Serverless Paradigm; Quality of Service (QoS); Cost and Performance Modeling; Cost and Performance Optimization; Multi-Dimensional Multi-Choice Knapsack Problem; Ant Colony Optimization; State-Aware, Multi-Provider and Multiple Serverless Function Implementation Orchestrator; REST Architecture}
 
-\end{abstract}
+
+\chapter*{Acknowledgement}
+
+I would like to express my gratitude to my primary supervisor, Valeria Cardellini, who, thank to her invaluable support, encouragement and patience, guiding me throughout this project.
+
+I wish to extend my special thanks to Gabriele Russo Russo, my tutor, for helping me to finalize this work through so many advices, tips and feedback.
+
+Finally, i would also like to thank my parents and my brother; without their support and encouragement in the past years, it would be impossible for me to complete my study. 
+
+\newpage
+
+\vspace*{\stretch{1}}
+\begin{flushright}
+		
+	\textit{I can't see anything, so i don't know what's up ahead.\\
+	If I keep going, it might be a zero, but it might be a one\\ or, maybe, it might be 100 too.\\
+	But if I give up now, I'll never find out.\\
+	\vspace{\baselineskip}
+	After all, it's still zero now.\\
+	Although I practiced so long, even though I worked that hard,\\
+	despite I really tried my best so many times...\\ it's still zero.\\
+	\vspace{\baselineskip}
+	It's zero and... it's so frustrating.\\
+	\vspace{\baselineskip}
+	However, that gave me strength.\\
+	Though I cried a bit, I will not give up.\\
+	Everyone fails sometimes but dreams don't fade and...\\
+	I have so many dreams I want to realize.\\
+	\vspace{\baselineskip}
+	I don't think I'll be able to go from zero to 100 right away, but...\\ I might be able to get to one.
+}
+	
+\end{flushright}
+\vspace{\stretch{2}}
+
 
 \tableofcontents	
 \listoffigures
