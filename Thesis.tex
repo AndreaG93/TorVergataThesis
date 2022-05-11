@@ -13,6 +13,9 @@
 \usepackage{listings}
 \usepackage{refcount}
 \usepackage{booktabs} 
+\usepackage{epigraph}
+
+% 0273395 - Andrea Graziani - A QoS-Aware Broker for Multi-Provider Serverless Applications
 
 \providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
 
@@ -33,13 +36,13 @@
 \usepackage[ruled,linesnumbered]{algorithm2e}
 \SetKw{KwBy}{by}
 
+
+
 \usepackage[numbers]{natbib} 
 
 \usepackage{footnote}
 \makesavenoteenv{tabular}
 \makesavenoteenv{table}
-
-
 
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
@@ -115,12 +118,19 @@ I wish to extend my special thanks to Gabriele Russo Russo, my tutor, for helpin
 
 Finally, i would also like to thank my parents and my brother; without their support and encouragement in the past years, it would be impossible for me to complete my study. 
 
+
 \newpage
 
-\vspace*{\stretch{1}}
-\begin{flushright}
-		
-	\textit{I can't see anything, so i don't know what's up ahead.\\
+\setlength\epigraphwidth{0.75\textwidth}
+
+\begin{center}
+	\textit{To my beloved A.}
+\end{center}
+
+\vspace*{\stretch{4}}
+
+\renewcommand{\textflush}{flushright}
+\epigraph{\itshape I can't see anything, so i don't know what's up ahead.\\
 	If I keep going, it might be a zero, but it might be a one\\ or, maybe, it might be 100 too.\\
 	But if I give up now, I'll never find out.\\
 	\vspace{\baselineskip}
@@ -131,26 +141,27 @@ Finally, i would also like to thank my parents and my brother; without their sup
 	It's zero and... it's so frustrating.\\
 	\vspace{\baselineskip}
 	However, that gave me strength.\\
-	Though I cried a bit, I will not give up.\\
-	Everyone fails sometimes but dreams don't fade and...\\
-	I have so many dreams I want to realize.\\
+	I cried a bit but I decided to not give up.\\
+	Everyone fails sometimes but dreams don't fade.\\
 	\vspace{\baselineskip}
 	I don't think I'll be able to go from zero to 100 right away, but...\\ I might be able to get to one.
-}
-	
-\end{flushright}
-\vspace{\stretch{2}}
+}{\textsc{Andrea Graziani}}
 
+
+\vspace*{\stretch{2}}
 
 \tableofcontents	
 \listoffigures
 \listoftables
-
 \listofalgorithms
 \addtocontents{loa}{\def\string\figurename{Algorithm}}
 
+\renewcommand{\textflush}{flushleft}
+\setlength\epigraphwidth{0.4\textwidth}
+
 \chapter{Introduction}\label{chapterIntro}
 \pagenumbering{arabic}
+\epigraph{\itshape To achieve great things, two things are needed: a plan, and not quite enough time.}{\textsc{Leonard Bernstein}}
 
 In recent years, thanks to an increased popularity of several lightweight virtualization solutions, specifically containers and container-orchestration systems, many public cloud providers have launched a new set of cloud computing services belonging to new service type category called \textit{Function-as-a-Service} (\textit{FaaS}), where almost every aspect of the system administration tasks, needed to deploy a workload on the cloud, like provisioning, monitoring, resource management and scaling, are directly managed by the provider with a minimum involvement of the user.
 
@@ -326,6 +337,8 @@ The remainder of this dissertation is organized as follows. In Chapter \ref{chap
 
 \chapter{Related Works}\label{chapterRelated}
 
+\epigraph{\itshape The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing.}{\textsc{Socrates}}
+
 The serverless computing paradigm has attracted a great deal of interest from both academia and industry, therefore in this chapter we provide a short preview of the literature inherently related to our topic, namely performance modeling
 of serverless applications.
 
@@ -369,6 +382,8 @@ There is no solution which considers the existence of multiple implementations, 
 
 
 \chapter{System Architecture and Implementation}\label{chapterArch}
+
+\epigraph{\itshape Computers are like Old Testament gods; lots of rules and no mercy.}{\textsc{Joseph Campbell}}
 
 Our software is a standalone orchestrator, QoS-aware model-based optimizer and profiler for serverless applications, whose functions can be hosted on multiple FaaS platforms.
 
@@ -575,10 +590,6 @@ As you can see from Listing \ref{AFCL1}, base function definition supports both 
 
 The number of the objects belonging to both \texttt{dataIns} and \texttt{dataOuts} depend on the chosen serverless function. These objects have to specify a name and a type while, optionally, they can include a constant value or the data source, which can be specified using the name of another base or compound function within the same workflow. 
 
-To build realistic serverless workflow, AFCL support following functions: \texttt{sequence}, \texttt{if-then-else}, \texttt{switch}, \texttt{for}, \texttt{while}, \texttt{parallel}, and \texttt{parallelFor}. The specifications for the \texttt{name} attribute, \texttt{dataIns} and \texttt{dataOuts} ports are similar as for a base function. Anyway, a detailed description of AFCL is available in \cite{AFCL}.
-
-Despite quite refined, only a subset of AFCL features are really needed to achieve our goals and, at the same time, AFCL lacks some features which are indispensable to us. Therefore, more concretely, our serverless application representation scheme is based on a custom version of AFCL and to integrate its use in our framework, we have developed our own custom AFCL parser, invoked whenever a serverless application needs to be instantiated from its AFCL representation. 
-
 \begin{lstlisting}[frame=lines, caption={Definition of a serverless function according to our custom AFCL.}, label={AFCL2}]
 	function: {
 		name: "name",
@@ -606,6 +617,10 @@ Despite quite refined, only a subset of AFCL features are really needed to achie
 		]?,
 	}
 \end{lstlisting}
+
+To build realistic serverless workflow, AFCL support following functions: \texttt{sequence}, \texttt{if-then-else}, \texttt{switch}, \texttt{for}, \texttt{while}, \texttt{parallel}, and \texttt{parallelFor}. The specifications for the \texttt{name} attribute, \texttt{dataIns} and \texttt{dataOuts} ports are similar as for a base function. Anyway, a detailed description of AFCL is available in \cite{AFCL}.
+
+Despite quite refined, only a subset of AFCL features are really needed to achieve our goals and, at the same time, AFCL lacks some features which are indispensable to us. Therefore, more concretely, our serverless application representation scheme is based on a custom version of AFCL and to integrate its use in our framework, we have developed our own custom AFCL parser, invoked whenever a serverless application needs to be instantiated from its AFCL representation. 
 
 Listing \ref{AFCL2} shows the definition of a serverless function according to our custom AFCL, which has follows characteristics and differences respect to the original one:
 
@@ -867,6 +882,7 @@ Conversely, to store data about users, serverless applications and FaaS security
 Finally, to resolve the optimization problems, which according to our model must be solved to find a configuration allowing us to respect QoS constraints, we adopted \texttt{lp\_solve}, a \textit{Mixed Integer Linear Programming} (MILP) solver written in C \cite{lpsolve}.
 
 \chapter{System Model}\label{chapterModel}
+\epigraph{\itshape All models are wrong, but some are useful.}{\textsc{George E. P. Box}}
 
 In this section, we will first formally describe the workflow of a serverless application, then we will develop the analytical model used by our framework to predict its the performance and cost.
 
@@ -2152,6 +2168,7 @@ where:
 \end{itemize}
 
 \chapter{Optimization Problem Formulations}\label{chapterOptimizationProble}
+\epigraph{\itshape Engineers like to solve problems. If there are no problems handily available, they will create their own problems.}{\textsc{Scott Adams}}
 
 To achieve our goal consisting in finding the best choreography configuration capable to guarantee QoS constraints imposed by an user, we have to solve an optimization problem, which we have formulated in two  different manners, where:
 
@@ -2590,7 +2607,9 @@ Then, our algorithm stops when:
 
 \newpage
 
-\chapter{Experimental evaluations}\label{chapterExperimental}
+\chapter{Experimental Evaluations}\label{chapterExperimental}
+
+\epigraph{\itshape Measure what is measurable, and make measurable what is not so.}{\textsc{Galileo Galilei}}
 
 In this chapter, we assess both our performance model and prototype implementation conducting two sets of experiments:
 
@@ -3147,6 +3166,7 @@ As expected, the Figure \ref{ACORamConsumptionIncreasingMemoryIncrement} shows t
 Finally, the Figure \ref{ACOvsOptimalAccuracyIncreasingMemoryIncrement} shows the average accuracy of the solution produced by our heuristic algorithm for different memory increment values.
 
 \chapter{Conclusion}\label{chapterConclusion}
+\epigraph{\itshape I think we agree, the past is over.}{\textsc{George W. Bush}}
 
 In this work we tried to address the problem to provide QoS guarantees during serverless application execution which represents a challenge towards widespread adoption of serverless computing paradigm.
 
