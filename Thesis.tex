@@ -347,8 +347,7 @@ Obviously, several researchers have already proposed some  performance and cost 
 \begin{itemize}
 	\item \citet{PMSCP} proposed a very interesting analytical model to determine both the delay and charged cost for a generic serverless workflow, including a methodology to obtain a configuration for each serverless function belonging to the application in order to respect either delay or cost constraints imposed by a user.
 	
-	Their methodology is based on solving two different optimization problems, namely the best performance under the budget constraint and the best cost under the performance constraint. Moreover, researchers proposed a heuristic algorithm named \textit{Probability Refined Critical Path} algorithm with four greedy
-	strategies in order to rapidly solve aforementioned optimization problems. 
+	Their methodology is based on solving two different optimization problems, namely the best performance under the budget constraint and the best cost under the performance constraint. Moreover, researchers proposed a heuristic algorithm named \textit{Probability Refined Critical Path} algorithm with four greedy strategies in order to rapidly solve aforementioned optimization problems. 
 	
 	\item \citet{COSE} proposed a statistical learning based configuration finder for serverless functions. 
 	
@@ -424,7 +423,7 @@ We will give a very brief overview of how these entities work while all details 
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\textwidth, height=0.9\textheight]{./images/System.png}
+	\includegraphics[width=\textwidth, height=0.9\textheight]{./Images/System.png}
 	\caption{A simplified overview of our system, including its components and their interactions.}%
 	\label{Overview}
 \end{figure}
@@ -3045,7 +3044,7 @@ Finally, the SLA $\left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle$ is set to $\
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalIncreasingExecutable.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACOvsOptimalIncreasingExecutable.png}
 	\caption{Mean elapsed time of both heuristic and optimal algorithm (1).}%
 	\label{ACOvsOptimalIncreasingExecutable}
 \end{figure}
@@ -3056,7 +3055,7 @@ Apparently, results show that the response time of the ACO based algorithm grows
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalAccuracyIncreasingExecutable.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACOvsOptimalAccuracyIncreasingExecutable.png}
 	\caption{Average accuracy of the heuristic algorithm (1).}%
 	\label{ACOvsOptimalIncreasingExecutable}
 \end{figure}
@@ -3075,7 +3074,7 @@ In this case, results show that average accuracy is above the $98.5$\% despite i
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACORamConsumptionIncreasingExecutable.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACORamConsumptionIncreasingExecutable.png}
 	\caption{Average memory consumption of the heuristic algorithm (1).}%
 	\label{ACORamConsumptionIncreasingExecutable}
 \end{figure}
@@ -3086,7 +3085,7 @@ That result suggests that this solution cannot be deployed on resource-constrain
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACO3DIncreasingExecutable.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACO3DIncreasingExecutable.png}
 	\caption{Heuristic algorithm performance.}%
 	\label{ACO3DIncreasingExecutable}
 \end{figure}
@@ -3102,7 +3101,7 @@ Like previously, concrete function are deployed on both AWS Lambda and Apache Op
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalIncreasingConcrete.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACOvsOptimalIncreasingConcrete.png}
 	\caption{Mean elapsed time of both heuristic and optimal algorithm (2).}%
 	\label{ACOvsOptimalIncreasingConcrete}
 \end{figure}
@@ -3115,7 +3114,7 @@ Conversely, the response time of the ACO based algorithm grows very slowly, perf
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalAccuracyIncreasingConcrete.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACOvsOptimalAccuracyIncreasingConcrete.png}
 	\caption{Average accuracy of the heuristic algorithm (2).}%
 	\label{ACOvsOptimalAccuracyIncreasingConcrete}
 \end{figure}
@@ -3124,7 +3123,7 @@ The Figure \ref{ACOvsOptimalAccuracyIncreasingConcrete} shows the average accura
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACORamConsumptionIncreasingConcrete.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACORamConsumptionIncreasingConcrete.png}
 	\caption{Average memory consumption of the heuristic algorithm (2).}%
 	\label{ACORamConsumptionIncreasingConcrete}
 \end{figure}
@@ -3140,7 +3139,7 @@ We evaluate heuristic performance changing the granularity of the amount of memo
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalIncreasingMemoryIncrement.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACOvsOptimalIncreasingMemoryIncrement.png}
 	\caption{Mean elapsed time of both heuristic and optimal algorithm (3).}%
 	\label{ACOvsOptimalIncreasingMemoryIncrement}
 \end{figure}
@@ -3149,7 +3148,7 @@ The Figure \ref{ACOvsOptimalIncreasingMemoryIncrement} shows the average amount 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACORamConsumptionIncreasingMemoryIncrement.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACORamConsumptionIncreasingMemoryIncrement.png}
 	\caption{Average memory consumption of the heuristic algorithm (3).}%
 	\label{ACORamConsumptionIncreasingMemoryIncrement}
 \end{figure}
@@ -3158,7 +3157,7 @@ As expected, the Figure \ref{ACORamConsumptionIncreasingMemoryIncrement} shows t
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{./experiments/ACOvsOptimalAccuracyIncreasingMemoryIncrement.png}
+	\includegraphics[width=0.9\textwidth]{./Images/ACOvsOptimalAccuracyIncreasingMemoryIncrement.png}
 	\caption{Average accuracy of the heuristic algorithm (3).}%
 	\label{ACOvsOptimalAccuracyIncreasingMemoryIncrement}
 \end{figure}
