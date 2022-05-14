@@ -1,73 +1,105 @@
 \documentclass[13.5pt]{beamer}
-%\usetheme[
-%%% option passed to the outer theme
-%    progressstyle=fixedCircCnt,   % fixedCircCnt, movingCircCnt (moving is deault)
-%]{}
-  
-% If you want to change the colors of the various elements in the theme, edit and uncomment the following lines
-
-% Change the bar colors:
-%\setbeamercolor{Feather}{fg=red!20,bg=red}
-
-% Change the color of the structural elements:
-%\setbeamercolor{structure}{fg=red}
-
-% Change the frame title text color:
-%\setbeamercolor{frametitle}{fg=blue}
-
-% Change the normal text color background:
-%\setbeamercolor{normal text}{fg=black,bg=gray!10}
-
-%-------------------------------------------------------
-% INCLUDE PACKAGES
-%-------------------------------------------------------
-
 \usepackage[natbib=true,backend=bibtex,useprefix=true]{biblatex}
 \usepackage[utf8]{inputenc}
-\usepackage{quoting}
 \usepackage{tikz}
 \usepackage{ragged2e}
 \usepackage{adjustbox}
-\usepackage{mwe}
-\usepackage{wrapfig}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usetikzlibrary{fadings}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmathfont{XITS Math}
+
+
+\usetheme{Madrid}
+
+\definecolor{TorVergataColor}{RGB}{0,125,52}
+\setsansfont[BoldFont={Circe-Bold}]{Circe-Regular}
+
+\newcommand{\B}[1]{\textcolor{TorVergataColor}{\textbf{#1}}}
+\newcommand{\Cross}{\mathbin{\tikz [x=2.5ex,y=2.5ex,line width=.10ex] \draw (0,0) -- (1,1) (0,1) -- (1,0);}}
+\newcommand{\mathDef}{\overset{\textit{def}}{=}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rplus}{\mathbb{R}^+}
+
+\makeatletter
+\setbeamertemplate{title page}{%
+	\vbox{}
+	\vfill
+	{\usebeamercolor[fg]{titlegraphic}\inserttitlegraphic\par}
+	\begingroup
+	\centering
+	\begin{beamercolorbox}[sep=8pt,center]{title}
+		\usebeamerfont{title}\inserttitle\par%
+		\ifx\insertsubtitle\@empty%
+		\else%
+		\vskip0.25em%
+		{\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+		\fi%     
+	\end{beamercolorbox}%
+	\vskip1em\par
+	\vfill%<- added
+	\begin{beamercolorbox}[sep=8pt,left]{author}
+		\usebeamerfont{author}\insertauthor
+	\end{beamercolorbox}
+	\vfill%<- added
+	\begin{beamercolorbox}[sep=8pt,center]{institute}
+		\usebeamerfont{institute}\insertinstitute
+	\end{beamercolorbox}
+	\vfill%<- added
+	\begin{beamercolorbox}[sep=8pt,center]{date}
+		\usebeamerfont{date}\insertdate
+	\end{beamercolorbox}%
+	\vskip0cm%<- changed
+	%    
+	\endgroup
+	\vfill%<- removed
+}
+\makeatother
+
+
+
+\setbeamercolor{structure}{fg=TorVergataColor}
+\setbeamerfont{structure}{family=\bfseries,size=\large}
+
+\title[]
+{ 
+	\textbf{A QoS-Aware Broker \\ for Multi-Provider Serverless Applications}
+}
+
+\author[Andrea Graziani (m. 0273395)]{{\Large \textbf{Andrea Graziani}}\\m. $0273395$\\[10mm]{\small 
+		\begin{tabular}{l|l}
+			\textbf{Supervisor}: & \textit{Valeria Cardellini } \\ 
+			\textbf{Tutor}: & \textit{Gabriele Russo Russo}  \\  
+\end{tabular}}}
+
+\titlegraphic{\includegraphics[width=9.5cm,height=2.4cm]{../Images/UniLogo/LogoMacroarea.png}}
+
+\setbeamertemplate{background}{%
+	\begin{tikzpicture}[overlay,remember picture]
+		\node[scope fading=west,anchor=north west] at ([shift={(2in,-1in)}]current page.north west) {\includegraphics[width=9cm,height=9cm]{../Images/UniLogo/TorVergataWatermark.png}};
+	\end{tikzpicture}
+}
+
 \justifying
 
-%-------------------------------------------------------
-% DEFFINING AND REDEFINING COMMANDS
-%-------------------------------------------------------
-
-\usetheme{Warsaw}
-\usecolortheme{seahorse}
-
-%-------------------------------------------------------
-% INFORMATION IN THE TITLE PAGE
-%-------------------------------------------------------
-\vspace{\baselineskip}
-\title[] % [] is optional - is placed on the bottom of the sidebar on every slide
-{ % is placed on the title page
-      \textbf{A QoS-Aware Broker \\ for Multi-Provider Serverless Applications}
+\setbeamertemplate{frametitle}{%
+	\nointerlineskip%
+	\begin{beamercolorbox}[wd=\paperwidth,ht=4.0ex,dp=1ex]{frametitle}
+		\hspace*{1ex}\insertframetitle%
+	\end{beamercolorbox}%
 }
 
-\author[Andrea Graziani (0273395)]{\textbf{Andrea Graziani}\\m. $0273395$\\[10mm]{\footnotesize Supervisor: \textbf{Valeria Cardellini} \\Tutor: Gabriele Russo Russo}}
-%\author[Andrea Graziani - 0273395]
-%{      Andrea Graziani - 0273395 \\
-%      {}
-%}
+\addtobeamertemplate{frametitle}{}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[anchor=north east,yshift=2pt] at (current page.north east) {\includegraphics[height=1cm]{../Images/UniLogo/NegativeTorVergataLogo.png}};
+\end{tikzpicture}}
 
-\institute[]
-{
-      Università degli Studi di Roma “Tor Vergata” \\
-      Macroarea di Ingegneria \\
-      Corso di Laurea Magistrale in Ingegneria Informatica
-}
-%\titlegraphic { 
-%	\begin{figure}[h]
-%		\centering
-%		\includegraphics[width=0.5\textwidth]{../images/logo.png}
-%	\end{figure}
-%}
-
-\date{23/05/2022}
+\date{May 23, 2022}
 
 %-------------------------------------------------------
 % THE BODY OF THE PRESENTATION
@@ -84,85 +116,41 @@
   \titlepage % call the title page information from above
 \end{frame}}
 
-
-\section{Introduction}
-\subsection{Research's goal}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Research's goal}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{alertblock}{}
-\justifying
-What is the work goal?
-\end{alertblock}
-
-\begin{itemize}
-	\item A \textbf{QoS-aware framework} for the orchestration of serverless functions supporting:
-	\begin{itemize}
-		\item Multiple FaaS providers
-		\item Multiple functions implementations.
-	\end{itemize}
-\end{itemize}
-
-
-\begin{alertblock}{}
-\justifying
-Why is it necessary to built that classification model?
-\end{alertblock}
-
-\begin{quoting}[font=itshape, begintext={``}, endtext={''\\\textbf{\citet{ITPAReport}}}]
-The most compelling reason for profiling IoT traffic is to enhance cyber-security. [...] IoT devices are by their nature easier to infiltrate [...] and used to launch large-scale attacks.
-\end{quoting}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Research's goal}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item In other words, if is possible to built a classification model capable to understand IoT devices ``\textit{normal}" \textbf{traffic pattern}, it will be possible to deploy a network-level security mechanisms to identify attacks analysing traffic patterns.
-
-\item According to the authors, that classification model is intended to be used inside a smart cities and campus environments.
-\end{itemize}
-
-\begin{alertblock}{}
-\justifying
-How the authors have built their classification model?
-\end{alertblock}
-
-\begin{itemize}
-\justifying
-\item Using a \textbf{supervised machine learning} approach, exploiting, form the implementation point of view, a collection of tools and algorithms regarding data analysis called \texttt{Weka}.
-
-All data were been analysed using \textbf{Random Forest} algorithm.
-\end{itemize}
-
-\begin{alertblock}{}
-\justifying
-What is the first step necessary to start the building of this classification model?
-\end{alertblock}
-
-\begin{itemize}
-\item \textbf{Collect data}!
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\section{The ``\textit{Serverless Computing Paradigm}"}
-\subsection{Overview}
+\setbeamertemplate{background}{}
 
 % -------------- %
-\begin{frame}{The ``\textit{Serverless Computing Paradigm}"}
+% -------------- %
+\begin{frame}{Goals}
+% -------------- %
+% -------------- %
+
+\begin{block}{}
+	\centering
+	My thesis is focused on ``\B{Serverless Computing}".
+\end{block}
+
+\vspace{\baselineskip}
+Two main goals:
+\begin{enumerate}
+	\item The \B{orchestration} of a serverless workflow supporting:
+	
+	\begin{itemize}
+		\item \textbf{Multiple FaaS Providers}
+		\item \textbf{Multiple Functions Implementations.}
+	\end{itemize}
+	\vspace{\baselineskip}
+	\item The fulfillment of \B{non-functional requirements} concerning the \B{quality of service} (QoS) levels that should be guaranteed.
+\end{enumerate}
+
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}{Serverless Computing: Overview}
 
 
 \begin{block}{}
-What's meant by ``\textit{Serverless Computing Paradigm}"?
-\justifying	
+\centering
+What's meant by serverless computing?
 \end{block}
 \vspace{\baselineskip}
 An applications service model where:
@@ -170,36 +158,40 @@ An applications service model where:
 \begin{itemize}
 	\item Administration tasks (provisioning, monitoring, scaling, etc.) are directly managed by the provider.
 	\vspace{\baselineskip}
-	\item Small-granularity billing pricing model: \textit{pay-as-you-go}.
+	\item Small-granularity billing pricing model: \B{pay-as-you-go}.
 	\vspace{\baselineskip}
-	\item Cloud application are abstracted as a group of so-called \textit{serverless functions}.
+	\item Cloud application are abstracted as a group of so-called \\ ``\B{Serverless Functions}".
 	
 \end{itemize}
 
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``\textit{Serverless Computing Paradigm}"}
-	
+\begin{frame}{Serverless Computing: Overview}
 	
 	\begin{block}{}
-		What is a ``\textit{Serverless Function}"?
-		\justifying	
+		\centering
+		What is a serverless function?
 	\end{block}
 	\vspace{\baselineskip}
-	A \textbf{stateless}, \textbf{event-driven}, \textbf{short-lived}, \textbf{self-contained} unit of computation implementing a business functionality.
-	\vspace{\baselineskip}
+	A computation unit implementing a business functionality.
 	
+	\begin{itemize}
+		\item \B{Stateless}
+		\item \B{Event-Driven}
+		\item \B{Short-Lived}
+	\end{itemize}
 
-	
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``\textit{Serverless Computing Paradigm}"}
+\begin{frame}{Serverless Computing: Overview}
 	
-	\begin{alertblock}{}
-		A serverless function is executed inside a containerized environment called \textbf{function instance}.
-	\end{alertblock}
+	\begin{block}{}
+		\centering
+		A serverless function is executed inside a containerized environment: the so-called ``\B{Function Instance}".
+	\end{block}
+	\vspace{\baselineskip}
 	Any function instance can be in:
 	\begin{itemize}
 		\item Initialization State.
@@ -207,51 +199,50 @@ An applications service model where:
 		\item Running State
 	\end{itemize}
 	\vspace{\baselineskip}
-	\begin{alertblock}{\textbf{Warm Pool}}
-		The set of all function instances whose state is either \textbf{idle} or \textbf{running} state.
-	\end{alertblock}
+	\begin{block}{\textbf{Warm Pool}}
+		
+		The set of all function instances whose state is either \B{idle} or \B{running} state.
+	\end{block}
 	
 	
 	
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``Smart Environment" - Overview - Part 2}
+\begin{frame}{Serverless Computing: Overview}
 	
-\begin{alertblock}{}
-	The platform \textbf{automatically scales} the number of function instances.
-\end{alertblock}
+\begin{block}{}
+	\centering
+	The FaaS platform \B{automatically} scales the number of function instances.
+\end{block}
+
 \vspace{\baselineskip}
 When a request comes in, only one of the following events can occur:
 \begin{itemize}
 	\item \textbf{Warm start}.
 	\item \textbf{Cold start.}
 \end{itemize}
-\vspace{\baselineskip}
-\begin{block}{}
-	We assume that all FaaS providers adopt the auto-scaling technique called \textit{scale-per-request}.
-\end{block}
-	
-	
+
+		
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``Smart Environment" - Overview - Part 2}
+\begin{frame}{Serverless Computing: Overview}
 	
-	\begin{alertblock}{Concurrency Level}
-		FaaS platforms impose a limitation on the number of function instance runnable at the same time.
-	\end{alertblock}
-
-	Any provider applies these restriction differently:
+	\begin{block}{Concurrency Level}
+		The limitation, imposed by FaaS platforms, on the \B{number} of function instance runnable at the \B{same time}.
+	\end{block}
+	\vspace{\baselineskip}
+	Providers apply that restriction differently:
 	\vspace{\baselineskip}
 	\begin{itemize}
-		\item Global (Per-Account) Concurrency Model.
+		\item \B{Global (Per-Account) Concurrency Model}.
 		\begin{itemize}
 			\item AWS Lambda. 
 			\item IBM Cloud Functions.
 		\end{itemize}
 		\vspace{\baselineskip}
-		\item Local (Per-Function) Concurrency Model.
+		\item \B{Local (Per-Function) Concurrency Model}.
 		\begin{itemize}
 			\item Google Cloud Functions.
 		\end{itemize}
@@ -260,69 +251,63 @@ When a request comes in, only one of the following events can occur:
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``Smart Environment" - Overview - Part 2}
+\begin{frame}{Serverless Computing: Problems}
 	
 	\begin{block}{}
-		What are the most important limitations of today’s FaaS Platforms?
+		\centering
+		What current problems or limitations of the serverless computing paradigm I tried to solve?
 	\end{block}
-
+\vspace{\baselineskip}
 	\begin{itemize}
-		\item Cold Starts.
-		\item Too simple scheduling policies (FIFO).
-		\item Security concerns (\textit{side-channel} attacks).
-		\item Branch mispredictions.
-		\item ...
-	\end{itemize}
-
-\begin{block}{}
-	Ok, but which one we tried to solve?
-\end{block}
-
-	\begin{itemize}
-		\item Quality of service (\textit{QoS})
+		\item Vendor lock-in issues.
+		\item The fulfillment of quality of service (\textit{QoS}) levels.
 	\end{itemize}
 
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``Smart Environment" - Overview - Part 2}
+\begin{frame}{Serverless Computing: Problems}
 	
 	\begin{block}{}
-		Why is so difficult to guarantee the respect of QoS constraints?
+		\centering
+		Why is so difficult to guarantee QoS levels?
 	\end{block}
-	
+	\vspace{\baselineskip}
 	\begin{itemize}
-		\item Lack of performance model.
-		\item Lack of a methodological way to find a suitable ``\textit{configuration}" for a serverless application.
+		\item Lack of an analytical model to predict application performance.
+		\vspace{\baselineskip}
+		\item Lack of a methodological way to find a suitable ``\B{configuration}" for a serverless application.
 	\end{itemize}
-
-	\begin{block}{}
-		What we mean for ``\textit{configuration}"?
-	\end{block}
 
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The ``Smart Environment" - Overview - Part 2}
+\begin{frame}{Serverless Computing: Problems}
 	
 	\begin{block}{}
-		Why is so difficult to find a suitable configuration for a serverless application?
+		\centering
+		Why is so difficult to find a suitable configuration for a \\serverless application?
 	\end{block}
 	\vspace{\baselineskip}
 	Configuration parameters \textbf{significantly} affect the \textbf{cost} and \textbf{response time} of serverless functions.
 	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth]{../Images/slideImage1.png}
+	\end{figure}
+	
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}
+\begin{frame}{Related Works}
 
-Fortunately, solutions to that problem \textbf{already} exist, \textbf{but}:
+Solutions \textbf{already} exist, \textbf{but}:
 \vspace{\baselineskip}
 \begin{itemize}
 	\item They are unaware of the current status of FaaS platforms.
 	\item No support for multiple implementations, or versions, of a same serverless function.
-	\item No support for multiple FaaS platforms scheduling.
-	\item No support for generic workload applications.
+	\item No support for multiple FaaS platforms.
+	\item Limited support for generic workload applications.
 \end{itemize}
 
 \end{frame} 
@@ -330,558 +315,230 @@ Fortunately, solutions to that problem \textbf{already} exist, \textbf{but}:
 % -------------- %
 % -------------- %
 
-\begin{frame}
+\begin{frame}{My Contributions}
 	
-	Fortunately, solutions to that problem \textbf{already} exist, \textbf{but}:
+	My contributions respect to the current state of art:
+	\vspace{\baselineskip}
+	\begin{enumerate}
+	
+		\item An \B{Analytical Model} to evaluate applications performance.
+		\begin{itemize}
+			\item Multi-Provider.
+			\item Multi-Implementation.
+			\item QoS-Aware.
+			\item FaaS-Status-Aware.
+		\end{itemize}
+		\vspace{\baselineskip} 
+		\item A \B{methodological way} to find the ``best" configuration to satisfy QoS constraints.
+		\begin{itemize}
+			\item By solving an optimization problem.
+		\end{itemize}
+		\vspace{\baselineskip} 
+		
+	\end{enumerate}
+	
+\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}{My Contributions}
+	
+	\vspace{\baselineskip}
+	\begin{enumerate}
+		\justifying
+		\setcounter{enumi}{2}
+		\item A custom \B{heuristic algorithm} to resolve the aforementioned optimization problem.
+		\vspace{\baselineskip} 
+		\item A \B{software framework} for the orchestration of serverless applications supporting ``hybrid-scheduling".
+		\begin{itemize}
+			\item Following REST architectural style.
+		\end{itemize}
+		\vspace{\baselineskip} 
+		\item An extension to an already existent \B{representation scheme} to define a serverless application workflow.
+		\vspace{\baselineskip} 
+		
+		
+	\end{enumerate}
+	
+\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}{The Software Framework}
+	
+ 	Main features of our software framework:
 	\vspace{\baselineskip}
 	\begin{itemize}
-		\item They are unaware of the current status of FaaS platforms.
-		\item No support for multiple implementations, or versions, of a same serverless function.
-		\item No support for multiple FaaS platforms scheduling.
-		\item No support for generic workload applications.
+		\item \B{Client-Server architecture}.
+		\item \B{Cloud-native} application.
+		\item Includes a set of \B{adapters} to interact with following FaaS providers:
+		\begin{itemize}
+			\item AWS Lambda.
+			\item Apache OpenWhisk.
+		\end{itemize}
+		\item \B{REST} architectural style.
+	\end{itemize}
+	
+\end{frame} 
+% -------------- %
+% -------------- %
+\begin{frame}{The Software Framework}
+	
+	Main logical entities of our system:
+	
+	\begin{itemize}
+		\item A Logging subsystem.
+		\item An Orchestrator.
+		\item A profiler.
+		\item A QoS-aware model-based optimizer.
+		\item A Custom AFCL Parser.
 	\end{itemize}
 	
 \end{frame} 
 
 % -------------- %
 % -------------- %
+\begin{frame}
 
-
-\subsection{Architecture}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Architecture - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item Similarly to many \texttt{LPWAN} implementations (\texttt{LoRaWAN}, \texttt{Sigfox}), proposed architecture can be splitted into:
-
-\begin{description}
-\justifying
-\item[\textbf{Front-end}] which contains the \textit{router} and the \textit{IoT/non-IoT devices}. 
-
-\begin{itemize}
-\item Both \textit{wireless} and \textit{wired} interfaces are used.
-\end{itemize}
-
-\item[\textbf{Back-end}] represented by the \textit{cloud}. 
-
-\begin{itemize}
-\justifying
-\item IoT devices rely on cloud back-end services for \textbf{data storage}, \textbf{backup}, \textbf{firmware updates}, \textbf{media streaming} \cite{mazhar2020characterizing} ... and \textbf{remote access and integration using RESTful Web API}.
-\end{itemize}
-\end{description}
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Architecture - Part 2}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item In order to preserve battery life, expensive and complex task are \textbf{offloaded} to the back-end system, that is to the cloud. 
-
-In other words, cloud resources are exploited through so-called \textbf{cyber-foraging techniques} in order to overcome the very strictly constrains of IoT devices. \cite{TheSeminalRoleEdgeNativeApplications}. 
-
-\item Since the cloud represents the main execution site for tasks and services, proposed architecture is intended for \textbf{cloud-native} IoT applications and services \cite{TheSeminalRoleEdgeNativeApplications}.
-
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Architecture - Part 3}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{block}{}
-Proposed architecture is based on a \textbf{star network topology}.
-\end{block}
-
-The use of a star network topology allows us to:
-
-\begin{itemize}
-\justifying
-\item \textbf{Preserve battery life} of IoT devices because they \textbf{do not have to forward} other nodes data; in other words, \textit{any IoT device receives, or transmits, only its own data} \cite{LoRaWAN}.
-
-\item \textbf{Decrease the complexity} of the network \cite{LoRaWAN} making infrastructure deployment cost low.
-
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\subsection{IoT Traffic}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{IoT Traffic - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{quoting}[font=itshape, begintext={``}, endtext={''\\\textbf{\citet{ITPAReport}}}]
-\justifying
-[...] if we consider only the load imposed by the IoT devices, then there is a dramatic reduction in the peak load ($1$ Mbps) and average loads ($66$ Kbps), [...], implying that traffic generated by IoT devices is small compared to traditional non-IoT traffic. 
-\end{quoting}
-
-\begin{quoting}[font=itshape, begintext={``}, endtext={''\\\textbf{\citet{ITPAReport}}}]
-\justifying
-the traffic pattern of one IoT device [...] a pattern of active/sleep communication emerges. [...] IoT active time [...] decays rapidly initially (only $5\%$ of sessions last longer than $5$ seconds), with the maximum active time being $250$ seconds in our trace. This shows that IoT activities are short-lived in general. 
-\end{quoting}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{IoT Traffic - Part 2}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item Since many IoT devices are battery powered, in order to maximize energy efficiency, results provided by researchers state that the power management approach adopted by IoT devices is based on \textbf{periodic sleep}, during which radio transceiver are turned off.
-\end{itemize}
-
-\begin{figure}
-  \includegraphics[width=150pt, height=80pt]{SleepTime.png}
-  \caption{Load of LiFX light bulb device.}
-  \label{fig1}
-\end{figure}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{IoT Traffic - Part 3}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item A very interesting observation regards packet size. Experimental results state that only the $10\%$ of packets are larger than $500$ Bytes.
-
-
-
-\begin{figure}
-  \includegraphics[width=80pt]{PacketSize.png}
-\end{figure}
-
-\begin{quoting}[font=itshape, begintext={``}, endtext={''\\\textbf{\citet{ITPAReport}}}]
-\justifying
-More than 75\% of IoT sessions transfer less than $1$ KB, and only fewer than 1\% of the sessions exchange
-more than 10 KB, suggesting that the majority of IoT devices generate only a small burst of traffic.
-\end{quoting}
-
-\end{itemize}
-
-\begin{alertblock}{}
-\justifying
-From these results, is clear that we do not need of \textbf{high transfer rates}. But...
-\end{alertblock}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-
-\subsection{Wireless Technologies}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Wireless Technologies - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item Researchers state that all wireless IoT devices support \texttt{IEEE 802.11} as wireless technologies.
-
-\item Researchers did \textit{not} specify which \textbf{version} of IEEE 802.11 standard has been effectively used. Moreover, we don't know with which \textbf{frequencies} data has been transmitted.
-
-\begin{itemize}
-\justifying
-\item However we can learn more from the vendor's specifications regarding the \textsc{TP Link Archer C7}, which supports following protocols:
-
-\begin{itemize}
-\item \texttt{IEEE 802.11ac/n/a} at $5$ GHz
-\item \texttt{IEEE 802.11n/b/g} at $2.4$ GHz
-\end{itemize}
-\end{itemize}
-
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Wireless Technologies - Part 2}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{block}{}
-\justifying
-
-\texttt{IEEE 802.11} wireless technologies can \textbf{not} be fully optimized for IoT business models and devices used in \textbf{smart cities} and \textbf{campuses}.
-\end{block}
-
-\begin{itemize}
-\justifying
-\item Despite high reliability, low latency, and high transfer rates (using \texttt{802.11ac} $5$ GHz we can achieve $1300$ Mbps), due to their \textbf{inherent complexity} and \textbf{energy consumption} are generally not suitable for all IoT nodes \cite{IOTCITY}.
-
-\begin{itemize}
-\item All results regarding IoT traffic suggest that IoT devices requires \textbf{low power} and \textbf{less data-rate}. In this context, any \texttt{LPWAN} solution, like \texttt{LoRaWAN}, can be a better choice \cite{IOTCITY}.
-\end{itemize}
-
-\item These technologies provide a \textbf{short/medium coverage} with \textbf{100-to-1000} meters range \cite{LoRaWAN}. Provided coverage range can be not enough to fulfil all use cases inside a smart-city environment.
-
-\begin{itemize}
-
-\item This is due to \textbf{mid/high frequencies} used by these protocol which are \textbf{vulnerable to several side effect during signal propagation} (\textit{blocking}, \textit{reflection}, \textit{refraction} and so on) \cite{schiller2003mobile}.
-\end{itemize}
-
-\end{itemize}
-
-
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Wireless Technologies - Part 3}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-
-\item Utilizing sub-1 GHz bands is possible to provide \textbf{better  propagation characteristics} in outdoor scenarios. \textbf{Low frequencies signal are less affected by obstacles presence.}
-\end{itemize}
-
-\begin{figure}
-  \includegraphics[width=200pt]{class.png}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{../Images/SystemForSlide.png}
 \end{figure}
 
 
-%---------------------------------------------------------------------------------------------------------%
 \end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The ``Smart Environment" - Wireless Technologies - Part 3}
-%---------------------------------------------------------------------------------------------------------%
+% -------------- %
+% -------------- %
+\begin{frame}{The Software Framework}
+	
+	\begin{block}{}
+		\centering
+		An unique representation scheme is used for serverless workflows.
+	\end{block}
 
-\begin{block}{}
-\justifying
-Adopted wireless technologies are suitable only for \textit{unconstrained} IoT devices which requiring \textbf{short-medium} range scenarios. 
+	\vspace{\baselineskip}
+	
+	\begin{itemize}
+		\item It is based on an existing language called \B{Abstract Function Choreography Language} (AFCL).
+		\item I extend the original one to include the support for multiple serverless function implementations hosted on multiple FaaS.
+	\end{itemize}
 
-Seem that experimental setup not cover all smart-city and campus use cases...
-\end{block}
+	\vspace{\baselineskip}
+	
+	\begin{block}{Advantages}
+	\centering
+	\begin{itemize}
+		\item Access transparency.
+		\item It overcomes portability limitations and vendor lock-in issues.
+	\end{itemize}
+	\end{block}
+	
 
-%---------------------------------------------------------------------------------------------------------%
 \end{frame} 
-%---------------------------------------------------------------------------------------------------------%
+% -------------- %
+% -------------- %
+\begin{frame}{The Analytical Model}
+	
+	
+	
+	
+	Informally, that abstraction has been derived from that of a \textit{control-flow graph} which, as known, describes, using graphs notation, all paths that might be traversed through a serverless application during its execution. Similarly, a choreography describes calling relationships between functions belonging to an application in a serverless environment, combining them using several types of control-flow structures, like sequence, branch, loop or connectors for a parallel execution. 
+	
 
-\section{IoT Application Layer Protocols}
-\subsection{The Most Dominant Application Layer Protocols}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The Most Dominant Application Layer Protocols}
-%---------------------------------------------------------------------------------------------------------%
-
-Experimental results regarding the \textbf{application layer protocol} (inferred using the destination port numbers) that IoT devices use to communicate, show that:
-
-\begin{description}
-\justifying
-
-\item[\texttt{HTTPS}] (\texttt{TCP} port $443$) is the dominant protocol used by the IoT devices since it represents over the $55\%$ of total IoT traffic.
-
-\item[\texttt{HTTP}] (\texttt{TCP} port $80$) represent the second most dominant application layer protocol constituting the $11\%$ of total traffic.
-
-\item[\texttt{SSDP}] (\texttt{UDP} port $1900$) is the next most dominant application layer protocol representing the $8\%$ of traffic.
-
-\item[\texttt{RTMP}] (\texttt{TCP} port $1935$) represent the fourth most dominant protocol representing the $7\%$ of traffic
-
-\item[\texttt{DNS}] (\texttt{UDP} port $53$) represents less than $5/4\%$ of total traffic.
-
-\item[\texttt{NTP}] (\texttt{UDP} port $123$) constitutes less than $2/3\%$ of IoT traffic.
-
-\end{description}
-
-%---------------------------------------------------------------------------------------------------------%
+	
 \end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\subsection{The role of \texttt{HTTP}}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The role of \texttt{HTTP} - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{alertblock}{}
-\textit{Why \texttt{HTTPS} and \texttt{HTTP} are the most used protocols?}
-\end{alertblock}
-
-\begin{itemize}
-\justifying
-\item A very important aspect of an urban, or campus, IoT infrastructure is the \textbf{necessity to make data collected by the urban IoT devices easily accessible} by both authorities and citizens \cite{IOTCITY}. 
-
-\item Generally, IoT devices do not conform to a unified \textit{application programming interface} (\texttt{API}) so that a developer has to learn various protocols and APIs of each IoT device. 
-
-Therefore, in order to develop IoT applications, in order to integrate a lot of heterogeneous communication protocols and system software, is still complex and costly. 
-
-\begin{itemize}
-\justifying
-\item In order to achieve this objective, IoT devices adopt a very well known web-based paradigm called  \textbf{Representational State Transfer} (\textbf{ReST}), which plays a very important role into \textbf{Web of Things Architecture} (\textbf{WoT}) \cite{IOTCITY}\cite{WOT}.
-\end{itemize}
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
+% -------------- %
+% -------------- %
+\begin{frame}{System Model}
+	
+	
+	
 \end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The role of \texttt{HTTP} - Part 2}
-%---------------------------------------------------------------------------------------------------------%
+% -------------- %
+% -------------- %
+\begin{frame}{System Model}
+	
+Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
 
 \begin{itemize}
-\justifying
-\item Exploiting REST paradigm, \texttt{HTTP} and \texttt{HTTPS} are used very frequently because they facilitate both the \textbf{integration of IoT devices} with existing services currently available on the Web and the \textbf{Web applications development} \cite{IOTCITY}\cite{WOT}.
-
-\begin{itemize}
-\item \texttt{HTTP} and \texttt{HTTPS} offer a \textbf{direct access} for users to IoT devices data and services, without the need for installing additional software \cite{IOTCITY}.
-
-In fact, using a Web browser (or any \texttt{HTTP} library in the case of a software client) client are able to to directly extract, save and share smart things data and services \cite{WOT}.
+	\item For each $\phi \in \mathcal{F_E}(\mathcal{C})$, it selects only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$, which will be effectively invoked and executed on its corresponding FaaS platform. 
+	\item For each selected concrete function $f_{\phi}$, it selects a value for memory size.
 \end{itemize}
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
+	
 \end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\subsection{Not only \texttt{HTTP}}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Not only \texttt{HTTP}}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\item Not all IoT devices support \texttt{HTTPS}/\texttt{HTTP} or support RESTful paradigm. 
-
-\item Results shows that, regarding remaining IoT traffic, several IoT device use an own \textbf{application-specific} protocol. 
-
-\begin{figure}
-  \includegraphics[width=250pt]{port.png}
-\end{figure}
-
-\end{itemize}
+% -------------- %
+% -------------- %
+\begin{frame}{System Model}
+	
+According to our model point of view, at any time $t$, any FaaS platform provider acts as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, also called \textit{$K(t)$-server loss systems}, where:
+	
+\end{frame}
 
 
-%---------------------------------------------------------------------------------------------------------%
+\begin{frame}
+	Then, let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set, formally an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
+	
+	\begin{equation}
+		x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
+	\end{equation}
+	
+	where:
+	
+	\begin{itemize}
+		\item $f_{\phi} \in \textbf{F}_{\phi}$  denotes a particular concrete function implementing the executable function $\phi$.
+		\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+	Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
+	
+	\begin{eqnarray}
+		\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+		& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
+		& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
+		& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
+	\end{eqnarray}
+
+	\begin{block}{Concrete Functions}
+		\centering
+		Set of semantically and logically equivalent serverless function implementations, accepting the same set of input data and returning the same type of output data. They may expose different performance or cost behavior.
+	\end{block}
+
+\end{frame}
+
+
+% -------------- %
+% -------------- %
+
+\setbeamertemplate{background}{%
+	\begin{tikzpicture}[overlay,remember picture]
+		\node[scope fading=west,anchor=north west] at ([shift={(2in,-1in)}]current page.north west) {\includegraphics[width=9cm,height=9cm]{../Images/UniLogo/TorVergataWatermark.png}};
+	\end{tikzpicture}
+}
+
+\begin{frame}{{}}
+	\begin{block}{}
+		\centering
+		Thanks for your attention!\\\B{Questions}?
+	\end{block}
 \end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-
-
-\subsection{The disadvantages of \texttt{HTTP}}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{The disadvantages of \texttt{HTTP}}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item The \textbf{verbosity} and \textbf{complexity} of native \texttt{HTTPS}/\texttt{HTTP} make them \textbf{unsuitable} for constrained IoT devices \cite{IOTCITY}. 
-
-\begin{itemize}
-\justifying
-\item In fact, the \textbf{human-readable format} of \texttt{HTTP}, which has been one of the reasons of its success in traditional networks, turns out to be a limiting factor due to the large amount of heavily correlated (and, hence, \textbf{redundant}) data \cite{IOTCITY}.
-\end{itemize}
-
-\item \texttt{HTTPS}/\texttt{HTTP} rely upon the \texttt{TCP} transport protocol that, however, does not scale well on constrained devices, yielding poor performance for small data flows in lossy environments \cite{IOTCITY}.
-
-\item In a Smart City environment, can be \textbf{not} possible to install a full stack of \texttt{HTTP} into resource-constrained devices or sensors. 
-\end{itemize}
-
-\begin{block}{}
-\justifying
-Seem that experimental setup not cover all smart-city and campus use cases...
-\end{block}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-
-
-\subsection{Security Problems Due To Unencrypted Traffic}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Security Problems Due To Unencrypted Traffic - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-
-\item According to \citet{ITPAReport}, about $45\%$ of IoT traffic is \textbf{not} sent over HTTPS to the servers. 
-
-\begin{itemize}
-\justifying
-\item Since the traffic transmitted using other protocols are typically not encrypted, \citet{ITPAReport}'s results indicate that a sizeable fraction of IoT traffic is \textbf{not} being securely transported over the Internet.
-\end{itemize}
-
-\begin{itemize}
-\item The use of unencrypted protocols can leak sensitive information about users \cite{mazhar2020characterizing}.
-\end{itemize}
-
-\end{itemize}
-
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Security Problems Due To Unencrypted Traffic - Part 2}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{alertblock}{}
-\textit{Why IoT devices transmit unencrypted data?}
-\end{alertblock}
-
-There may be various reasons according to which data are transmitted unencrypted:
-
-\begin{itemize}
-\justifying
-
-\item Due to \textbf{limitations and constrains} in the IoT device itself. 
-
-\item As noted by \citet{mazhar2020characterizing}, IoT devices vendors may be hesitant to move to \texttt{HTTPS} if their products use any third-party resources that are \texttt{HTTP}-only. \cite{mazhar2020characterizing}.
-
-\item Bad design.
-
-\end{itemize}
-
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\section{Machine learning}
-\subsection{Introduction}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Machine learning - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{block}{}
-\justifying
-Since \citet{ITPAReport} adopted a \textbf{supervised machine learning algorithms} to build their classification model, is necessary to generate a \textbf{data-set} in order to provide an appropriate input during the \textbf{learning phase}.
-\end{block}
-
-\begin{itemize}
-\justifying
-\item \citet{ITPAReport} collected traffic over $3$ weeks generated from the ``\textit{Smart Environment}".
-\begin{itemize}
-\item 2 weeks of data was used for \textit{training} and \textit{validation}.
-\item last week was used for \textit{test}.
-\end{itemize}
-
-\item Is very important to precise that collected data are \textbf{time series}, where each instance, indexed by time, contains several \textbf{attributes} (or \textbf{features}) like \textit{sleep time}, \textit{active time}, \textit{average packet size} and so on.
-
-\item Clearly, every instance contains a \textbf{label} identifying the IoT device, which is necessary during supervised learning.
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\subsection{An Unbalanced Data-Set}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{An Unbalanced Data-Set - Part 1}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{block}{}
-\justifying
-The performance and the interpretation of a IoT device classification model \textbf{depend heavily on the data} on which it was \textbf{trained}. 
-
-\begin{itemize}
-\justifying
-\item Scientific literature showed that classification model, which are trained on \textit{imbalanced datasets}, are highly susceptible to producing inaccurate results. 
-\end{itemize}
-\end{block}
-
-\begin{alertblock}{}
-\begin{itemize}
-\justifying
-\item Could \citet{ITPAReport}'s dataset be unbalanced? 
-
-\item Could \citet{ITPAReport}'s classification model be unsuitable to correctly classify IoT devices in a real smart-city and campus scenario?
-\end{itemize}
-\end{alertblock}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{An Unbalanced Data-Set - Part 2}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item Generally smart city and campus services are based on a \textbf{very heterogeneous set of IoT devices}, generating \textbf{very different types of data} that have to be delivered through \textbf{suitable communication technologies}.
-
-\begin{itemize}
-\item For instance, possible IoT use cases can be:
-
-\begin{itemize}
-\item Structural Health of Buildings.
-\item Waste Management.
-\item Air Quality.
-\item Traffic Congestion.
-\item Noise Monitoring.
-\item City Energy Consumption.
-\item Smart Parking.
-\item Smart Lighting.
-\end{itemize}
-
-\end{itemize}
-\end{itemize}
-
-\begin{block}{}
-\begin{itemize}
-\item Proposed ``\textit{Smart environment}" simulates too few IoT use cases relating to a smart-city or campus.
-\item Proposed environment is more suitable for a \textit{smart-home} rather than a smart-city or campus.
-\end{itemize}
-
-\end{block}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{An Unbalanced Data-Set - Part 3}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{itemize}
-\justifying
-\item Too few use cases. Only short/medium range use cases.
-
-\item It includes \textbf{only} \textit{unconstrained protocol stack}, that is protocols that are currently the de-facto standards for Internet communications and are commonly used by regular Internet hosts (\texttt{HTTP}/\texttt{TCP}/\texttt{IPv4}). These protocol are suitable only for unconstrained IoT devices \cite{IOTCITY}.
-
-\begin{itemize}
-\justifying
-\item In fact there is a prevalence of \texttt{HTTPS}/\texttt{HTTP} application layer protocol ($66\%$ of total IoT traffic according to \citet{ITPAReport}) and of the \texttt{TCP} transport layer protocol (representing, more or less, the $85\%$ of total transmitted packets according to \citet{ITPAReport}'s results).
-\end{itemize}
-
-\item It does \textbf{not} include any \textit{constrained protocol stack}, the low-complexity counterparts of the de-facto standards for Internet, i.e., \textbf{Constrained Application Protocol} (\texttt{CoAP}), \texttt{UDP}, and \texttt{6LoWPAN}, which are suitable even for very constrained devices \cite{IOTCITY}.
-
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
-\subsection{Validation technique}
-%---------------------------------------------------------------------------------------------------------%
-\begin{frame}{Validation technique}
-%---------------------------------------------------------------------------------------------------------%
-
-\begin{quoting}[font=itshape, begintext={``}, endtext={''\\\textbf{\citet{ITPAReport}}}]
-\justifying
-Our cross-validation method randomly splits the dataset into training (90\% of total instances) and validation (10\% of total instances) sets. This cross-validation is repeated 10 times. The results are then averaged to produce a single performance metric. 
-\end{quoting}
-
-\begin{itemize}
-\justifying
-\item Since their datasets contains \textbf{time-series data}, in order to take into account the time-sensitiveness of data, is required a validation technique, that is a \textit{technique which defines a specific way to split available data in train, validation and test sets}, capable \textbf{to preserve the temporal order of data}, preventing for example that the testing set contains data antecedent to the training set.
-
-\item Traditional methods of validation, like \textit{10-fold cross-validation} method, are unusable in this context.
-\end{itemize}
-
-%---------------------------------------------------------------------------------------------------------%
-\end{frame} 
-%---------------------------------------------------------------------------------------------------------%
 
 
 
-
+\begin{frame}
+	Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
+	
+	\begin{eqnarray}
+		\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+		& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
+		& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
+		& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
+	\end{eqnarray}
+\end{frame}
 
 
 
