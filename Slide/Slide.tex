@@ -161,7 +161,6 @@ An applications service model where:
 	\item Small-granularity billing pricing model: \B{pay-as-you-go}.
 	\vspace{\baselineskip}
 	\item Cloud application are abstracted as a group of so-called \\ ``\B{Serverless Functions}".
-	
 \end{itemize}
 
 \end{frame} 
@@ -182,6 +181,13 @@ An applications service model where:
 		\item \B{Short-Lived}
 	\end{itemize}
 
+	\vspace{\baselineskip}
+	
+	\begin{block}{Serverless Application}
+		\justifying
+		A software system made up of a serverless functions set.
+	\end{block}
+
 \end{frame} 
 % -------------- %
 % -------------- %
@@ -192,38 +198,20 @@ An applications service model where:
 		A serverless function is executed inside a containerized environment: the so-called ``\B{Function Instance}".
 	\end{block}
 	\vspace{\baselineskip}
-	Any function instance can be in:
-	\begin{itemize}
-		\item Initialization State.
-		\item Idle State.
-		\item Running State
-	\end{itemize}
-	\vspace{\baselineskip}
-	\begin{block}{\textbf{Warm Pool}}
-		
-		The set of all function instances whose state is either \B{idle} or \B{running} state.
+	
+	\begin{block}{}
+		\centering
+		The FaaS platform \B{automatically} scales the number of function instances.
 	\end{block}
 	
+	\vspace{\baselineskip}
+	When a request comes in, only one of the following events can occur:
+	\begin{itemize}
+		\item \textbf{Warm start}.
+		\item \textbf{Cold start.}
+	\end{itemize}
 	
 	
-\end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Overview}
-	
-\begin{block}{}
-	\centering
-	The FaaS platform \B{automatically} scales the number of function instances.
-\end{block}
-
-\vspace{\baselineskip}
-When a request comes in, only one of the following events can occur:
-\begin{itemize}
-	\item \textbf{Warm start}.
-	\item \textbf{Cold start.}
-\end{itemize}
-
-		
 \end{frame} 
 % -------------- %
 % -------------- %
@@ -251,6 +239,34 @@ When a request comes in, only one of the following events can occur:
 \end{frame} 
 % -------------- %
 % -------------- %
+\begin{frame}{Serverless Computing: Overview}
+	
+	\begin{block}{}
+		\centering
+		To invoke a \B{serverless function}, users have to specify a so-called \B{serverless function configuration}.
+	\end{block}
+	\vspace{\baselineskip}
+	\begin{block}{}
+		\centering
+		To invoke a \B{serverless application}, users have to specify a configuration for \B{all} its functions.
+	\end{block}
+	
+	
+\end{frame} 
+% -------------- %
+% -------------- %
+\begin{frame}{Serverless Computing: Overview}
+	
+	Configuration parameters \B{significantly} affect the \B{cost} and \B{response time} of serverless functions.
+	\vspace{\baselineskip}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth]{../Images/slideImage1.png}
+	\end{figure}
+	
+\end{frame} 
+% -------------- %
+% -------------- %
 \begin{frame}{Serverless Computing: Problems}
 	
 	\begin{block}{}
@@ -259,6 +275,8 @@ When a request comes in, only one of the following events can occur:
 	\end{block}
 \vspace{\baselineskip}
 	\begin{itemize}
+		\item No support for application whose functions are hosted on multiple providers.
+		\item No support for application whose functions have more than one implementation (\B{Concrete Functions}).
 		\item Vendor lock-in issues.
 		\item The fulfillment of quality of service (\textit{QoS}) levels.
 	\end{itemize}
@@ -276,38 +294,21 @@ When a request comes in, only one of the following events can occur:
 	\begin{itemize}
 		\item Lack of an analytical model to predict application performance.
 		\vspace{\baselineskip}
-		\item Lack of a methodological way to find a suitable ``\B{configuration}" for a serverless application.
+		\item Lack of a methodological way to find a suitable configuration for a serverless application.
 	\end{itemize}
 
 \end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Problems}
-	
-	\begin{block}{}
-		\centering
-		Why is so difficult to find a suitable configuration for a \\serverless application?
-	\end{block}
-	\vspace{\baselineskip}
-	Configuration parameters \textbf{significantly} affect the \textbf{cost} and \textbf{response time} of serverless functions.
-	
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=\textwidth]{../Images/slideImage1.png}
-	\end{figure}
-	
-\end{frame} 
+
 % -------------- %
 % -------------- %
 \begin{frame}{Related Works}
 
-Solutions \textbf{already} exist, \textbf{but}:
+Solutions \B{already} exist, but:
 \vspace{\baselineskip}
 \begin{itemize}
 	\item They are unaware of the current status of FaaS platforms.
-	\item No support for multiple implementations, or versions, of a same serverless function.
-	\item No support for multiple FaaS platforms.
-	\item Limited support for generic workload applications.
+	\item No support for Multi-Provider, Multiple-Implementations serverless applications. 
+	\item Many do not support generic workload applications.
 \end{itemize}
 
 \end{frame} 
@@ -323,15 +324,15 @@ Solutions \textbf{already} exist, \textbf{but}:
 	
 		\item An \B{Analytical Model} to evaluate applications performance.
 		\begin{itemize}
-			\item Multi-Provider.
-			\item Multi-Implementation.
-			\item QoS-Aware.
+			\item Supports generic workflow (branch, loop, parallel)
+			\item Multi-Provider support.
+			\item Support for Multi-Implementation for functions.
 			\item FaaS-Status-Aware.
 		\end{itemize}
 		\vspace{\baselineskip} 
-		\item A \B{methodological way} to find the ``best" configuration to satisfy QoS constraints.
+		\item A \B{Methodological Way} to find the ``best" configuration to satisfy QoS constraints.
 		\begin{itemize}
-			\item By solving an optimization problem.
+			\item By solving an \B{Optimization Problem} (LP).
 		\end{itemize}
 		\vspace{\baselineskip} 
 		
@@ -348,16 +349,18 @@ Solutions \textbf{already} exist, \textbf{but}:
 	\begin{enumerate}
 		\justifying
 		\setcounter{enumi}{2}
-		\item A custom \B{heuristic algorithm} to resolve the aforementioned optimization problem.
-		\vspace{\baselineskip} 
-		\item A \B{software framework} for the orchestration of serverless applications supporting ``hybrid-scheduling".
+		\item A custom \B{Heuristic Algorithm} to resolve the aforementioned optimization problem.
 		\begin{itemize}
-			\item Following REST architectural style.
+			\item Based on \B{Ant Colony Optimization} algorithm (ACO) family.
 		\end{itemize}
 		\vspace{\baselineskip} 
-		\item An extension to an already existent \B{representation scheme} to define a serverless application workflow.
-		\vspace{\baselineskip} 
+		\item A \B{QoS-Aware Software Framework} for the orchestration for multi-provider, multiple-implementations serverless applications. 
 		
+		\vspace{\baselineskip} 
+		\item An extension to an already existent \B{Representation Scheme} to define a serverless application workflow.
+		\begin{itemize}
+			\item Based on an existing language called \B{Abstract Function Choreography Language} (AFCL).
+		\end{itemize}
 		
 	\end{enumerate}
 	
@@ -366,7 +369,7 @@ Solutions \textbf{already} exist, \textbf{but}:
 % -------------- %
 % -------------- %
 
-\begin{frame}{The Software Framework}
+\begin{frame}{The Prototype}
 	
  	Main features of our software framework:
 	\vspace{\baselineskip}
@@ -384,7 +387,7 @@ Solutions \textbf{already} exist, \textbf{but}:
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Software Framework}
+\begin{frame}{The Prototype}
 	
 	Main logical entities of our system:
 	
@@ -411,40 +414,29 @@ Solutions \textbf{already} exist, \textbf{but}:
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Software Framework}
+\begin{frame}{The Prototype}
 	
 	\begin{block}{}
 		\centering
-		An unique representation scheme is used for serverless workflows.
+		The use of an unique representation scheme for serverless workflows \B{mitigates portability limitations and vendor lock-in issues}.
 	\end{block}
 
 	\vspace{\baselineskip}
-	
-	\begin{itemize}
-		\item It is based on an existing language called \B{Abstract Function Choreography Language} (AFCL).
-		\item I extend the original one to include the support for multiple serverless function implementations hosted on multiple FaaS.
-	\end{itemize}
 
-	\vspace{\baselineskip}
-	
-	\begin{block}{Advantages}
-	\centering
-	\begin{itemize}
-		\item Access transparency.
-		\item It overcomes portability limitations and vendor lock-in issues.
-	\end{itemize}
+	\begin{block}{}
+		\centering
+		Serverless application are managed using identical operations based on standard \texttt{HTTP} methods providing \B{Access Transparency}.
 	\end{block}
-	
 
 \end{frame} 
 % -------------- %
 % -------------- %
 \begin{frame}{The Analytical Model}
 	
-	
-	
-	
-	Informally, that abstraction has been derived from that of a \textit{control-flow graph} which, as known, describes, using graphs notation, all paths that might be traversed through a serverless application during its execution. Similarly, a choreography describes calling relationships between functions belonging to an application in a serverless environment, combining them using several types of control-flow structures, like sequence, branch, loop or connectors for a parallel execution. 
+	\begin{block}{}
+		\centering
+		Serverless applications are abstracted to a \\\B{weakly connected weighted directed graph}.
+	\end{block}
 	
 
 	
