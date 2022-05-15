@@ -105,6 +105,9 @@
 % THE BODY OF THE PRESENTATION
 %-------------------------------------------------------
 
+
+
+
 \begin{document}
 
 %-------------------------------------------------------
@@ -405,10 +408,9 @@ Solutions \B{already} exist, but:
 % -------------- %
 \begin{frame}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{../Images/SystemForSlide.png}
-\end{figure}
+\begin{center}
+	\includegraphics[width=\textwidth,height=0.95\textheight]{../Images/SystemForSlide.png}
+\end{center}
 
 
 \end{frame} 
@@ -597,19 +599,19 @@ Aforementioned algorithm depends on:
 	
 	\begin{block}{}
 		\centering
-		The heuristic algorithm is based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics: it is called Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update
+		I develop a custom heuristic algorithm based on \B{Ant Colony Optimization} (ACO); it is called \B{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}.
 	\end{block}
-	
+	\vspace{\baselineskip}
 	\begin{itemize}
-		\item It is based on a set of computational agents, called \textit{artificial ants}, which \B{iteratively} construct a so-called \textit{partial solution}.
+		\item It is based on a set of computational agents, called \B{artificial ants}, which \B{iteratively} construct a solution.
 		
 		\vspace{\baselineskip}
 		
-		\item At each iteration, each artificial ant moves from a partial solution to another, applying a series of stochastic local decisions whose policy is based on following parameters
+		\item At each iteration, each agent moves from a solution to another, applying a series of stochastic \B{local} decisions whose policy is based on following parameters:
 		
 		\begin{itemize}
-			\item \textbf{Attractiveness}.
-			\item \textbf{Pheromone Trail}.
+			\item \B{Attractiveness}.
+			\item \B{Pheromone Trail}.
 		\end{itemize}
 		
 	\end{itemize}
@@ -622,10 +624,24 @@ Aforementioned algorithm depends on:
 % -------------- %
 \begin{frame}{The Heuristic Algorithm}
 	
+	\begin{block}{}
+		\centering
+		Pheromone trails are updated during \B{every iteration}.
+	\end{block}
+
+	\begin{block}{}
+		\centering
+		Pheromone trails are used to decide which solutions should be preferred during \B{next iterations}.
+	\end{block}
+
+	\vspace{\baselineskip}
+
 	\begin{itemize}
-		\item Lazy approach for pheromone trails update on the solution component graph.
+		\item A \B{Lazy Approach} for pheromone trails update is used.
 		
-		\item We exploit pre-provisioning tactic to anticipates data needs assuring a lower latency.
+		\vspace{\baselineskip}
+		
+		\item A \B{Pre-Provisioning Tactic} is used to anticipates data needs assuring a \B{lower latency}.
 	\end{itemize}
 
 
