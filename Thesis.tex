@@ -1644,8 +1644,7 @@ The exit probability of a branch structure can be computed as follows:
 
 Clearly, in order to select an appropriate serverless choreography configuration able to effectively guarantee SLA requirements specified by users, we need firstly to evaluate the performance of concrete functions, in terms of average values regarding response time and charged costs.
 
-However, to develop both an analytical way and a software framework capable to evaluate concrete serverless function performance, we first need to understand
-how they are managed by FaaS platforms.
+However, to develop both an analytical way and a software framework capable to evaluate concrete serverless function performance, we first need to understand how they are managed by FaaS platforms.
 
 \subsection{FaaS Platform Modeling}
 
@@ -2012,8 +2011,7 @@ Supposing to have a choreography $\mathcal{C} = (\Phi,E)$, let $x_{\phi_{i_{j}}}
 		P_{exe}^F(\theta^{(\phi_i)}_k, \phi, t) \mathDef \prod_{i = 1}^{n-1} (1 - P_{exit}(\phi_i,t))
 	\end{equation}
 	
-
-
+	
 \item We will use $\Gamma_{\theta_k^{(\phi_{i})}}(t)$ to denote the probability to execute the entry point of the sub-choreography $\theta_k^{(\phi_{i})}$ at time $t$.
 
 \begin{equation}
@@ -2897,7 +2895,7 @@ After very few moments after the start of our experiment, our prototype produces
 			\node[circle,draw=blue,minimum width=0.2cm] (a) {}; 
 			\node[circle,minimum width=0.2cm, right of=a, xshift=0.65cm, yshift=-0.05cm] (a1) {\ItalicQuotMark{OpenWhisk 1}}; 
 			\node[circle,draw=red,minimum width=0.2cm, below of=a] (b) {}; 
-			\node[circle,minimum width=0.2cm, right of=b, xshift=0.65cm, yshift=-0.05cm] {\ItalicQuotMark{OpenWhisk 1}}; \\
+			\node[circle,minimum width=0.2cm, right of=b, xshift=0.65cm, yshift=-0.05cm] {\ItalicQuotMark{OpenWhisk 2}}; \\
 		};
 		
 	\end{tikzpicture}
@@ -3017,7 +3015,7 @@ Unfortunately, according to our experiment results, some invocations of the imag
 			\node[circle,draw=blue,minimum width=0.2cm] (a) {}; 
 			\node[circle,minimum width=0.2cm, right of=a, xshift=0.65cm, yshift=-0.05cm] (a1) {\ItalicQuotMark{OpenWhisk 1}}; 
 			\node[circle,draw=red,minimum width=0.2cm, below of=a] (b) {}; 
-			\node[circle,minimum width=0.2cm, right of=b, xshift=0.65cm, yshift=-0.05cm] {\ItalicQuotMark{OpenWhisk 1}}; \\
+			\node[circle,minimum width=0.2cm, right of=b, xshift=0.65cm, yshift=-0.05cm] {\ItalicQuotMark{OpenWhisk 2}}; \\
 		};
 		
 	\end{tikzpicture}

@@ -435,58 +435,106 @@ Solutions \B{already} exist, but:
 	
 	\begin{block}{}
 		\centering
-		Serverless applications are abstracted to a \\\B{weakly connected weighted directed graph}.
+		Serverless applications are abstracted to a \\\B{Weakly Connected Weighted Directed Graph}.
 	\end{block}
+	\vspace{\baselineskip}
+	\begin{itemize}
+		\item Each \B{vertex} models an \B{abstract serverless function}, that is a computational unit required by business logic.
+		\begin{itemize}
+			\item To each abstract function corresponds a set containing all concrete function implementing it.
+		\end{itemize}
+		\vspace{\baselineskip}
+		\item Each \B{edge} represents the calling relationship between two abstract functions.
+		\begin{itemize}
+			\item Edge weights represent the so-called \B{transition probability}. 
+		\end{itemize}
+	\end{itemize}
+	
 	
 
 	
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{System Model}
-	
-	
-	
-\end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{System Model}
-	
-Formally, let a choreography $\mathcal{C} = (\Phi,E)$, when an invocation request of $\mathcal{C}$ arrive on our system, the latter acts as follows:
+\begin{frame}{The Analytical Model}
 
+To evaluate the performance of a \textbf{Concrete Function}:
+\vspace{\baselineskip}
 \begin{itemize}
-	\item For each $\phi \in \mathcal{F_E}(\mathcal{C})$, it selects only one concrete function $f_{\phi} \in \textbf{F}_{\phi}$, which will be effectively invoked and executed on its corresponding FaaS platform. 
-	\item For each selected concrete function $f_{\phi}$, it selects a value for memory size.
+	\item Estimations about the \B{Average Response Time} (\B{Cost}) in case of cold (warm) start are required.
+	\begin{itemize}
+		\item To compute aforementioned estimations, \B{Exponential Moving Average} based approach is adopted.
+	\end{itemize}
+	\vspace{\baselineskip}
+	\item An estimation of the probability according to which a request follows a cold start (\B{Cold Start Probability}) is required.
 \end{itemize}
-	
+
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{System Model}
+\begin{frame}{The Analytical Model}
 	
-According to our model point of view, at any time $t$, any FaaS platform provider acts as a ``\textit{set}'' of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems, also called \textit{$K(t)$-server loss systems}, where:
-	
-\end{frame}
-
-
-\begin{frame}
-	Then, let $\phi \in \mathscr{F_E}(\mathcal{C})$ an executable function and $\textbf{F}_{\phi}$ the corresponding implementation-set, formally an \textit{executable function configuration} $x_{\phi}$ for the executable function $\phi$ is a two-dimensional vector defined as follows:
-	
-	\begin{equation}
-		x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
-	\end{equation}
-	
-	where:
+	To compute \B{Cold Start Probability}:
 	
 	\begin{itemize}
-		\item $f_{\phi} \in \textbf{F}_{\phi}$  denotes a particular concrete function implementing the executable function $\phi$.
-		\item $m \in \textbf{M}_{f_{\phi}}$ represents the allocated memory size during the execution of $f_{\phi}$, where $\textbf{M}_{f_{\phi}} \subseteq \N$ is the set holding all available memory size configurations allowed by provider where the concrete function $f_{\phi}$ is executed.
+		\vspace{\baselineskip}
+		\item Any FaaS platform provider is modeled  by \B{set} of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems.
+		\begin{itemize}
+			\item $K(t)$: the number of function instances at time $t$.
+			\item $C_{max}$: the concurrency limit.
+		\end{itemize}
+		\vspace{\baselineskip}
+		\item Aforementioned set depends on the concurrency model adopted by providers.
+		\vspace{\baselineskip}
+		\item \B{Erlang-B} formula is used.
 	\end{itemize}
+	
+	
+	
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}{}
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{../Images/FaaSForSlide.png}
+\end{figure}
+	
+\end{frame} 
+% -------------- %
+% -------------- %
+\begin{frame}{The Analytical Model}
+	
+
+\begin{block}{}
+	I formalized algorithms and equations to evaluate the performance of both a \B{serverless application} and of an \B{abstract function}.
+\end{block}
+\vspace{\baselineskip}
+
+Aforementioned algorithm depends on:
+\begin{itemize}
+	\item The topological properties of the graph representing the application.
+	\item The actual value of transition probabilities of all edges.
+\end{itemize}
+
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}{The Optimization Problem}
+
+\begin{itemize}
+	\item To achieve our goal consisting in finding the best configuration to guarantee QoS constraints, we have to solve an \B{optimization problem}.
+	\begin{itemize}
+		\item It is based on \B{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}. 
+	\end{itemize}
+\end{itemize}
+
 \end{frame}
 
 
-\begin{frame}
-	Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
+\begin{frame}{The Optimization Problem}
+	Formally, the configuration vector $\textbf{x}_{\mathcal{C}}$ we want to find is such that:
 	
 	\begin{eqnarray}
 		\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
@@ -495,16 +543,119 @@ According to our model point of view, at any time $t$, any FaaS platform provide
 		& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
 	\end{eqnarray}
 
-	\begin{block}{Concrete Functions}
-		\centering
-		Set of semantically and logically equivalent serverless function implementations, accepting the same set of input data and returning the same type of output data. They may expose different performance or cost behavior.
-	\end{block}
+\end{frame}
 
+% -------------- %
+% -------------- %
+\begin{frame}{The Optimization Problem}
+	
+	\begin{block}{}
+		\centering
+		The number of all possible configuration grow very fast.
+	\end{block}
+	
+	\begin{itemize}
+		\item An application with:
+		\begin{itemize} 
+			\item $6$ functions.
+			\item $46$ possible memory choice.
+			\item \B{Only one} implementation for each function.
+		\end{itemize}
+		
+		lead to $9.47 \cdot 10^9$ different configurations.
+		\vspace{\baselineskip}
+		\item An application with:
+		\begin{itemize} 
+			\item $6$ functions.
+			\item $46$ possible memory choice.
+			\item \B{Two} implementation for each function.
+		\end{itemize}
+		
+		lead to $6.06 \cdot 10^{11}$ different configurations.
+	\end{itemize}
+	
+	
+\end{frame}
+% -------------- %
+% -------------- %
+
+\begin{frame}
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth,height=0.8\columnwidth]{../Images/MMKPForSlide.png}
+\end{figure}
+	
+	
 \end{frame}
 
 
+
 % -------------- %
 % -------------- %
+\begin{frame}{The Heuristic Algorithm}
+	
+	\begin{block}{}
+		\centering
+		The heuristic algorithm is based on \textit{Ant Colony Optimization} (ACO), a class of stochastic meta-heuristics: it is called Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update
+	\end{block}
+	
+	\begin{itemize}
+		\item It is based on a set of computational agents, called \textit{artificial ants}, which \B{iteratively} construct a so-called \textit{partial solution}.
+		
+		\vspace{\baselineskip}
+		
+		\item At each iteration, each artificial ant moves from a partial solution to another, applying a series of stochastic local decisions whose policy is based on following parameters
+		
+		\begin{itemize}
+			\item \textbf{Attractiveness}.
+			\item \textbf{Pheromone Trail}.
+		\end{itemize}
+		
+	\end{itemize}
+	
+	
+	
+	
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}{The Heuristic Algorithm}
+	
+	\begin{itemize}
+		\item Lazy approach for pheromone trails update on the solution component graph.
+		
+		\item We exploit pre-provisioning tactic to anticipates data needs assuring a lower latency.
+	\end{itemize}
+
+
+
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth, height=0.8\textheight]{../Images/ACOvsOptimalIncreasingConcrete.png}
+	\end{figure}
+	
+\end{frame}
+
+% -------------- %
+% -------------- %
+
+\begin{frame}
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth, height=0.8\textheight]{../Images/ACO3DIncreasingExecutable.png}
+	\end{figure}
+	
+\end{frame}
+
+
+
 
 \setbeamertemplate{background}{%
 	\begin{tikzpicture}[overlay,remember picture]
@@ -518,22 +669,5 @@ According to our model point of view, at any time $t$, any FaaS platform provide
 		Thanks for your attention!\\\B{Questions}?
 	\end{block}
 \end{frame} 
-
-
-
-\begin{frame}
-	Formally, a \textit{serverless choreography configuration} $\textbf{X}_{\mathcal{C}}$ for the choreography $\mathcal{C}$ is a vector such that:
-	
-	\begin{eqnarray}
-		\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
-		& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
-		& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
-		& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
-	\end{eqnarray}
-\end{frame}
-
-
-
-
 
 \end{document}
