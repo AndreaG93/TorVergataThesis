@@ -123,7 +123,7 @@
 
 % -------------- %
 % -------------- %
-\begin{frame}{Goals}
+\begin{frame}{Thesis Goal}
 % -------------- %
 % -------------- %
 
@@ -133,17 +133,15 @@
 \end{block}
 
 \vspace{\baselineskip}
-Two main goals:
-\begin{enumerate}
-	\item The \B{orchestration} of a serverless workflow supporting:
-	
+
+\begin{block}{The Goal}
+	The fulfillment of \B{non-functional requirements} concerning the \B{quality of service} (QoS) levels that should be guaranteed for 
+	any \B{generic} serverless workflow supporting:
 	\begin{itemize}
-		\item \textbf{Multiple FaaS Providers}
-		\item \textbf{Multiple Functions Implementations.}
+		\item \B{Multiple FaaS Providers}
+		\item \B{Multiple Serverless Functions Implementations.} 
 	\end{itemize}
-	\vspace{\baselineskip}
-	\item The fulfillment of \B{non-functional requirements} concerning the \B{quality of service} (QoS) levels that should be guaranteed.
-\end{enumerate}
+\end{block}
 
 \end{frame}
 % -------------- %
@@ -156,14 +154,20 @@ Two main goals:
 What's meant by serverless computing?
 \end{block}
 \vspace{\baselineskip}
-An applications service model where:
+It is an execution model in which:
 \vspace{\baselineskip}
 \begin{itemize}
 	\item Administration tasks (provisioning, monitoring, scaling, etc.) are directly managed by the provider.
 	\vspace{\baselineskip}
+	
 	\item Small-granularity billing pricing model: \B{pay-as-you-go}.
 	\vspace{\baselineskip}
 	\item Cloud application are abstracted as a group of so-called \\ ``\B{Serverless Functions}".
+	
+	
+
+	
+	
 \end{itemize}
 
 \end{frame} 
@@ -186,11 +190,6 @@ An applications service model where:
 
 	\vspace{\baselineskip}
 	
-	\begin{block}{Serverless Application}
-		\justifying
-		A software system made up of a serverless functions set.
-	\end{block}
-
 \end{frame} 
 % -------------- %
 % -------------- %
@@ -206,15 +205,7 @@ An applications service model where:
 		\centering
 		The FaaS platform \B{automatically} scales the number of function instances.
 	\end{block}
-	
-	\vspace{\baselineskip}
-	When a request comes in, only one of the following events can occur:
-	\begin{itemize}
-		\item \textbf{Warm start}.
-		\item \textbf{Cold start.}
-	\end{itemize}
-	
-	
+		
 \end{frame} 
 % -------------- %
 % -------------- %
@@ -278,30 +269,13 @@ An applications service model where:
 	\end{block}
 \vspace{\baselineskip}
 	\begin{itemize}
+		\item The fulfillment of quality of service (\textit{QoS}) levels.
 		\item No support for application whose functions are hosted on multiple providers.
 		\item No support for application whose functions have more than one implementation (\B{Concrete Functions}).
 		\item Vendor lock-in issues.
-		\item The fulfillment of quality of service (\textit{QoS}) levels.
 	\end{itemize}
 
 \end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Problems}
-	
-	\begin{block}{}
-		\centering
-		Why is so difficult to guarantee QoS levels?
-	\end{block}
-	\vspace{\baselineskip}
-	\begin{itemize}
-		\item Lack of an analytical model to predict application performance.
-		\vspace{\baselineskip}
-		\item Lack of a methodological way to find a suitable configuration for a serverless application.
-	\end{itemize}
-
-\end{frame} 
-
 % -------------- %
 % -------------- %
 \begin{frame}{Related Works}
@@ -310,7 +284,12 @@ Solutions \B{already} exist, but:
 \vspace{\baselineskip}
 \begin{itemize}
 	\item They are unaware of the current status of FaaS platforms.
-	\item No support for Multi-Provider, Multiple-Implementations serverless applications. 
+	\vspace{\baselineskip}
+	\item No support for Multi-Provider and Multiple-Implementations serverless applications. 
+		\begin{itemize}
+			\item Lack of an analytical model to evaluate their  performance.
+		\end{itemize}
+	\vspace{\baselineskip}
 	\item Many do not support generic workload applications.
 \end{itemize}
 
@@ -390,45 +369,12 @@ Solutions \B{already} exist, but:
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Prototype}
-	
-	Main logical entities of our system:
-	
-	\begin{itemize}
-		\item A Logging subsystem.
-		\item An Orchestrator.
-		\item A profiler.
-		\item A QoS-aware model-based optimizer.
-		\item A Custom AFCL Parser.
-	\end{itemize}
-	
-\end{frame} 
-
-% -------------- %
-% -------------- %
 \begin{frame}
 
 \begin{center}
 	\includegraphics[width=\textwidth,height=0.95\textheight]{../Images/SystemForSlide.png}
 \end{center}
 
-
-\end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{The Prototype}
-	
-	\begin{block}{}
-		\centering
-		The use of an unique representation scheme for serverless workflows \B{mitigates portability limitations and vendor lock-in issues}.
-	\end{block}
-
-	\vspace{\baselineskip}
-
-	\begin{block}{}
-		\centering
-		Serverless application are managed using identical operations based on standard \texttt{HTTP} methods providing \B{Access Transparency}.
-	\end{block}
 
 \end{frame} 
 % -------------- %
@@ -547,37 +493,6 @@ Aforementioned algorithm depends on:
 
 \end{frame}
 
-% -------------- %
-% -------------- %
-\begin{frame}{The Optimization Problem}
-	
-	\begin{block}{}
-		\centering
-		The number of all possible configuration grow very fast.
-	\end{block}
-	
-	\begin{itemize}
-		\item An application with:
-		\begin{itemize} 
-			\item $6$ functions.
-			\item $46$ possible memory choice.
-			\item \B{Only one} implementation for each function.
-		\end{itemize}
-		
-		lead to $9.47 \cdot 10^9$ different configurations.
-		\vspace{\baselineskip}
-		\item An application with:
-		\begin{itemize} 
-			\item $6$ functions.
-			\item $46$ possible memory choice.
-			\item \B{Two} implementation for each function.
-		\end{itemize}
-		
-		lead to $6.06 \cdot 10^{11}$ different configurations.
-	\end{itemize}
-	
-	
-\end{frame}
 % -------------- %
 % -------------- %
 
