@@ -123,9 +123,7 @@
 
 % -------------- %
 % -------------- %
-\begin{frame}{Thesis Goal}
-% -------------- %
-% -------------- %
+\begin{frame}{Serverless Computing: Overview}
 
 \begin{block}{}
 	\centering
@@ -133,28 +131,7 @@
 \end{block}
 
 \vspace{\baselineskip}
-
-\begin{block}{The Goal}
-	The fulfillment of \B{non-functional requirements} concerning the \B{quality of service} (QoS) levels that should be guaranteed for 
-	any \B{generic} serverless workflow supporting:
-	\begin{itemize}
-		\item \B{Multiple FaaS Providers}
-		\item \B{Multiple Serverless Functions Implementations.} 
-	\end{itemize}
-\end{block}
-
-\end{frame}
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Overview}
-
-
-\begin{block}{}
-\centering
-What's meant by serverless computing?
-\end{block}
-\vspace{\baselineskip}
-It is an execution model in which:
+It is a development paradigm according to which:
 \vspace{\baselineskip}
 \begin{itemize}
 	\item Administration tasks (provisioning, monitoring, scaling, etc.) are directly managed by the provider.
@@ -199,37 +176,29 @@ It is an execution model in which:
 		\centering
 		A serverless function is executed inside a containerized environment: the so-called ``\B{Function Instance}".
 	\end{block}
+
 	\vspace{\baselineskip}
 	
 	\begin{block}{}
 		\centering
-		The FaaS platform \B{automatically} scales the number of function instances.
+		The FaaS platform \B{Automatically} scales the number of function instances.
 	\end{block}
-		
-\end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Overview}
-	
-	\begin{block}{Concurrency Level}
-		The limitation, imposed by FaaS platforms, on the \B{number} of function instance runnable at the \B{same time}.
-	\end{block}
-	\vspace{\baselineskip}
-	Providers apply that restriction differently:
-	\vspace{\baselineskip}
-	\begin{itemize}
-		\item \B{Global (Per-Account) Concurrency Model}.
-		\begin{itemize}
-			\item AWS Lambda. 
-			\item IBM Cloud Functions.
-		\end{itemize}
-		\vspace{\baselineskip}
-		\item \B{Local (Per-Function) Concurrency Model}.
-		\begin{itemize}
-			\item Google Cloud Functions.
-		\end{itemize}
-	\end{itemize}
 
+	\vspace{\baselineskip}
+	
+	\begin{block}{}
+		FaaS platforms impose a \B{Limit} on the number of function instance runnable at the \B{Same Time} called \B{Concurrency Limit}.
+		\begin{itemize}
+			\item Providers apply that restriction differently.
+		\end{itemize}
+	\end{block}
+
+\vspace{\baselineskip}
+
+\begin{block}{}
+	A delay is observed when a new function instance is started by the provider; this is called \B{Cold Start}.
+\end{block}
+		
 \end{frame} 
 % -------------- %
 % -------------- %
@@ -244,53 +213,47 @@ It is an execution model in which:
 		\centering
 		To invoke a \B{serverless application}, users have to specify a configuration for \B{all} its functions.
 	\end{block}
-	
-	
-\end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Overview}
-	
-	Configuration parameters \B{significantly} affect the \B{cost} and \B{response time} of serverless functions.
 	\vspace{\baselineskip}
-	\begin{figure}[h]
+	\begin{block}{}
 		\centering
-		\includegraphics[width=\textwidth]{../Images/slideImage1.png}
-	\end{figure}
+		Configuration parameters \B{significantly} affect the \B{cost} and \B{response time} of serverless functions.
+	\end{block}
+	
 	
 \end{frame} 
 % -------------- %
 % -------------- %
 \begin{frame}{Serverless Computing: Problems}
 	
-	\begin{block}{}
-		\centering
-		What current problems or limitations of the serverless computing paradigm I tried to solve?
-	\end{block}
-\vspace{\baselineskip}
 	\begin{itemize}
-		\item The fulfillment of quality of service (\textit{QoS}) levels.
-		\item No support for application whose functions are hosted on multiple providers.
-		\item No support for application whose functions have more than one implementation (\B{Concrete Functions}).
-		\item Vendor lock-in issues.
+		\item The fulfillment of \B{Non-Functional Requirements} concerning the \B{Quality of Service} (QoS) levels that should be guaranteed for 
+		any \B{generic} serverless workflow.
+		\vspace{\baselineskip}
+		\item The lack of support for application whose functions are hosted on \B{Multiple Providers}.
+		\vspace{\baselineskip}
+		\item The lack of support for serverless function implementations abstraction, that is, for the so-called \B{Concrete Functions}.
+		\vspace{\baselineskip}
+		\item The fulfillment of \B{Functional Requirements} concerning the \B{orchestration} of \B{Multi-Provider, Multiple-Implementation Serverless Applications}.
 	\end{itemize}
 
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{Related Works}
+\begin{frame}{State of Art}
 
-Solutions \B{already} exist, but:
+Solutions concerning QoS fulfillment \B{already exist}.
 \vspace{\baselineskip}
 \begin{itemize}
-	\item They are unaware of the current status of FaaS platforms.
+	\item Despite there are some exceptions, they are unaware of both the current status of FaaS platforms and user traffic.
+	\vspace{\baselineskip}
+	\item Some solutions provide no support for generic workflow.
 	\vspace{\baselineskip}
 	\item No support for Multi-Provider and Multiple-Implementations serverless applications. 
 		\begin{itemize}
-			\item Lack of an analytical model to evaluate their  performance.
+			\item No one provides an analytical model to evaluate their performance.
 		\end{itemize}
 	\vspace{\baselineskip}
-	\item Many do not support generic workload applications.
+	\item Many solutions rely on QoS-aware scheduling algorithms while others rely on the formulation and solving of optimization problems.
 \end{itemize}
 
 \end{frame} 
@@ -298,25 +261,51 @@ Solutions \B{already} exist, but:
 % -------------- %
 % -------------- %
 
-\begin{frame}{My Contributions}
+\begin{frame}{Thesis Goals}
 	
-	My contributions respect to the current state of art:
+	\begin{block}{Goal $\#$ 1}
+		\centering
+	To guarantee the \B{Satisfaction of QoS Levels} for Multi-Provider and Multiple-Implementations serverless applications. 
+	\end{block}
+
 	\vspace{\baselineskip}
+	It was necessary to develop:
+	\vspace{\baselineskip} 
+	
 	\begin{enumerate}
 	
 		\item An \B{Analytical Model} to evaluate applications performance.
 		\begin{itemize}
-			\item Supports generic workflow (branch, loop, parallel)
-			\item Multi-Provider support.
-			\item Support for Multi-Implementation for functions.
+			\item Supporting generic workflow (branch, loop, parallel)
+			\item Providing support for Multi-Provider, Multiple-Implementation Serverless Applications
 			\item FaaS-Status-Aware.
 		\end{itemize}
+		
+		
 		\vspace{\baselineskip} 
+		
+	\end{enumerate}
+	\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}{Thesis Goals}
+	
+	\begin{enumerate}
+		\justifying
+		\setcounter{enumi}{1}
 		\item A \B{Methodological Way} to find the ``best" configuration to satisfy QoS constraints.
 		\begin{itemize}
 			\item By solving an \B{Optimization Problem} (LP).
 		\end{itemize}
-		\vspace{\baselineskip} 
+		
+		\vspace{\baselineskip}
+		
+		\item A custom \B{Heuristic Algorithm} to rapidly resolve the aforementioned optimization problem.
+		\begin{itemize}
+			\item Based on \B{Ant Colony Optimization} algorithm (ACO) family.
+		\end{itemize}
 		
 	\end{enumerate}
 	
@@ -325,18 +314,25 @@ Solutions \B{already} exist, but:
 % -------------- %
 % -------------- %
 
-\begin{frame}{My Contributions}
+\begin{frame}{Thesis Goals}
+	
+	\begin{block}{Goal $\#$ 2}
+		\centering
+		The \B{Orchestration} for Multi-Provider and Multiple-Implementations serverless applications. 
+	\end{block}
 	
 	\vspace{\baselineskip}
+	To achieve it, I had to build:
+	\vspace{\baselineskip}
+
 	\begin{enumerate}
 		\justifying
-		\setcounter{enumi}{2}
-		\item A custom \B{Heuristic Algorithm} to resolve the aforementioned optimization problem.
-		\begin{itemize}
-			\item Based on \B{Ant Colony Optimization} algorithm (ACO) family.
-		\end{itemize}
-		\vspace{\baselineskip} 
-		\item A \B{QoS-Aware Software Framework} for the orchestration for multi-provider, multiple-implementations serverless applications. 
+	
+		\item A \B{Software Framework}
+			\begin{itemize}
+				\item Users/Serverless Application Management (CRUD operations, profiling tasks, orchestration task, etc.)
+				\item User-Traffic/QoS/FaaS-Status Aware.
+			\end{itemize}
 		
 		\vspace{\baselineskip} 
 		\item An extension to an already existent \B{Representation Scheme} to define a serverless application workflow.
@@ -387,34 +383,50 @@ Solutions \B{already} exist, but:
 	\end{block}
 	\vspace{\baselineskip}
 	\begin{itemize}
-		\item Each \B{vertex} models an \B{abstract serverless function}, that is a computational unit required by business logic.
+		\item Each \B{vertex} models an \B{abstract serverless function}.
 		\begin{itemize}
 			\item To each abstract function corresponds a set containing all concrete function implementing it.
 		\end{itemize}
 		\vspace{\baselineskip}
-		\item Each \B{edge} represents the calling relationship between two abstract functions.
+		\item Each \B{edge} represents the calling relationship between two abstract functions. 
 		\begin{itemize}
-			\item Edge weights represent the so-called \B{transition probability}. 
-		\end{itemize}
+		\item Edge weights represent the so-called \B{transition probability}. 
+		 \end{itemize}
+		
 	\end{itemize}
-	
-	
-
-	
+		
 \end{frame} 
 % -------------- %
 % -------------- %
 \begin{frame}{The Analytical Model}
+	
+	
+	\begin{block}{}
+		The model provides algorithms and equations to evaluate the performance of a \B{serverless application} under a given configuration.
+	\end{block}
+	\vspace{\baselineskip}
+	
+	Aforementioned algorithm depends on:
+	\begin{itemize}
+		\item The topological properties of the graph representing the application.
+		\item The actual value of transition probabilities of all edges.
+		\item The estimation of concrete function performance.
+	\end{itemize}
+	
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}{The Analytical Model}
 
-To evaluate the performance of a \textbf{Concrete Function}:
+To evaluate the performance of a concrete function is required:
 \vspace{\baselineskip}
 \begin{itemize}
-	\item Estimations about the \B{Average Response Time} (\B{Cost}) in case of cold (warm) start are required.
+	\item An estimations about the \B{Average Response Time} (\B{Cost}) in case of cold (warm) start are required.
 	\begin{itemize}
 		\item To compute aforementioned estimations, \B{Exponential Moving Average} based approach is adopted.
 	\end{itemize}
 	\vspace{\baselineskip}
-	\item An estimation of the probability according to which a request follows a cold start (\B{Cold Start Probability}) is required.
+	\item An estimation of the probability according to which a request follows a cold start (\B{Cold Start Probability})
 \end{itemize}
 
 \end{frame} 
@@ -422,23 +434,19 @@ To evaluate the performance of a \textbf{Concrete Function}:
 % -------------- %
 \begin{frame}{The Analytical Model}
 	
-	To compute \B{Cold Start Probability}:
-	
+	\begin{block}{}
+	Any FaaS platform provider is modeled by set of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems.
 	\begin{itemize}
-		\vspace{\baselineskip}
-		\item Any FaaS platform provider is modeled  by \B{set} of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems.
-		\begin{itemize}
-			\item $K(t)$: the number of function instances at time $t$.
-			\item $C_{max}$: the concurrency limit.
-		\end{itemize}
-		\vspace{\baselineskip}
-		\item Aforementioned set depends on the concurrency model adopted by providers.
-		\vspace{\baselineskip}
-		\item \B{Erlang-B} formula is used.
+		\item $K(t)$: the number of function instances at time $t$.
+		\item $C_{max}$: the concurrency limit.
 	\end{itemize}
+	\end{block}
 	
-	
-	
+	\begin{block}{}
+		\centering
+		To compute the cold start probability the \B{Erlang-B} formula is used.
+	\end{block}
+		
 \end{frame}
 % -------------- %
 % -------------- %
@@ -452,21 +460,7 @@ To evaluate the performance of a \textbf{Concrete Function}:
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Analytical Model}
-	
 
-\begin{block}{}
-	I formalized algorithms and equations to evaluate the performance of both a \B{serverless application} and of an \B{abstract function}.
-\end{block}
-\vspace{\baselineskip}
-
-Aforementioned algorithm depends on:
-\begin{itemize}
-	\item The topological properties of the graph representing the application.
-	\item The actual value of transition probabilities of all edges.
-\end{itemize}
-
-\end{frame}
 % -------------- %
 % -------------- %
 \begin{frame}{The Optimization Problem}
