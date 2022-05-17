@@ -2174,7 +2174,7 @@ To achieve our goal consisting in finding the best choreography configuration ca
 	\item the latter is based on the \textit{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}. 
 \end{itemize}
 
-In this section, we will describe and analyze both approaches, although only for the latter we have developed and implemented a heuristic approach capable to solve it in a faster way with respect to the exact algorithms. 
+In this section, we will describe and analyze both approaches, although only for the latter we have developed and implemented a heuristic approach capable to solve it in a faster way with respect to the exact algorithm. 
 
 \section{Multidimensional Knapsack Problem Formulation}
 
@@ -2363,7 +2363,7 @@ However, we adopted a slightly different version of the ACO based algorithm desc
 
 As our algorithm name suggests, we adopt a lazy approach for pheromone trails update. In fact, we believe that it is not very useful to update pheromone trails associated to the edges belonging to the solution component graph which, for some reasons, are never traversed by ants. Therefore, to update all edges can be not efficient from a computational point of view, especially when aforementioned graph is very big.
 
-Therefore we delay pheromone trails update until the first time it is needed by an ants, allowing our algorithm to perform faster. 
+Therefore we delay pheromone trails update until the first time it is needed by an ant, allowing our algorithm to perform faster. 
 
 Moreover, our approach allows a parallel pheromone trails update too; as we will see shortly, since each ant starts its journey inside the solution components graph in different randomly selected nodes, because every of which updates different edges, it is possible to update pheromone trails with a very low risk to pay performance cost due to synchronization needs.
 
@@ -2623,7 +2623,7 @@ During all subsequent experiments, the parameters of our ACO based heuristic alg
 	\item $w_{\text{\textbf{min}}}$ and $w_{\text{\textbf{max}}}$, that is the lower and the upper bounds on pheromone trails, are set to $0.01$ and $6.00$ respectively.
 \end{itemize}
 
-According to \citet{acosemplice} research, selected parameters allow our algorithm to quickly find good solutions even though it may fail to find the optimal (or best) solution. The number of ants is set to $4$, which is the double of the number of physical cores in our CPU. Finally, we limited the number of iteration of our algorithm to $1000$.
+According to \citet{acosemplice} research, the selected parameters allow our algorithm to quickly find good solutions even though it may fail to find the optimal (or best) solution. The number of ants is set to $4$, which is the double of the number of physical cores in our CPU. Finally, we limited the number of iterations of our algorithm to $1000$.
 
 Before running any experiment, we performed the profiling of our concrete functions in order to obtain their average end-to-end response time and cost by invoking each of them $50$ times under all available memory configuration.
 
