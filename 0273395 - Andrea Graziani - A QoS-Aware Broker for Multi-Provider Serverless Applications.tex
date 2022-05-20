@@ -15,8 +15,6 @@
 \usepackage{booktabs} 
 \usepackage{epigraph}
 
-% 0273395 - Andrea Graziani - A QoS-Aware Broker for Multi-Provider Serverless Applications
-
 \providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
 
 \lstset{
@@ -522,7 +520,7 @@ Synchronously interacting with the logging subsystem, it retrieves all needed pe
 
 However, performing aforementioned tasks is generally expensive due to several reasons like the huge amount of data, expensive computation and network delay during data transmission between system components. In general, in a real situation, thousands data point must be collected and analyzed. It may happen that the TSDB instance, from which the data is obtained, can be connected to our framework through a lower-bandwidth and multi-hop connection. 
 
-Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from the TSDB, then it stores locally processed data. Data synchronization is performed periodically \footnote{By default every 15 minutes}.
+Therefore, a \textit{pre-fetching tactic} is used to anticipates data needs in order to minimize latency\cite{Tactics}. Our framework firstly collect and analyze all data points retrieving them from the TSDB, then it stores locally processed data. Data synchronization is performed periodically\footnote{By default every $15$ minutes.}.
 
 Since according to our performance model processed data must used for future invocations, they are stored inside a NoSQL distributed database instance for future use.
 	

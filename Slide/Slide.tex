@@ -12,6 +12,10 @@
 \usepackage{fontspec}
 \usepackage{unicode-math}
 \setmathfont{XITS Math}
+\usepackage{float}
+\usepackage[caption = false]{subfig}
+\usepackage{graphicx}
+
 
 
 \usetheme{Madrid}
@@ -127,24 +131,21 @@
 
 \begin{block}{}
 	\centering
-	My thesis is focused on ``\B{Serverless Computing}".
+	My thesis is focused on ``\B{serverless computing}".
 \end{block}
 
 \vspace{\baselineskip}
 It is a development paradigm according to which:
 \vspace{\baselineskip}
 \begin{itemize}
-	\item Administration tasks (provisioning, monitoring, scaling, etc.) are directly managed by the provider.
+	\justifying
+	\item The provider takes care of all aspect of server management.
 	\vspace{\baselineskip}
 	
 	\item Small-granularity billing pricing model: \B{pay-as-you-go}.
 	\vspace{\baselineskip}
-	\item Cloud application are abstracted as a group of so-called \\ ``\B{Serverless Functions}".
-	
-	
+	\item Cloud application are abstracted as a group of so-called \\ \B{serverless functions}, which are computation units implementing a business functionality.
 
-	
-	
 \end{itemize}
 
 \end{frame} 
@@ -154,46 +155,26 @@ It is a development paradigm according to which:
 	
 	\begin{block}{}
 		\centering
-		What is a serverless function?
-	\end{block}
-	\vspace{\baselineskip}
-	A computation unit implementing a business functionality.
-	
-	\begin{itemize}
-		\item \B{Stateless}
-		\item \B{Event-Driven}
-		\item \B{Short-Lived}
-	\end{itemize}
-
-	\vspace{\baselineskip}
-	
-\end{frame} 
-% -------------- %
-% -------------- %
-\begin{frame}{Serverless Computing: Overview}
-	
-	\begin{block}{}
-		\centering
-		A serverless function is executed inside a containerized environment: the so-called ``\B{Function Instance}".
+		A serverless function is executed inside a containerized environment: the so-called \B{function instance}.
 	\end{block}
 
 	\vspace{\baselineskip}
 	
 	\begin{block}{}
 		\centering
-		The FaaS platform \B{Automatically} scales the number of function instances.
+		The FaaS platform \B{automatically} scales the number of function instances.
 	\end{block}
 
 	\vspace{\baselineskip}
 	
 	\begin{block}{}
-		FaaS platforms impose a \B{Limit} on the number of function instance runnable at the \B{Same Time} called \B{Concurrency Limit}.
+		FaaS platforms impose a \B{limit} on the number of function instance runnable at the \B{same time} called \B{concurrency limit}.
 	\end{block}
 
 \vspace{\baselineskip}
 
 \begin{block}{}
-	A delay is observed when a new function instance is started by the provider: this event is called \B{Cold Start}.
+	A delay is observed when a new function instance is started by the provider: this event is called \B{cold start}.
 \end{block}
 		
 \end{frame} 
@@ -202,13 +183,10 @@ It is a development paradigm according to which:
 \begin{frame}{Serverless Computing: Overview}
 	
 	\begin{block}{}
-		\centering
 		To invoke a \B{serverless function}, users have to specify a so-called \B{serverless function configuration}.
-	\end{block}
-	\vspace{\baselineskip}
-	\begin{block}{}
-		\centering
-		To invoke a \B{serverless application}, users have to specify a configuration for \B{all} its functions.
+		\begin{itemize}
+			\item Generally, the \B{amount of memory allocated} to a serverless function.
+		\end{itemize}
 	\end{block}
 	\vspace{\baselineskip}
 	\begin{block}{}
@@ -223,14 +201,13 @@ It is a development paradigm according to which:
 \begin{frame}{Serverless Computing: Problems}
 	
 	\begin{itemize}
-		\item The fulfillment of \B{Non-Functional Requirements} concerning the \B{Quality of Service} (QoS) levels that should be guaranteed for 
-		any \B{generic} serverless workflow.
+		\item The fulfillment of \B{non-functional requirements} concerning the \B{quality of service} (QoS) levels that should be guaranteed for \B{multi-provider serverless applications}.
 		\vspace{\baselineskip}
-		\item The lack of support for application whose functions are hosted on \B{Multiple Providers}.
+		\item The lack of support for application whose functions are hosted on \B{multiple providers}.
 		\vspace{\baselineskip}
-		\item The lack of support for serverless function implementations abstraction, that is, for the so-called \B{Concrete Functions}.
+		\item The lack of support for serverless function implementations abstraction, that is, for the so-called \B{concrete functions}.
 		\vspace{\baselineskip}
-		\item The fulfillment of \B{Functional Requirements} concerning the \B{orchestration} of \B{Multi-Provider, Multiple-Implementation Serverless Applications}.
+		\item The fulfillment of \B{functional requirements} concerning the \B{orchestration} of multi-provider applications.
 	\end{itemize}
 
 \end{frame} 
@@ -241,16 +218,16 @@ It is a development paradigm according to which:
 Solutions concerning QoS fulfillment \B{already exist}.
 \vspace{\baselineskip}
 \begin{itemize}
-	\item Despite there are some exceptions, they are unaware of both the current status of FaaS platforms and user traffic.
+	\item Many solutions rely on \B{QoS-aware scheduling algorithms} while others rely on the formulation and \B{solving of optimization problems}.
+	
+	\begin{itemize}
+		\item Generally, proposed solution do \B{not} support Multi-Provider serverless applications. 
+	\end{itemize}
+	
 	\vspace{\baselineskip}
-	\item Some solutions provide no support for generic workflow.
+	\item Despite there are some exceptions, current solution are unaware of both the current status of FaaS platforms and user traffic.
 	\vspace{\baselineskip}
-	\item No support for Multi-Provider and Multiple-Implementations serverless applications. 
-		\begin{itemize}
-			\item No one provides an analytical model to evaluate their performance.
-		\end{itemize}
-	\vspace{\baselineskip}
-	\item Many solutions rely on QoS-aware scheduling algorithms while others rely on the formulation and solving of optimization problems.
+	
 \end{itemize}
 
 \end{frame} 
@@ -262,7 +239,7 @@ Solutions concerning QoS fulfillment \B{already exist}.
 	
 	\begin{block}{Goal $\#$ 1}
 		\centering
-	To guarantee the \B{Satisfaction of QoS Levels} for Multi-Provider and Multiple-Implementations serverless applications. 
+	To guarantee the \B{satisfaction of QoS levels} for multi-provider serverless applications. 
 	\end{block}
 
 	\vspace{\baselineskip}
@@ -270,16 +247,21 @@ Solutions concerning QoS fulfillment \B{already exist}.
 	\vspace{\baselineskip} 
 	
 	\begin{enumerate}
+		\justifying
 	
-		\item An \B{Analytical Model} to evaluate applications performance.
-		\begin{itemize}
-			\item Supporting generic workflow (branch, loop, parallel)
-			\item Providing support for Multi-Provider, Multiple-Implementation Serverless Applications
-			\item FaaS-Status-Aware.
-		\end{itemize}
-		
-		
-		\vspace{\baselineskip} 
+	\item An \B{analytical model} to evaluate aforementioned class of applications.
+
+	\vspace{\baselineskip} 
+	
+	\item A \B{methodological way} to find the ``best" configuration to satisfy QoS constraints.
+	\begin{itemize}
+		\item By solving an \B{optimization problem} (LP).
+	\end{itemize}
+	
+	
+	\vspace{\baselineskip}
+	
+	\item A custom \B{heuristic algorithm} to rapidly resolve the aforementioned optimization problem.
 		
 	\end{enumerate}
 	\end{frame} 
@@ -289,33 +271,9 @@ Solutions concerning QoS fulfillment \B{already exist}.
 
 \begin{frame}{Thesis Goals}
 	
-	\begin{enumerate}
-		\justifying
-		\setcounter{enumi}{1}
-		\item A \B{Methodological Way} to find the ``best" configuration to satisfy QoS constraints.
-		\begin{itemize}
-			\item By solving an \B{Optimization Problem} (LP).
-		\end{itemize}
-		
-		\vspace{\baselineskip}
-		
-		\item A custom \B{Heuristic Algorithm} to rapidly resolve the aforementioned optimization problem.
-		\begin{itemize}
-			\item Based on \B{Ant Colony Optimization} algorithm (ACO) family.
-		\end{itemize}
-		
-	\end{enumerate}
-	
-\end{frame} 
-
-% -------------- %
-% -------------- %
-
-\begin{frame}{Thesis Goals}
-	
 	\begin{block}{Goal $\#$ 2}
 		\centering
-		The \B{Orchestration} for Multi-Provider and Multiple-Implementations serverless applications. 
+		The \B{orchestration} for multi-provider serverless applications. 
 	\end{block}
 	
 	\vspace{\baselineskip}
@@ -325,16 +283,15 @@ Solutions concerning QoS fulfillment \B{already exist}.
 	\begin{enumerate}
 		\justifying
 	
-		\item A \B{Software Framework}
+		\item A \B{software framework}
 			\begin{itemize}
-				\item Users/Serverless Application Management (CRUD operations, profiling tasks, orchestration task, etc.)
-				\item User-Traffic/QoS/FaaS-Status Aware.
+				\item Users/Serverless application management (CRUD operations, profiling tasks, orchestration task, etc.)
 			\end{itemize}
 		
 		\vspace{\baselineskip} 
-		\item An extension to an already existent \B{Representation Scheme} to define a serverless application workflow.
+		\item An extension to an already existent \B{representation scheme} to define a serverless application workflow.
 		\begin{itemize}
-			\item Based on an existing language called \B{Abstract Function Choreography Language} (AFCL).
+			\item Based on an existing language called \B{abstract function choreography language} (AFCL).
 		\end{itemize}
 		
 	\end{enumerate}
@@ -344,12 +301,12 @@ Solutions concerning QoS fulfillment \B{already exist}.
 % -------------- %
 % -------------- %
 
-\begin{frame}{The Prototype}
+\begin{frame}{Prototype}
 	
  	Main features of our software framework:
 	\vspace{\baselineskip}
 	\begin{itemize}
-		\item \B{Client-Server architecture}.
+		\item \B{Client-server architecture}.
 		\item \B{Cloud-native} application.
 		\item Includes a set of \B{adapters} to interact with following FaaS providers:
 		\begin{itemize}
@@ -372,115 +329,153 @@ Solutions concerning QoS fulfillment \B{already exist}.
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Analytical Model}
+\begin{frame}{System Model}
 	
 	\begin{block}{}
 		\centering
-		Serverless applications are abstracted to a \\\B{Weakly Connected Weighted Directed Graph}.
+		Serverless applications are abstracted to a \\\B{weakly connected weighted directed graph}.
 	\end{block}
 	\vspace{\baselineskip}
-	\begin{itemize}
-		\item Each \B{vertex} models an \B{abstract serverless function}.
-		\begin{itemize}
-			\item To each abstract function corresponds a set containing all concrete function implementing it.
-		\end{itemize}
-		\vspace{\baselineskip}
-		\item Each \B{edge} represents the calling relationship between two abstract functions. 
-		\begin{itemize}
-		\item Edge weights represent the so-called \B{transition probability}. 
-		 \end{itemize}
-		
-	\end{itemize}
-		
+	\begin{Center}
+
+	
+	\resizebox{11cm}{5cm}{
+		\begin{tikzpicture}
+			
+			
+			\node[circle,draw,minimum width = 1cm] 
+			(Func1) at (-2,0) {$\phi_1$};
+			
+			\node[circle, draw, minimum width = 0.2cm]        					   
+			() at (0,0) {};
+			\node[circle, draw, minimum width = 0.6cm]        					   
+			(PAR-Enter) at (0,0) {};
+			
+			\draw[ultra thick,->] (Func1) -- (PAR-Enter);
+			
+			\node[circle, draw, minimum width = 0.2cm]        					   
+			() at (2,2) {};
+			\node[circle, draw, minimum width = 0.6cm]        					   
+			(IF-Enter) at (2,2) {};
+			
+			\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=10]{$1$} (IF-Enter);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func2) at (4,3) {$\phi_2$};
+			
+			\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=10]{$\frac{1}{2}$} (Func2);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func3) at (4,1) {$\phi_3$};
+			
+			\draw[ultra thick,->] (IF-Enter) edge node[xshift=-10,yshift=-10]{$\frac{1}{2}$} (Func3);
+			
+			\node[circle, draw, minimum width = 0.2cm]        					   
+			() at (6,2) {};
+			\node[circle, draw, minimum width = 0.6cm]        					   
+			(IF-Exit) at (6,2) {};
+			
+			\draw[ultra thick,->] (Func2) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+			\draw[ultra thick,->] (Func3) edge node[xshift=-10,yshift=-10]{} (IF-Exit);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func4) at (8,2) {$\phi_4$};
+			
+			\draw[ultra thick,->] (IF-Exit) edge node[xshift=-10,yshift=-10]{} (Func4);
+			
+			\node[circle, draw, minimum width = 0.2cm]        					   
+			() at (2,-4) {};
+			\node[circle, draw, minimum width = 0.6cm]        					   
+			(SWITCH-Enter) at (2,-4) {};
+			
+			\draw[ultra thick,->] (PAR-Enter) edge node[xshift=-10,yshift=5]{$1$} (SWITCH-Enter);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func5) at (4,-2) {$\phi_5$};
+			
+			\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=5]{$\frac{1}{3}$} (Func5);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func6) at (4,-4) {$\phi_6$};
+			
+			\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=5,yshift=10]{$\frac{1}{3}$} (Func6);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func7) at (4,-6) {$\phi_7$};
+			
+			\draw[ultra thick,->] (SWITCH-Enter) edge node[xshift=-10,yshift=0]{$\frac{1}{3}$} (Func7);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func8) at (6,-2) {$\phi_8$};
+			
+			\draw[ultra thick,->] (Func5) edge node[xshift=-10,yshift=0]{} (Func8);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func9) at (6,-4) {$\phi_9$};
+			
+			\draw[ultra thick,->] (Func6) edge node[xshift=-10,yshift=0]{} (Func9);
+			
+			\node[circle, draw, minimum width = 1cm]       					   
+			(Func10) at (6,-6) {$\phi_{10}$};
+			
+			\draw[ultra thick,->] (Func7) edge node[xshift=-10,yshift=0]{} (Func10);
+			
+			\node[circle, draw, minimum width = 0.2cm]        					   
+			() at (8,-4) {};
+			\node[circle, draw, minimum width = 0.6cm]        					   
+			(SWITCH-Exit) at (8,-4) {};
+			
+			\draw[ultra thick,->] (Func8) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+			\draw[ultra thick,->] (Func9) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+			\draw[ultra thick,->] (Func10) edge node[xshift=-10,yshift=0]{} (SWITCH-Exit);
+			
+			\node[circle, draw, minimum width = 0.2cm]        					   
+			() at (10,0) {};
+			\node[circle, draw, minimum width = 0.6cm]        					   
+			(PAR-Exit) at (10,0) {};
+			
+			\draw[ultra thick,->] (SWITCH-Exit) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+			\draw[ultra thick,->] (Func4) edge node[xshift=-10,yshift=0]{} (PAR-Exit);
+			
+			\node[circle,draw,minimum width = 1cm] 
+			(Func11) at (12,0) {$\phi_{11}$};
+			
+			\draw[ultra thick,->] (PAR-Exit) edge node[xshift=-10,yshift=0]{} (Func11);
+			
+		\end{tikzpicture}
+}
+	\end{Center}
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Analytical Model}
-	
-	
-	\begin{block}{}
-		The model provides algorithms and equations to evaluate the performance of a \B{serverless application} under a given configuration.
-	\end{block}
-	\vspace{\baselineskip}
-	
-	Aforementioned algorithm depends on:
-	\begin{itemize}
-		\item The topological properties of the graph representing the application.
-		\item The actual value of transition probabilities of all edges.
-		\item The estimation of concrete function performance.
-	\end{itemize}
-	
-\end{frame}
-% -------------- %
-% -------------- %
-\begin{frame}{The Analytical Model}
+\begin{frame}{System Model}
 
-To evaluate the performance of a concrete function is required:
 \vspace{\baselineskip}
 \begin{itemize}
-	\item An estimations about the \B{Average Response Time} (\B{Cost}) in case of cold (warm) start are required.
-	\begin{itemize}
-		\item To compute aforementioned estimations, \B{Exponential Moving Average} based approach is adopted.
-	\end{itemize}
+	\item Estimations of \B{average response time} and \B{cost} under \B{any} possible configuration of all concrete functions is done using \B{exponential moving average} approach.
+
 	\vspace{\baselineskip}
-	\item An estimation of the probability according to which a request follows a cold start (\B{Cold Start Probability})
+	\item An estimation of the \B{probability} according to which a request follows a cold start is required.
+	\begin{itemize}
+		\vspace{\baselineskip}
+		\item This is done using \B{Erlang-B} formula by modeling FaaS platform providers by \B{sets} of $M/G/K(t)/K(t)$ queueing systems.
+		\begin{itemize}
+			\item $K(t)$: the number of function instances at time $t$.
+		\end{itemize}
+	\end{itemize}
 \end{itemize}
 
 \end{frame} 
 % -------------- %
 % -------------- %
-\begin{frame}{The Analytical Model}
-	
-	\begin{block}{}
-	Any FaaS platform provider is modeled by set of $M/G/K(t)_{\textbf{C}_{max}}/K(t)_{\textbf{C}_{max}}$ queueing systems.
-	\begin{itemize}
-		\item $K(t)$: the number of function instances at time $t$.
-		\item $C_{max}$: the concurrency limit.
-	\end{itemize}
-	\end{block}
-	
-	\begin{block}{}
-		\centering
-		To compute the cold start probability the \B{Erlang-B} formula is used.
-	\end{block}
-		
-\end{frame}
-% -------------- %
-% -------------- %
-\begin{frame}{}
-	
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{../Images/FaaSForSlide.png}
-\end{figure}
-	
-\end{frame} 
-% -------------- %
-% -------------- %
-
-% -------------- %
-% -------------- %
-\begin{frame}{The Optimization Problem}
+\begin{frame}{Optimization Problem}
 
 \begin{itemize}
 	\item To achieve our goal consisting in finding the best configuration to guarantee QoS constraints, we have to solve an \B{optimization problem}.
 	\begin{itemize}
-		\item It is based on \B{Multi-Dimensional Multi-Choice Knapsack Problem Formulation}. 
+		\item It is based on \B{multi-dimensional multi-choice knapsack problem formulation} (MMKP).
 	\end{itemize}
 \end{itemize}
-
-\end{frame}
-
-
-\begin{frame}{The Optimization Problem}
-	Formally, the configuration vector $\textbf{x}_{\mathcal{C}}$ we want to find is such that:
-	
-	\begin{eqnarray}
-		\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
-		& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
-		& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
-		& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
-	\end{eqnarray}
 
 \end{frame}
 
@@ -501,11 +496,11 @@ To evaluate the performance of a concrete function is required:
 
 % -------------- %
 % -------------- %
-\begin{frame}{The Heuristic Algorithm}
+\begin{frame}{Heuristic Algorithm}
 	
 	\begin{block}{}
 		\centering
-		I develop a custom heuristic algorithm based on \B{Ant Colony Optimization} (ACO); it is called \B{Pre-provisioned Colony Optimization Algorithm with Lazy Pheromone Update}.
+		I develop a custom heuristic algorithm based on \B{ant colony optimization} (ACO); it is called \B{pre-provisioned colony optimization algorithm with lazy pheromone update}.
 	\end{block}
 	\vspace{\baselineskip}
 	\begin{itemize}
@@ -517,7 +512,7 @@ To evaluate the performance of a concrete function is required:
 		
 		\begin{itemize}
 			\item \B{Attractiveness}.
-			\item \B{Pheromone Trail}.
+			\item \B{Pheromone trail}.
 		\end{itemize}
 		
 	\end{itemize}
@@ -528,7 +523,7 @@ To evaluate the performance of a concrete function is required:
 \end{frame}
 % -------------- %
 % -------------- %
-\begin{frame}{The Heuristic Algorithm}
+\begin{frame}{Heuristic Algorithm}
 	
 	\begin{block}{}
 		\centering
@@ -543,11 +538,11 @@ To evaluate the performance of a concrete function is required:
 	\vspace{\baselineskip}
 
 	\begin{itemize}
-		\item A \B{Lazy Approach} for pheromone trails update is used.
+		\item A \B{lazy approach} for pheromone trails update is used.
 		
 		\vspace{\baselineskip}
 		
-		\item A \B{Pre-Provisioning Tactic} is used to anticipates data needs assuring a \B{lower latency}.
+		\item A \B{pre-provisioning tactic} is used to anticipates data needs assuring a \B{lower latency}.
 	\end{itemize}
 
 
@@ -555,40 +550,53 @@ To evaluate the performance of a concrete function is required:
 \end{frame}
 % -------------- %
 % -------------- %
-\begin{frame}
+\begin{frame}{Validation Test}
 	
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=\textwidth, height=0.8\textheight]{../Images/ACOvsOptimalIncreasingConcrete.png}
+\begin{block}{}
+	\centering
+	We validate our model through several experiments using an image-processing serverless application.
+\end{block}
+	\vspace{\baselineskip}
+\begin{itemize}
+	\item Firstly, we check the respect of user specified QoS constraints in a static way thorough several \B{sequential invocations}.
+	\vspace{\baselineskip}
+	\item Then, we test the model in a dynamically way thorough \B{several concurrent and parallel invocations}. 
+	\begin{itemize}
+	\item That experiment aimed to \B{run out of capacity} on one FaaS provider and so force our prototype to schedule the concrete function on the other.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+% -------------- %
+% -------------- %
+\begin{frame}{Heuristic Algorithm Evaluation}
+	
+\begin{itemize}
+	\item We compared performance of our heuristic algorithm with that of optimal algorithm through several experiments.
+\end{itemize}
+	
+	\begin{figure}
+		\subfloat{\includegraphics[width = 2.4in]{../Images/ACOvsOptimalIncreasingConcrete.png}} 
+		\subfloat{\includegraphics[width = 2.4in]{../Images/ACOvsOptimalAccuracyIncreasingExecutable.png}}\\
 	\end{figure}
-	
+
 \end{frame}
 
 % -------------- %
 % -------------- %
-
-\begin{frame}
-	
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=\textwidth, height=0.8\textheight]{../Images/ACO3DIncreasingExecutable.png}
-	\end{figure}
-	
-\end{frame}
 
 \begin{frame}{Conclusions}
 
-\begin{itemize}
+\begin{enumerate}
 	
-	\item I presented an analytical model to compute the performance  of a generic serverless workflows having multiple concrete functions hosted on multiple FaaS providers. 
+	\item I presented an analytical model to evaluate the performance of multi-provider serverless application 
 	\vspace{\baselineskip}
 	\item I defined an optimization problems formulation to address the problem of finding a suitable configuration in order to meet user defined QoS constraints
 	\vspace{\baselineskip}
-	\item We developed a heuristic algorithm to rapidly solve it.
+	\item I developed a heuristic algorithm to rapidly solve it.
 	\vspace{\baselineskip}
-	\item We verified the validity of both the proposed algorithms and the analytical model through test and experimental evaluations developing a prototype supporting AWS and OpenWhisk.
-	
-\end{itemize}
+	\item I validate proposed solution through test and experimental evaluations using my prototype.	
+\end{enumerate}
 \end{frame}
 
 \setbeamertemplate{background}{%
