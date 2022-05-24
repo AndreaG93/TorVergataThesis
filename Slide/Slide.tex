@@ -139,7 +139,7 @@ It is a development paradigm according to which:
 \vspace{\baselineskip}
 \begin{itemize}
 	\justifying
-	\item The provider takes care of all aspect of server management.
+	\item The provider takes care of all aspects of server management.
 	\vspace{\baselineskip}
 	\item Cloud application are abstracted as a group of so-called \\ \B{serverless functions}, which are computation units implementing a business functionality.
 
@@ -165,7 +165,7 @@ It is a development paradigm according to which:
 	\vspace{\baselineskip}
 	
 	\begin{block}{}
-		FaaS platforms impose a \B{limit} on the number of function instance runnable at the \B{same time} called \B{concurrency limit}.
+		FaaS platforms impose a \B{limit} on the number of function instances runnable at the \B{same time} called \B{concurrency limit}.
 	\end{block}
 
 \vspace{\baselineskip}
@@ -198,7 +198,7 @@ It is a development paradigm according to which:
 \begin{frame}{Serverless Computing: Problems}
 	
 	\begin{itemize}
-		\item Lack of support for application whose functions are hosted on \B{multiple providers}.
+		\item Lack of support for applications whose functions are hosted on \B{multiple providers}.
 		\vspace{\baselineskip}
 		\item Lack of support for serverless function implementations abstraction, that is, for the so-called \B{concrete functions}.
 		\vspace{\baselineskip}
@@ -563,7 +563,7 @@ It is a development paradigm according to which:
 
 \end{frame}
 
-\begin{frame}{Prototype}
+\begin{frame}{Broker Prototype}
 	
 	Main features of our software framework:
 	\vspace{\baselineskip}
@@ -625,7 +625,7 @@ It is a development paradigm according to which:
 	\vspace{\baselineskip}
 	\item Then, we test the model in a dynamically way thorough \B{several concurrent and parallel invocations}. 
 	\begin{itemize}
-	\item That experiment aimed to \B{run out of capacity} on one FaaS provider and so force our prototype to schedule the concrete function on the other.
+	\item That experiment aimed to \B{run out of capacity} on one FaaS provider and so force our prototype to schedule the concrete functions on the other.
 	\end{itemize}
 \end{itemize}
 
@@ -708,9 +708,9 @@ It is a development paradigm according to which:
 	\vspace{\baselineskip}
 	\item I defined an optimization problem formulation to address the problem of finding a suitable configuration in order to meet user defined QoS constraints.
 	\vspace{\baselineskip}
-	\item I developed a heuristic algorithm to rapidly solve it.
+	\item I developed a heuristic algorithm to efficiently solve it.
 	\vspace{\baselineskip}
-	\item I validate proposed solution through test and experimental evaluations using my prototype.	
+	\item I validated proposed solution through test and experimental evaluations using my prototype.	
 \end{enumerate}
 \end{frame}
 
@@ -725,6 +725,229 @@ It is a development paradigm according to which:
 		\centering
 		Thanks for your attention!\\\B{Questions}?
 	\end{block}
+\end{frame} 
+
+% -------------- %
+% -------------- %
+\setbeamertemplate{background}{}
+
+\begin{frame}[noframenumbering]
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.95\textheight]{../Images/FaaSForSlide.png}
+	\end{center}
+	
+\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]
+	
+	\begin{block}{Pheromone Trail Update}
+		\begin{equation}
+			\tau(o_{i_a}, o_{j_b})_k = \tau(o_{i_a}, o_{j_b})_{k-1} \cdot \rho + \Delta \tau(o_{i_a}, o_{j_b})_{k} \nonumber
+		\end{equation}
+	\end{block}
+
+	where:
+	
+	\begin{equation}
+		\Delta \tau(o_{i_a}, o_{j_b})_{k} \mathDef \sum_{l=1}^{m} \tau(o_{i_a}, o_{j_b})_k^{(l)}
+	\end{equation}
+
+	and:
+
+	\begin{equation}
+		\tau(o_{i_j}, o_{a_b})_{k}^{(l)} \mathDef \left\{ 
+		\begin{array}{lll}
+			0 & \text{\textbf{if }} & S_{k_l} = \emptyset \\ 
+			\displaystyle \frac{1}{1 + profit(S_{best}) - profit(S_{k_l})} & \text{\textbf{if }} & \substack{S_{k_l} \neq \emptyset \\ (o_{i_j}, o_{a_b}) \in \pi_{k_l}} \\ 
+		\end{array} \right.
+	\end{equation}
+	
+\end{frame} 
+
+
+\begin{frame}[noframenumbering]
+	\begin{block}{Transition Probability}
+\begin{equation}
+	P(o_{i_j}, \textbf{S}_{k_l}^{(z)}, \pi_{k_l}^{(z)}) \mathDef \frac{\left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}{\displaystyle \sum_{o_{i_j} \in \mathcal{C}(\textbf{G}_i, \textbf{S}_{k_l}^{(z)})} \left[ \tau( o_{i_j}, \pi_{k_l}^{(z)}) \right]^{\alpha} \cdot \left[ \eta( o_{i_j}, \textbf{S}_{k_l}^{(z)}) \right]^{\beta}}
+\end{equation}
+\end{block}
+\end{frame} 
+
+
+\begin{frame}[noframenumbering]
+	\begin{block}{Function Configuration}
+\begin{equation}
+	x_{\phi} = (f_{\phi},m) \in f_{\phi} \times \textbf{M}_{f_{\phi}} \subseteq \textbf{F}_{\phi} \times \N
+\end{equation}
+\end{block}
+
+\begin{block}{Choreography Configuration}
+\begin{eqnarray}
+	\textbf{x}_{\mathcal{C}} & \mathDef & \left\lbrace x_{\phi_{1}}, \ldots, x_{\phi_{k}} \right\rbrace \nonumber \\ 
+	& \in & \left\{  \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{1}}|} f_{\phi_{1_j}} \times \textbf{M}_{f_{\phi_{1_j}}} \right\} \times \ldots \times \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{k}}|} f_{\phi_{k_j}} \times \textbf{M}_{f_{\phi_{k_j}}} \right\} \right\}  \nonumber \\
+	& = & \Cross_{i = 1}^k \left\{ \bigcup_{j=1}^{|\textbf{F}_{\phi_{i}}|} f_{\phi_{i_j}} \times \textbf{M}_{f_{\phi_{i_j}}} \right\} \nonumber \\
+	& \subseteq & \Cross_{i = 1}^k \left\{ \textbf{F}_{\phi_{i}} \times \mathbb{N} \right\} = \textbf{X}_{\mathcal{C}}
+\end{eqnarray}
+
+
+\end{block}
+\end{frame} 
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.95\textheight]{../Images/super1.png}
+	\end{center}
+	
+\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]
+	
+	\begin{block}{Perfromance Evaluation Loop Structure}
+		\begin{equation}
+			RT(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot RT(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+		\end{equation}
+		
+		\begin{equation}
+			C(\mathcal{L},\textbf{x}_{\mathcal{C}}, t) \mathDef E[I_{\theta}(t)] \cdot C(\theta_i,\textbf{x}_{\mathcal{C}}, t)
+		\end{equation}
+	\end{block}
+
+
+\begin{eqnarray}
+	p = P(\phi_x,\phi_y,t) = 1 - P\Big(\phi_{x}, \alpha(\theta),t\Big)
+\end{eqnarray}
+
+\end{frame} 
+
+% -------------- %
+% -------------- %
+\begin{frame}[noframenumbering]
+	
+\begin{eqnarray}
+	P(I_{\theta} = k) & = & p \cdot (1-p)^{k-1} \nonumber \\
+	& = & pq^{k-1} \nonumber \\
+	& = & \Big[  1 - P\Big(\phi_{x}, \alpha(\theta),t\Big) \Big] \cdot \bigg[  P\Big(\phi_{x}, \alpha(\theta),t\Big) \bigg] ^{k-1}
+\end{eqnarray}
+
+\begin{eqnarray}
+	E[I_{\theta}(t)] & = & \sum_{k = 1}^\infty (k-1) pq^{k-1} \nonumber \\
+	& = & \dfrac{P\Big(\phi_{x}, \alpha(\theta),t\Big)}{1 - P\Big(\phi_{x}, \alpha(\theta),t\Big)} 
+\end{eqnarray}
+\end{frame} 
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.80\textheight]{../Images/super2.png}
+	\end{center}
+	
+\end{frame} 
+
+
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]
+	
+	\begin{block}{SLA definition}
+		\begin{equation}
+			SLA \mathDef \left\langle (RT,w_{RT}),(C,w_{C}) \right\rangle \nonumber
+		\end{equation}
+	\end{block}
+	
+	\begin{block}{Function configuration score}
+	\begin{equation}\label{profit}
+		p_{\phi_{i_{j}}}(t) \mathDef w_{RT} \cdot p_{\phi_{i_{j}}}(t)^{(rt)} + w_{C} \cdot p_{\phi_{i_{j}}}(t)^{(c)} \nonumber
+	\end{equation}
+\end{block}
+	
+	\begin{eqnarray}
+		p_{\phi_{i_{j}}}(t)^{(rt)} & \mathDef & \left\{ 
+		\begin{array}{lcc}
+			1 & \text{\textbf{if}} & rt_{\phi_{i_{\textbf{MAX}}}}(t) = rt_{\phi_{i_{\textbf{MIN}}}}(t) \\ 
+			\dfrac{rt_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{j}}}(t)}{rt_{\phi_{i_{\textbf{MAX}}}}(t) - rt_{\phi_{i_{\textbf{MIN}}}}(t)} & & otherwise \\ 
+		\end{array} \right.\\\nonumber\\
+		p_{\phi_{i_{j}}}(t)^{(c)} & \mathDef & \left\{ 
+		\begin{array}{lcc}
+			1 & \text{\textbf{if}} & c_{\phi_{i_{\textbf{MAX}}}}(t) = c_{\phi_{i_{\textbf{MIN}}}}(t) \\ 
+			\dfrac{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{j}}}(t)}{c_{\phi_{i_{\textbf{MAX}}}}(t) - c_{\phi_{i_{\textbf{MIN}}}}(t)} &&otherwise \\ 
+		\end{array} \right.
+	\end{eqnarray}
+	
+	
+\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]{MKP Formulation}
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.80\textheight]{../Images/super3.png}
+	\end{center}
+	
+\end{frame} 
+
+% -------------- %
+% -------------- %
+
+\begin{frame}[noframenumbering]
+	
+	\begin{block}{Concrete Function Average Response Time}
+		\begin{eqnarray}
+			RT(x_{\phi},t) & \mathDef & RT(f_{\phi},m,t) \nonumber \\
+			& = & RT_{avg}^{(c)}(f_{\phi}, m,t) \cdot \textbf{P}_{\omega_{P_R}^{(l)}}(t) + \\ 
+			& & \qquad RT_{avg}^{(w)}(f_{\phi}, m,t) \cdot \Big( 1 - \textbf{P}_{\omega_{P_R}^{(l)}}(t)  \Big) \nonumber
+		\end{eqnarray}
+	\end{block}
+	
+	where:
+	
+	\begin{equation}
+		RT_{avg}^{(c)}(f_{\phi}, m,t) \mathDef
+		\begin{cases}
+			Y_o & \text{if}\ t = 0\\ 
+			\alpha \cdot Y_t + (1 - \alpha) \cdot RT_{avg}^{(c)}(f_{\phi}, m,t-1) & \text{if}\ t > 0\\
+			
+		\end{cases}\,
+	\end{equation}
+	
+\end{frame} 
+
+\begin{frame}[noframenumbering]
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.80\textheight]{../Images/super5.png}
+	\end{center}
+	
+\end{frame} 
+
+\begin{frame}[noframenumbering]
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.80\textheight]{../Images/super6.png}
+	\end{center}
+	
+\end{frame} 
+
+\begin{frame}[noframenumbering]
+	
+	\begin{center}
+		\includegraphics[width=\textwidth,height=0.5\textheight]{../Images/super7.png}
+	\end{center}
+	
 \end{frame} 
 
 \end{document}

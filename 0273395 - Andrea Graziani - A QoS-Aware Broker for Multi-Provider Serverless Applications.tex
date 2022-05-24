@@ -883,7 +883,7 @@ Finally, to resolve the optimization problems, which according to our model must
 
 In this section, we will first formally describe the workflow of a serverless application, then we will develop the analytical model used by our framework to predict its the performance and cost.
 
-\section{SLA definition}
+\section{SLA Definition}
 
 As said previously, our system goal is the fulfillment of both \textit{functional requirements}, concerning the orchestration of a serverless workflow, and \textit{non-functional} requirements, concerning the \textit{quality of service} (QoS) levels that should be guaranteed.
 
@@ -1234,7 +1234,7 @@ where:
 
 From now, we will use $RT(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ and $C(\mathcal{C},\textbf{x}_{\mathcal{C}}, t)$ notations to represent the average response time and billed cost when the choreography $\mathcal{C}$ is executed with the configuration $\textbf{x}_{\mathcal{C}}$ at time $t$. 
 
-\section{Serverless Choreography's Structure}
+\section{Serverless Choreography Structure}
 
 Let $\mathcal{C} = (\Phi,E)$ a choreography. 
 
@@ -1532,7 +1532,7 @@ Any structure $\mathcal{B} = (\Phi',E',\Theta)$ such that:
 	|\Theta| = n  & \qquad n \in \N \setminus \left\{0\right\} \\
 	P(\phi_x, \alpha(\theta_i),t) \leq 1 & \qquad \forall i \in \SetFromOneTo{n} \\
 	\sum_{i = 1}^n P(\phi_x, \alpha(\theta_i),t) = 1 & \\
-	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta \\
+	E[I_{\theta}] = 1 & \qquad \forall \theta \in \Theta
 \end{eqnarray}
 
 is called \textit{branch structure} and $\tau$ denotes a \textit{branch} type. More precisely, if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{if-else-branch structure}; if $|\Theta| = 2$, $\mathcal{B}$ will be called \textit{switch-branch structure}. When $|\Theta| = 1$ and $(\phi_x,\phi_y) \in E$, $\mathcal{B}$ is called \textit{if-branch structure}. Clearly, it is used to model \texttt{if}, \texttt{if-else} and \texttt{switch} programming structures inside a serverless application. It is not necessary that $\omega(\mathcal{B})$ exists.
@@ -1946,9 +1946,9 @@ For instance, referring to the computation of $RT_{avg}^{(c)}(f_{\phi}, m,t)$, l
 	RT_{avg}^{(c)}(f_{\phi}, m,t) \mathDef
 	\begin{cases}
 		Y_o & \text{if}\ t = 0\\ 
-		\alpha \cdot Y_t + (1 - \alpha) \cdot \lambda(t-1) & \text{if}\ t > 0\\
+		\alpha \cdot Y_t + (1 - \alpha) \cdot RT_{avg}^{(c)}(f_{\phi}, m,t-1) & \text{if}\ t > 0\\
 		
-	\end{cases}\,.
+	\end{cases}\,
 \end{equation}
 
 \section{Executable Function Performance Evaluation}
@@ -2574,7 +2574,7 @@ where:
 		\item $\tau(o_{i_a}, o_{j_b})_k^{(l)}$ is the amount of pheromones laid on edge $(o_{i_a}, o_{j_b})$ by $l$-th ant, which, letting $\pi_{k_l}$ the path traversed by that ant, can be computed as follows:
 		
 		\begin{equation}
-			\tau(o_{i_j}, o_{a_b})_{k-1}^{l} \mathDef \left\{ 
+			\tau(o_{i_j}, o_{a_b})_{k}^{(l)} \mathDef \left\{ 
 			\begin{array}{lll}
 				0 & \text{\textbf{if }} & S_{k_l} = \emptyset \\ 
 				\displaystyle \frac{1}{1 + profit(S_{best}) - profit(S_{k_l})} & \text{\textbf{if }} & \substack{S_{k_l} \neq \emptyset \\ (o_{i_j}, o_{a_b}) \in \pi_{k_l}} \\ 
